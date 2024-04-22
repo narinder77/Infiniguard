@@ -78,12 +78,16 @@ class CertifiedProviderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(CertifiedProvider $certifiedProvider)
+    public function show($certifiedProviderId)
     {
-        $page_title = 'Certified Providers Details';
-        $page_description = 'Some description for the page';
-        return view('admin.certified-providers.show', compact('page_title', 'page_description'));
-    }
+       $CertifiedProvider=CertifiedProvider::find($certifiedProviderId);
+
+            $page_title = 'Certified Providers Details';
+            $page_description = 'Some description for the page';
+    
+            return view('admin.certified-providers.show', compact('page_title', 'page_description','CertifiedProvider'));
+    
+   }
 
     /**
      * Show the form for editing the specified resource.
