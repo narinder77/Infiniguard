@@ -1,0 +1,76 @@
+/*
+* Css for dataTables
+*/
+
+body,
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+table.dataTable>thead>tr>th {
+    border-bottom: 0px !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button.previous,
+div.dt-container .dt-paging .dt-paging-button.next {
+    color: #016682 !important;
+    border: 1px solid #016682 !important;
+    background: transparent !important;
+    margin: 0 10px;
+}
+
+div.dt-container .dt-paging button.dt-paging-button {
+    border-radius: 0.5rem !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button.previous:hover,
+div.dt-container .dt-paging .dt-paging-button.next:hover {
+    background: #016682 !important;
+    color: #fff !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button:hover,
+div.dt-container .dt-paging .dt-paging-button:hover {
+    background: #016682 !important;
+    color: #fff !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current,
+div.dt-container .dt-paging .dt-paging-button.current:hover {
+    color: #fff !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button.disabled {
+    color: #016682 !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button {
+    border: 0 !important;
+    padding: 10px 20px;
+    border: 0px solid var(--primary) !important;
+    background: #E6E6E6 !important;
+    border-radius: 0.5rem;
+    color: #096C88 !important;
+    font-size: 16px;
+    margin: 0 5px !important;
+    display: inline-block;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current {
+    color: #fff !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current {
+    background: #016682 !important;
+}
+
+div.dt-container .dt-paging span a {
+    color: #fff;
+    background: transparent !important;
+}
+
+table.dataTable.stripe>tbody>tr:nth-child(odd)>*,
+table.dataTable.display>tbody>tr:nth-child(odd)>* {
+    box-shadow: none !important;
+}
