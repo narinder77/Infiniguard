@@ -110,8 +110,8 @@
                     },
                 order: [[0, 'asc']],
                 columnDefs: [
-                    { orderable: false, "targets": [7, 8] },
-                    { searchable: false, "targets": [7, 8] },
+                    { orderable: false, "targets": [1,7, 8] },
+                    { searchable: false, "targets": [1,7, 8] },
                 ],
                 columns: [
                     {data: 'equipment_claim_name', name: 'equipment_claim_name'},
@@ -127,8 +127,8 @@
                     {data: 'equipment_claim_email', name: 'equipment_claim_email'},
                     {data: 'equipment_claim_phone_number', name: 'equipment_claim_phone_number'},
                     {data: 'equipment_claim_qr_id', name: 'equipment_claim_qr_id'},
-					{data: 'equipment_claim_id', name: 'equipment_claim_id'},
-					{data: 'equipment_claim_id', name: 'equipment_claim_id'},
+					{data: 'certified_applicators.certified_providers.provider_name', name: 'provider_name'},
+					{data: 'certified_applicators.applicator_certification_id', name: 'applicator_certification_id'},
 					{data: 'equipment_claim_date', name: 'equipment_claim_date'},
 					{data: 'equipment_claim_id', name: 'equipment_claim_id'},
                 ]

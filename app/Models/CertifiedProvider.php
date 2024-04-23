@@ -12,7 +12,7 @@ class CertifiedProvider extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $table = "certified_providers";
+    protected $table = 'certified_providers';
     protected $primaryKey = 'provider_id';
 
     protected $fillable = [
