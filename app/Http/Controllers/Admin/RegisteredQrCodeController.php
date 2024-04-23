@@ -127,9 +127,10 @@ class RegisteredQrCodeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(RegisteredQrCode $registeredQrCode)
+    public function show(Request $request,$certifiedApplicatorId)
     {
-        //
+        $registeredQrCode=RegisteredQrCode::where('applicator_id',$certifiedApplicatorId)->get();
+    //    dd($registeredQrCode);
     }
 
     /**
