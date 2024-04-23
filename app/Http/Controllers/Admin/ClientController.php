@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Client;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+use App\Http\Controllers\Controller;
 
 class ClientController extends Controller
 {
@@ -15,61 +16,20 @@ class ClientController extends Controller
     {
         $page_title = 'Clients';
         $page_description = 'Some description for the page';
+
         if ($request->ajax()) {
-            $draw = $request->get('draw');
-            $start = $request->get('start');
-            $length = $request->get('length');
-            $order = $request->get('order');
-            $columns = $request->get('columns');
-            $search = $request->get('search')['value'];
-
-            $query = Client::query();
-            //$query->with('certifiedApplicators', 'certifiedProviders', 'registeredEquipments');
-
-            if (!empty($search)) {
-                $query->when($search, function ($q) use ($search) {
-                    $q->where(function ($q) use ($search) {
-                        $q->where('client_id', 'like', "%$search%")
-                            ->orWhere('client_company_name', 'like', "%$search%")
-                            ->orWhere('client_firstname', 'like', "%$search%")
-                            ->orWhere('client_email', 'like', "%$search%")
-                            ->orWhere('client_phone', 'like', "%$search%");
+            $data = Client::with('certifiedProviders');
+            return DataTables::of($data)
+                ->orderColumn('provider_name', function ($query, $order) {
+                    $query->join('certified_providers', 'clients.client_provider_id', '=', 'certified_providers.provider_id')
+                        ->orderBy('certified_providers.provider_name', $order);
+                })
+                ->filterColumn('provider_name', function ($query, $keyword) {
+                    $query->whereHas('certifiedProviders', function ($query) use ($keyword) {
+                        $query->where('provider_name', 'like', "%{$keyword}%");
                     });
-                    /*->orWhereHas('certifiedProviders', function ($q) use ($search) {
-                        $q->where('provider_name', 'like', "%$search%");
-                    });*/
-                });
-            }
-            if (!empty($order)) {
-                $columnIndex = $order[0]['column'];
-                $columnName = $columns[$columnIndex]['data']; // Get the actual column name
-                $columnSortOrder = $order[0]['dir'];
-
-                if (strpos($columnName, '.') !== false) {
-                    $relationship = explode('.', $columnName)[0];
-                    $relationshipName = str_replace('_', '', ucwords($relationship, '_'));
-                    $relatedColumnName = explode('.', $columnName)[1];
-                    $query->with([$relationshipName => function ($query) use ($relatedColumnName, $columnSortOrder) {
-                        $query->orderBy($relatedColumnName, $columnSortOrder);
-                    }]);
-                } else {
-                    $query->orderBy($columnName, $columnSortOrder);
-                }
-            }
-
-
-            $total = $query->count();
-            $filteredTotal = $query->count();
-            $query->skip($start)->take($length);
-            $data = $query->get();
-
-            $response = [
-                "draw" => intval($draw),
-                "recordsTotal" => $total,
-                "recordsFiltered" => $filteredTotal,
-                "data" => $data,
-            ];
-            return $response;
+                })
+                ->toJson();
         }
 		return view('admin.clients.index', compact('page_title', 'page_description'));
     }
