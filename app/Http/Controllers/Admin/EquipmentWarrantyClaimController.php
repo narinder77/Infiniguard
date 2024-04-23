@@ -24,6 +24,13 @@ class EquipmentWarrantyClaimController extends Controller
             $search = $request->get('search')['value'];
 
             $query = EquipmentWarrantyClaim::query();
+            $query->join('generated_qr_codes', 'equipment_warranty_claims.equipment_claim_qr_id', '=', 'generated_qr_codes.equipment_qr_id')
+            ->join('registered_qr_codes', 'generated_qr_codes.equipment_qr_id', '=', 'registered_qr_codes.equipment_qr_id')
+            ->join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
+            ->join('certified_providers', 'certified_applicators.applicator_provider_id', '=', 'certified_providers.provider_id')
+            ->select('equipment_warranty_claims.*', 'certified_providers.provider_name','certified_applicators.applicator_certification_id');
+        
+      
             //$query->with('certifiedApplicators', 'certifiedProviders', 'registeredEquipments');
 
             if (!empty($search)) {
@@ -95,6 +102,7 @@ class EquipmentWarrantyClaimController extends Controller
      */
     public function show(EquipmentWarrantyClaim $equipmentWarrantyClaim)
     {
+        dd($equipmentWarrantyClaim);
         print_r($equipmentWarrantyClaim->toArray());
         return 'show warranty claims';
     }

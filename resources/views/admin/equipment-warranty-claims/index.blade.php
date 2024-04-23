@@ -127,8 +127,8 @@
                     {data: 'equipment_claim_email', name: 'equipment_claim_email'},
                     {data: 'equipment_claim_phone_number', name: 'equipment_claim_phone_number'},
                     {data: 'equipment_claim_qr_id', name: 'equipment_claim_qr_id'},
-					{data: 'equipment_claim_id', name: 'equipment_claim_id'},
-					{data: 'equipment_claim_id', name: 'equipment_claim_id'},
+					{data: 'provider_name', name: 'provider_name'},
+					{data: 'applicator_certification_id', name: 'applicator_certification_id'},
 					{data: 'equipment_claim_date', name: 'equipment_claim_date'},
 					{data: 'equipment_claim_id', name: 'equipment_claim_id'},
                 ]

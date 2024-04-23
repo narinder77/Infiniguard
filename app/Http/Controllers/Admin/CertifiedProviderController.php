@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 use App\Models\CertifiedProvider;
+use App\Models\CertifiedApplicator;
 use App\Http\Controllers\Controller;
 
 class CertifiedProviderController extends Controller
@@ -78,13 +80,34 @@ class CertifiedProviderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($certifiedProviderId)
+    public function show(Request $request,$certifiedProviderId)
     {
-       $CertifiedProvider=CertifiedProvider::find($certifiedProviderId);
-
+      
+       $CertifiedProvider=CertifiedProvider::find($certifiedProviderId);   
+        
             $page_title = 'Certified Providers Details';
             $page_description = 'Some description for the page';
-    
+            if ($request->ajax()) {
+                $provider_id = $request->get('provider_id');
+                if ($CertifiedProvider) {
+                    $data = CertifiedApplicator::query();
+                    $data->where('applicator_provider_id', $provider_id);                
+                    $data->withCount('registeredCodes', 'warrantyClaims');
+                
+                return DataTables::of($data)
+                    ->orderColumn('applicator_name', function ($query, $order) {
+                        $query->orderBy('applicator_name', $order); // Corrected the syntax here
+                    })
+                    ->filterColumn('applicator_name', function ($query, $keyword) {
+                        $query->where('applicator_name', 'like', "%{$keyword}%");
+                    })
+                    ->toJson();            
+                
+                }else{
+                    return DataTables::of([])
+                                ->toJson();
+                }
+            }
             return view('admin.certified-providers.show', compact('page_title', 'page_description','CertifiedProvider'));
     
    }
@@ -100,9 +123,20 @@ class CertifiedProviderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, CertifiedProvider $certifiedProvider)
+    public function update(Request $request,$certifiedProviderId)
     {
-        //
+        $request->validate([
+            'status' => 'required|in:active,revoked',
+        ]);
+
+        $CertifiedProvider=CertifiedProvider::findOrFail($certifiedProviderId);
+        $CertifiedProvider->provider_status = $request->status == 'active' ? '1' : '0';
+        $CertifiedProvider->save();
+
+        session()->flash('success', 'Status updated successfully');
+        // Return a response
+        return response()->json(['message' => 'Status updated successfully']);
+
     }
 
     /**
@@ -112,4 +146,11 @@ class CertifiedProviderController extends Controller
     {
         //
     }
+
+    public function getApplicators(Request $request)
+    {
+
+        dd(request);
+
+    } 
 }
