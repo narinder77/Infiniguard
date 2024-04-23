@@ -130,8 +130,9 @@
     </div>
     <!--Main Content-->
     <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
-        <h2 class="mb-0">INFINIGUARD GLOBAL</h2>
+        <h2 class="mb-0">{{ $CertifiedProvider->provider_name ?? '' }}</h2>
         <div class="d-flex">
+         @if($CertifiedProvider)
             <a href="{{ route('admin.profile.edit')}}" class="btn btn-primary rounded mx-2">Edit Profile</a>
             <label class="switch">
                 <input type="checkbox" id="togBtn">
@@ -142,6 +143,7 @@
                     <!--END-->
                 </div>
             </label>
+        @endif
         </div>
     </div>
     <div class="row">
@@ -158,23 +160,28 @@
                         </tr>
                     </thead>
                     <tbody>
+                    @if($CertifiedProvider)
                         <tr>
                             <td>
-                                <img src="https://maintenance.infiniguard.com/admin/assets/company_logo/cdb04371-efd1-4380-a504-4b32652089751.jpg"
+                             <img src="https://maintenance.infiniguard.com/admin/assets/company_logo/cdb04371-efd1-4380-a504-4b32652089751.jpg"
                                     style="width:100px;height:auto;" alt="">
+                                {{-- <img src="{{ asset('storage/'.$CertifiedProvider->provider_logo_image) }}"
+                                    style="width:100px;height:auto;" alt=""> --}}
                             </td>
-                            <td> INFINIGUARD® GLOBAL </td>
-                            <td> Marcos Rodriguez </td>
-                            <td> test@infiniguard.com </td>
-                            <td> +1-858-284-7400 </td>
+                            <td>{{ $CertifiedProvider->provider_name ?? 'NA' }}</td>
+                            <td>{{ $CertifiedProvider->provider_administrator ?? 'NA' }}</td>
+                            <td>{{ $CertifiedProvider->provider_email ?? 'NA' }}</td>
+                            <td>{{ $CertifiedProvider->provider_phone ?? 'NA' }}</td>
                         </tr>
+                    @endif
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
     <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
-        <h2 class="mb-0">Certified Applicators for Mexico</h2>
+        {{-- <h2 class="mb-0">Certified Applicators for Mexico</h2> --}}
+        <h2 class="mb-0">INFINIGUARD® Certified Applicators for Trane Puerto Rico</h2> 
         <div>
             <a href="#" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#addapplicator">Add
                 More</a>

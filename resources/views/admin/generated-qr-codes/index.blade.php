@@ -98,7 +98,7 @@
                     { searchable: false, "targets": [1,2] },
                 ],
                 columns: [
-                    {data: 'equipment_qr_id', name: 'equipment_qr_id'},
+                    {data: 'equipment_qr_number', name: 'equipment_qr_number'},
 					{
                         data: null,
                         render: function (data, type, row, meta) {

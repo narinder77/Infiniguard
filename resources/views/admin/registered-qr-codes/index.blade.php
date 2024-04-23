@@ -103,7 +103,7 @@
                 ],
                 columns: [
 					{data: 'certified_providers.provider_name',name: 'certified_providers.provider_name'},
-                    {data: 'certified_applicators.applicator_certification_id', name: 'certified_applicators.applicator_certification_id'},
+                    {data: 'certified_applicators.applicator_certification_id', name: 'applicator_certification_id'},
 					{
                         data: null,
                         render: function (data, type, row, meta) {
