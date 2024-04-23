@@ -49,4 +49,9 @@ class EquipmentInspection extends Model
             set: fn ($value) => json_encode(["additional_image" => $value]),
         );
     } 
+
+    public function warrantyClaims()
+    {
+        return $this->hasMany(EquipmentWarrantyClaim::class, 'equipment_claim_inspection_id', 'inspection_id');
+    }    
 }

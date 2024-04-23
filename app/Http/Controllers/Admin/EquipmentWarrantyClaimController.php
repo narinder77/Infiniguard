@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use App\Models\EquipmentWarrantyClaim;
-use Illuminate\Http\Request;
 
 class EquipmentWarrantyClaimController extends Controller
 {
@@ -15,69 +16,35 @@ class EquipmentWarrantyClaimController extends Controller
     {
         $page_title = 'Warranty Claims';
         $page_description = 'Some description for the page';
+    
         if ($request->ajax()) {
-            $draw = $request->get('draw');
-            $start = $request->get('start');
-            $length = $request->get('length');
-            $order = $request->get('order');
-            $columns = $request->get('columns');
-            $search = $request->get('search')['value'];
-
             $query = EquipmentWarrantyClaim::query();
-            $query->join('generated_qr_codes', 'equipment_warranty_claims.equipment_claim_qr_id', '=', 'generated_qr_codes.equipment_qr_id')
-            ->join('registered_qr_codes', 'generated_qr_codes.equipment_qr_id', '=', 'registered_qr_codes.equipment_qr_id')
-            ->join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
-            ->join('certified_providers', 'certified_applicators.applicator_provider_id', '=', 'certified_providers.provider_id')
-            ->select('equipment_warranty_claims.*', 'certified_providers.provider_name','certified_applicators.applicator_certification_id');
-        
-      
-            //$query->with('certifiedApplicators', 'certifiedProviders', 'registeredEquipments');
-
-            if (!empty($search)) {
-                $query->when($search, function ($q) use ($search) {
-                    $q->where(function ($q) use ($search) {
-                        $q->where('equipment_claim_name', 'like', "%$search%")
-                            ->orWhere('equipment_claim_email', 'like', "%$search%")
-                            ->orWhere('equipment_claim_phone_number', 'like', "%$search%")
-                            ->orWhere('equipment_claim_qr_id', 'like', "%$search%")
-                            ->orWhere('equipment_claim_date', 'like', "%$search%");
+            $query->with('certifiedApplicators.certifiedProviders');
+            return DataTables::of($query)
+                ->orderColumn('provider_name', function ($query, $order) {
+                    $query->join('registered_qr_codes', 'equipment_warranty_claims.equipment_claim_qr_id', '=', 'registered_qr_codes.equipment_qr_id')
+                    ->join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
+                    ->join('certified_providers', 'certified_applicators.applicator_provider_id', '=', 'certified_providers.provider_id')
+                    ->orderBy('certified_providers.provider_name', $order);
+                })
+                ->orderColumn('applicator_certification_id', function ($query, $order) {
+                    $query->join('registered_qr_codes', 'equipment_warranty_claims.equipment_claim_qr_id', '=', 'registered_qr_codes.equipment_qr_id')
+                        ->join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
+                        ->orderBy('certified_applicators.applicator_certification_id', $order);
+                })
+                ->filterColumn('provider_name', function ($query, $keyword) {
+                    $query->whereHas('certifiedApplicators.certifiedProviders', function ($query) use ($keyword) {
+                        $query->where('provider_name', 'like', "%{$keyword}%");
                     });
-                    /*->orWhereHas('certifiedProviders', function ($q) use ($search) {
-                        $q->where('provider_name', 'like', "%$search%");
-                    });*/
-                });
-            }
-            if (!empty($order)) {
-                $columnIndex = $order[0]['column'];
-                $columnName = $columns[$columnIndex]['data']; // Get the actual column name
-                $columnSortOrder = $order[0]['dir'];
-
-                if (strpos($columnName, '.') !== false) {
-                    $relationship = explode('.', $columnName)[0];
-                    $relationshipName = str_replace('_', '', ucwords($relationship, '_'));
-                    $relatedColumnName = explode('.', $columnName)[1];
-                    $query->with([$relationshipName => function ($query) use ($relatedColumnName, $columnSortOrder) {
-                        $query->orderBy($relatedColumnName, $columnSortOrder);
-                    }]);
-                } else {
-                    $query->orderBy($columnName, $columnSortOrder);
-                }
-            }
-
-
-            $total = $query->count();
-            $filteredTotal = $query->count();
-            $query->skip($start)->take($length);
-            $data = $query->get();
-
-            $response = [
-                "draw" => intval($draw),
-                "recordsTotal" => $total,
-                "recordsFiltered" => $filteredTotal,
-                "data" => $data,
-            ];
-            return $response;
-        }        
+                })
+                ->filterColumn('applicator_certification_id', function ($query, $keyword) {
+                    $query->whereHas('certifiedApplicators', function ($query) use ($keyword) {
+                        $query->where('applicator_certification_id', 'like', "%{$keyword}%");
+                    });
+                })
+                ->toJson();
+        }
+     
 		return view('admin.equipment-warranty-claims.index', compact('page_title', 'page_description'));
     }
 

@@ -17,9 +17,25 @@ class EquipmentWarrantyClaim extends Model
     {
         return $this->belongsTo(EquipmentInspection::class, 'equipment_claim_inspection_id', 'inspection_id');
     }
-    
+
     public function qrCode()
     {
         return $this->belongsTo(GeneratedQrCode::class, 'equipment_claim_qr_id', 'equipment_qr_id');
     }
+    public function certifiedApplicators()
+    {
+        return $this->hasOneThrough(
+            CertifiedApplicator::class,
+            RegisteredQrCode::class,
+            'equipment_qr_id',
+            'applicator_id',
+            'equipment_claim_qr_id',
+            'applicator_id'
+        );
+    }
+    /*public function certifiedProviders()
+    {
+        return $this->certifiedApplicators();
+    }*/
+    
 }

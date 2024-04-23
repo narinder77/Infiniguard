@@ -18,17 +18,19 @@ class CertifiedApplicatorController extends Controller
         $page_description = 'Some description for the page';
 
         if ($request->ajax()) {
-            $data = CertifiedApplicator::with(['certifiedProviders'])
+            $data = CertifiedApplicator::with('certifiedProviders')
                 ->withCount('registeredCodes', 'warrantyClaims');
             return DataTables::of($data)
                 ->orderColumn('provider_name', function ($query, $order) {
                     $query->join('certified_providers', 'certified_applicators.applicator_provider_id', '=', 'certified_providers.provider_id')
                         ->orderBy('certified_providers.provider_name', $order);
-                })->filterColumn('provider_name', function ($query, $keyword) {
+                })
+                ->filterColumn('provider_name', function ($query, $keyword) {
                     $query->whereHas('certifiedProviders', function ($query) use ($keyword) {
                         $query->where('provider_name', 'like', "%{$keyword}%");
                     });
-                })->toJson();
+                })
+                ->toJson();
         }
         return view('admin.certified-applicators.index', compact('page_title', 'page_description'));
     }
