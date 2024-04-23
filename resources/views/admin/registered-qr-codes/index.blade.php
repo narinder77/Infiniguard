@@ -102,7 +102,9 @@
                     { searchable: false, "targets": [2, 5, 6] },
                 ],
                 columns: [
+
 					{data: 'certified_providers.provider_name',name: 'provider_name'},
+
                     {data: 'certified_applicators.applicator_certification_id', name: 'applicator_certification_id'},
 					{
                         data: null,
