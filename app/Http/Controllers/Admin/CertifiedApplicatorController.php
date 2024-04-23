@@ -58,7 +58,8 @@ class CertifiedApplicatorController extends Controller
     {
         $page_title = 'Certified Providers Details';
         $page_description = 'Some description for the page';
-        return view('admin.applicators.show', compact('page_title', 'page_description'));
+
+        return view('admin.certified-applicators.show', compact('page_title', 'page_description', 'certifiedApplicator'));
     }
 
     /**

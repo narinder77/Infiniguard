@@ -152,9 +152,9 @@
                 <table class="table border-no display mb-4  project-bx">
                     <thead>
                         <tr>
-                            <th> Company Logo </th>
-                            <th> Company Name </th>
-                            <th> Company Administrator </th>
+                            <th> Provider Logo </th>
+                            <th> Provider Name </th>
+                            <th> Provider Administrator </th>
                             <th> Email </th>
                             <th> Phone </th>
                         </tr>
