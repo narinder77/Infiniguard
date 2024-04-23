@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\RegisteredQrCode;
-use App\Models\CertifiedApplicator;
-use App\Models\RegisteredEquipment;
 use Illuminate\Http\Request;
+use App\Models\RegisteredQrCode;
+use Yajra\DataTables\DataTables;
+use App\Http\Controllers\Controller;
 
 class RegisteredQrCodeController extends Controller
 {
@@ -17,57 +16,23 @@ class RegisteredQrCodeController extends Controller
     {
         $page_title = 'Registered Equipment';
         $page_description = 'Some description for the page';
+        
         if ($request->ajax()) {
-            $draw = $request->get('draw');
-            $start = $request->get('start');
-            $length = $request->get('length');
-            $order = $request->get('order');
-            $columns = $request->get('columns');
-            $search = $request->get('search')['value'];
-
             $query = RegisteredQrCode::query();
             $query->with('certifiedApplicators', 'certifiedProviders', 'registeredEquipments');
 
-            if (!empty($search)) {
-                $query->where(function ($query) use ($search )  {
-                    $query->where('equipment_qr_id', 'LIKE', "%$search%")
-                        ->orWhereHas('certifiedApplicators', function ($query) use ($search) {
-                            $query->where('applicator_certification_id', 'LIKE', "%$search%");
-                        })->orWhereHas('certifiedProviders', function ($query) use ($search) {
-                            $query->where('provider_name', 'LIKE', "%$search%");
-                        });
-                });
-            }
-            if (!empty($order)) {
-                $columnIndex = $order[0]['column'];
-                $columnName = $columns[$columnIndex]['data']; // Get the actual column name
-                $columnSortOrder = $order[0]['dir'];
-
-                if (strpos($columnName, '.') !== false) {
-                    $relationship = explode('.', $columnName)[0];
-                    $relationshipName = str_replace('_', '', ucwords($relationship, '_'));
-                    $relatedColumnName = explode('.', $columnName)[1];
-                    $query->with([$relationshipName => function ($query) use ($relatedColumnName, $columnSortOrder) {
-                        $query->orderBy($relatedColumnName, $columnSortOrder);
-                    }]);
-                } else {
-                    $query->orderBy($columnName, $columnSortOrder);
-                }
-            }
-
-
-            $total = $query->count();
-            $filteredTotal = $query->count();
-            $query->skip($start)->take($length);
-            $data = $query->get();
-
-            $response = [
-                "draw" => intval($draw),
-                "recordsTotal" => $total,
-                "recordsFiltered" => $filteredTotal,
-                "data" => $data,
-            ];
-            return $response;
+            return DataTables::of($query)
+                ->orderColumn('provider_name', function ($query, $order) {
+                    $query->join('certified_providers', 'certified_applicators.applicator_provider_id', '=', 'certified_providers.provider_id')
+                        ->orderBy('certified_providers.provider_name', $order);
+                })->orderColumn('applicator_certification_id', function ($query, $order) {
+                    $query->join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
+                        ->orderBy('certified_applicators.applicator_certification_id', $order);
+                })->orderColumn('equipment_serial_number', function ($query, $order) {
+                    $query->join('generated_qr_codes', 'registered_qr_codes.equipment_qr_id', '=', 'generated_qr_codes.equipment_qr_id')
+                        ->orderBy('generated_qr_codes.equipment_serial_number', $order);
+                })
+                ->toJson();
         }
         return view('admin.registered-qr-codes.index', compact('page_title', 'page_description'));
     }

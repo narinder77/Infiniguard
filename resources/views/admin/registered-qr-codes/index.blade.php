@@ -98,11 +98,11 @@
                     },
                 order: [[3, 'asc']],
                 columnDefs: [
-                    { orderable: false, "targets": [5, 6 ] },
-                    { searchable: false, "targets": [5, 6] },
+                    { orderable: false, "targets": [2, 5, 6 ] },
+                    { searchable: false, "targets": [2, 5, 6] },
                 ],
                 columns: [
-					{data: 'certified_providers.provider_name',name: 'certified_providers.provider_name'},
+					{data: 'certified_providers.provider_name',name: 'provider_name'},
                     {data: 'certified_applicators.applicator_certification_id', name: 'applicator_certification_id'},
 					{
                         data: null,
@@ -114,8 +114,8 @@
                     },
                     {data: 'equipment_qr_id', name: 'equipment_qr_id'},
 					{
-                        data: null,
-                        name: 'registered_equipments.equipment_serial_number',
+                        data: 'registered_equipments.equipment_serial_number',
+                        name: 'equipment_serial_number',
                         render: function (data, type, row, meta) {
                             let applicator_id = row.applicator_id;
                             let baseUrl = "{{ route('admin.applicators.show', '') }}";
