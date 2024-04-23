@@ -191,7 +191,7 @@
                             let status = row.provider_status;
     						let checkedAttribute = status == 1 ? 'checked' : ''; 
                             return `<div class="form-check form-switch">
-										<input class="form-check-input" type="checkbox" id="certificationStatus" name="" value="yes" ${checkedAttribute}>
+										<input data-certificationProviderId="${row.provider_id}" class="form-check-input" type="checkbox" id="certificationStatus" name="" value="yes" ${checkedAttribute}>
 									</div>`;
                         }
                     },                    
@@ -225,9 +225,46 @@
                     },
                 ]
             });          
-            $('#example tbody').on('click', 'tr', function() {
-                var data = table.row(this).data();
+            $('#CertifiedProvider tbody').on('click', 'tr', function() {
+                var data = CertifiedProvider.row(this).data();
             });
         })(jQuery);
+
+    $(document).on('change','#certificationStatus',function() {
+       var certificationProviderId = $(this).attr('data-certificationProviderId');
+        console.log(certificationProviderId);
+        var status = $(this).prop('checked') ? 'active' : 'revoked';
+        
+        // Construct the URL with the provider ID
+        var url = "{{ route('admin.providers.update', ':id') }}";
+            url = url.replace(':id', certificationProviderId);
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                _method: 'PUT', // Since Laravel's resourceful route uses PUT method for update
+                status: status
+            },
+            headers: {
+                    'X-CSRF-TOKEN': csrfToken
+            },
+            success: function(response) {
+                // Handle success response if needed
+              //  console.log(response);
+                $('#successAlert').fadeIn();
+                $('#successAlert').text(response.message);
+                // Hide success alert after 3 seconds (3000 milliseconds)
+                setTimeout(function() {
+                    $('#successAlert').fadeOut();
+                }, 3000);
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(xhr.responseText);
+            }
+        });
+    });
 </script>
 @endpush

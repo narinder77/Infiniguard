@@ -51,7 +51,7 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
      * This route for Certified Providers
      */
     Route::resource('providers', CertifiedProviderController::class);
-
+    Route::get('provider/applicators', [CertifiedProviderController::class, 'getApplicators'])->name('provider.getApplicators');
     /**
      * This route for Certified Applicators
      */

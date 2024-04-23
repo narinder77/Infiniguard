@@ -114,6 +114,9 @@
         ***********************************-->
         <div class="content-body {{$body_class}}">
             <!-- row -->
+        <div id="successAlert" class="alert alert-success" style="display: none;">
+            Data Updated Successfully
+        </div>
 			@yield('content')
         </div>
         <!--**********************************
