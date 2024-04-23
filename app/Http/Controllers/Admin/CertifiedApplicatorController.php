@@ -59,7 +59,9 @@ class CertifiedApplicatorController extends Controller
         $page_title = 'Certified Providers Details';
         $page_description = 'Some description for the page';
 
+
         return view('admin.certified-applicators.show', compact('page_title', 'page_description', 'certifiedApplicator'));
+
     }
 
     /**
@@ -73,9 +75,20 @@ class CertifiedApplicatorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, CertifiedApplicator $certifiedApplicator)
+    public function update(Request $request,$certifiedApplicatorId)
     {
-        //
+        $request->validate([
+            'status' => 'required|in:active,revoked',
+        ]);
+
+        $CertifiedApplicator=CertifiedApplicator::findOrFail($certifiedApplicatorId);
+        $CertifiedApplicator->applicator_status = $request->status == 'active' ? '1' : '0';
+        $CertifiedApplicator->save();
+
+        session()->flash('success', 'Status updated successfully');
+        // Return a response
+        return response()->json(['message' => 'Status updated successfully']);
+
     }
 
     /**

@@ -134,8 +134,9 @@
         <div class="d-flex">
          @if($CertifiedProvider)
             <a href="{{ route('admin.profile.edit')}}" class="btn btn-primary rounded mx-2">Edit Profile</a>
+            <input type="hidden" id="providerId" value="{{ $CertifiedProvider->provider_id }}">
             <label class="switch">
-                <input type="checkbox" id="togBtn">
+              <input type="checkbox" id="togBtn" {{ $CertifiedProvider->provider_status == 1 ? 'checked' : '' }}>               
                 <div class="slider round">
                     <!--ADDED HTML -->
                     <span class="on">Active</span>
@@ -181,7 +182,7 @@
     </div>
     <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
         {{-- <h2 class="mb-0">Certified Applicators for Mexico</h2> --}}
-        <h2 class="mb-0">INFINIGUARD® Certified Applicators for Trane Puerto Rico</h2> 
+        <h2 class="mb-0">INFINIGUARD® Certified Applicators for {{ $CertifiedProvider->provider_name ?? '' }}</h2> 
         <div>
             <a href="#" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#addapplicator">Add
                 More</a>
@@ -190,7 +191,7 @@
     <div class="row">
         <div class="col-lg-12 table-outer">
             <div class="table-responsive card-table rounded table-hover fs-14">
-                <table class="table border-no display mb-4 dataTablesCard project-bx" id="example5">
+                <table class="table border-no display mb-4 dataTablesCard project-bx" id="certifiedApplicators">
                     <thead>
                         <tr>
                             <th> Certification Id </th>
@@ -203,277 +204,7 @@
                             <th> Edit </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td> FZ-01 </td>
-                            <td> Fernando Zamarripa </td>
-                            <td>
-                                <a href="javascript:void(0)" class="btn btn-info d-block rounded" data-bs-toggle="modal"
-                                    data-bs-target="#reset-email">fernando@infiniguard.com</a>
-                            </td>
-                            <td> 2019-08-02 </td>
-                            <td>
-                                <a href="{{ url('register-equipment')}}">266</a>
-                            </td>
-                            <td>
-                                <a href="{{ url('warranty-claims')}}">3</a>
-                            </td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <a href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                        </svg>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal"
-                                            data-bs-target="#edit-modal">Edit</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td> FZ-01 </td>
-                            <td> Fernando Zamarripa </td>
-                            <td>
-                                <a href="javascript:void(0)" class="btn btn-info d-block rounded" data-bs-toggle="modal"
-                                    data-bs-target="#reset-email">fernando@infiniguard.com</a>
-                            </td>
-                            <td> 2019-08-02 </td>
-                            <td>
-                                <a href="{{ url('register-equipment')}}">266</a>
-                            </td>
-                            <td>
-                                <a href="{{ url('warranty-claims')}}">3</a>
-                            </td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <a href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                        </svg>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal"
-                                            data-bs-target="#edit-modal">Edit</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td> FZ-01 </td>
-                            <td> Fernando Zamarripa </td>
-                            <td>
-                                <a href="javascript:void(0)" class="btn btn-info d-block rounded" data-bs-toggle="modal"
-                                    data-bs-target="#reset-email">fernando@infiniguard.com</a>
-                            </td>
-                            <td> 2019-08-02 </td>
-                            <td>
-                                <a href="{{ url('register-equipment')}}">266</a>
-                            </td>
-                            <td>
-                                <a href="{{ url('warranty-claims')}}">3</a>
-                            </td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <a href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                        </svg>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal"
-                                            data-bs-target="#edit-modal">Edit</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td> FZ-01 </td>
-                            <td> Fernando Zamarripa </td>
-                            <td>
-                                <a href="javascript:void(0)" class="btn btn-info d-block rounded" data-bs-toggle="modal"
-                                    data-bs-target="#reset-email">fernando@infiniguard.com</a>
-                            </td>
-                            <td> 2019-08-02 </td>
-                            <td>
-                                <a href="{{ url('register-equipment')}}">266</a>
-                            </td>
-                            <td>
-                                <a href="{{ url('warranty-claims')}}">3</a>
-                            </td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <a href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                        </svg>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal"
-                                            data-bs-target="#edit-modal">Edit</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td> FZ-01 </td>
-                            <td> Fernando Zamarripa </td>
-                            <td>
-                                <a href="javascript:void(0)" class="btn btn-info d-block rounded" data-bs-toggle="modal"
-                                    data-bs-target="#reset-email">fernando@infiniguard.com</a>
-                            </td>
-                            <td> 2019-08-02 </td>
-                            <td>
-                                <a href="{{ url('register-equipment')}}">266</a>
-                            </td>
-                            <td>
-                                <a href="{{ url('warranty-claims')}}">3</a>
-                            </td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <a href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                        </svg>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal"
-                                            data-bs-target="#edit-modal">Edit</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td> FZ-01 </td>
-                            <td> Fernando Zamarripa </td>
-                            <td>
-                                <a href="javascript:void(0)" class="btn btn-info d-block rounded" data-bs-toggle="modal"
-                                    data-bs-target="#reset-email">fernando@infiniguard.com</a>
-                            </td>
-                            <td> 2019-08-02 </td>
-                            <td>
-                                <a href="{{ url('register-equipment')}}">266</a>
-                            </td>
-                            <td>
-                                <a href="{{ url('warranty-claims')}}">3</a>
-                            </td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <a href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                            <path
-                                                d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z"
-                                                stroke="#575757" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                        </svg>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal"
-                                            data-bs-target="#edit-modal">Edit</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
+                    <tbody>        
                     </tbody>
                 </table>
             </div>
@@ -485,44 +216,171 @@
 @push('scripts')
 <script>
     (function($) {
-	 
-		var table = $('#example5').DataTable({
-			searching: false,
-			paging:true,
-			select: false,
-			//info: false,         
-			lengthChange:false 
-			
-		});
-		var table = $('#example6').DataTable({
-			searching: false,
-			paging:true,
-			select: false,
-			//info: false,         
-			lengthChange:false 
-			
-		});
-		var table = $('#example7').DataTable({
-			searching: false,
-			paging:true,
-			select: false,
-			//info: false,         
-			lengthChange:false 
-			
-		});
-		var table = $('#example8').DataTable({
-			searching: false,
-			paging:true,
-			select: false,
-			//info: false,         
-			lengthChange:false 
-			
-		});
-		$('#example tbody').on('click', 'tr', function () {
-			var data = table.row( this ).data();
-			
-		});
+	    var providerId = $('#providerId').val();
+         var url = "{{ route('admin.providers.show', ':id') }}";
+             url = url.replace(':id', providerId);
+        let CertifiedApplicators = $('#certifiedApplicators').DataTable({
+                language: {
+                    lengthMenu: "Show _MENU_ entries",
+                    paginate: {
+                        "previous": "Previous",
+                        "next": "Next"
+                    }
+                },
+                pagingType: "simple_numbers",
+                lengthMenu: [ 5, 10, 25, 50, 100],
+                pageLength: 10,
+                columnDefs: [{ width: '500', targets: 0 }],
+                fixedColumns: false,
+                processing: true,
+                responsive: true,
+                serverSide: true,
+                ajax: {
+                        url: url,
+                        type: "GET",
+                        dataType: 'json',
+                        data: {
+                                provider_id: providerId // Pass the provider ID as data
+                            }
+                    },
+                order: [[0, 'asc']],
+                columnDefs: [
+                    { orderable: false, "targets": [6, 7] },
+                    { searchable: false, "targets": [6, 7] },
+                ],
+            columns: [
+                    {data: 'applicator_certification_id', name: 'applicator_certification_id'},
+                    {data: 'applicator_name', name: 'applicator_name'},
+                    {data: 'applicator_email', name: 'applicator_email'},
+					{data: 'applicator_date', name: 'applicator_date'},
+                    {
+                        data: null,
+                        render: function (data, type, row, meta) {
+                            let applicator_id = row.applicator_id;
+                            let baseUrl = "{{ route('admin.registered-equipments.show', '') }}";
+                            return `<a href="${baseUrl}/${applicator_id}" class="">${row.registered_codes_count}</a>`;
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function (data, type, row, meta) {
+                            let applicator_id = row.applicator_id;
+                            let baseUrl = "{{ route('admin.warranty-claims.show', '') }}";
+                            return `<a href="${baseUrl}/${applicator_id}" class="">${row.warranty_claims_count}</a>`;
+                        }
+                    },
+					{
+                        data: null,
+                        render: function (data, type, row, meta) {
+                            let status = row.applicator_status;
+    						let checkedAttribute = status == 1 ? 'checked' : '';
+                            return `<div class="form-check form-switch">
+										<input data-applicatorId="${row.applicator_id}" class="form-check-input" type="checkbox" id="certificationApplicatorStatus" name="" value="yes" ${checkedAttribute}>
+									</div>`;
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function (data, type, row, meta) {
+                            let applicator_id = row.applicator_id;
+                            let baseUrl = "{{ route('admin.applicators.show', '') }}";
+                            return `<div class="dropdown">
+                                    <a href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#575757" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z" stroke="#575757" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z" stroke="#575757" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </svg>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" href="${baseUrl}/${applicator_id}" data-bs-toggle="modal" data-bs-target="#edit-profile">Edit</a>
+                                        <a class="dropdown-item" href="${baseUrl}/${applicator_id}">Delete</a>
+                                    </div>
+                                </div>`;
+                        }
+                    },
+                ]
+            });
+        $('#certifiedApplicators tbody').on('click', 'tr', function () {
+            var data = CertifiedApplicators.row(this).data();
+            // Do something with the data
+        });
 	   
 	})(jQuery);
+
+
+    $(document).ready(function() {
+        $(document).on('change','#certificationApplicatorStatus',function() {
+             var certificationApplicatorId= $(this).attr('data-applicatorId');
+            var status = $(this).prop('checked') ? 'active' : 'revoked';
+            
+            // Construct the URL with the provider ID
+            var url = "{{ route('admin.applicators.update', ':id') }}";
+             url = url.replace(':id', certificationApplicatorId);
+            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    _method: 'PUT', // Since Laravel's resourceful route uses PUT method for update
+                    status: status
+                },
+                headers: {
+                     'X-CSRF-TOKEN': csrfToken
+                },
+                success: function(response) {
+                        $('#successAlert').fadeIn();
+                        $('#successAlert').text(response.message);
+                        // Hide success alert after 3 seconds (3000 milliseconds)
+                        setTimeout(function() {
+                            $('#successAlert').fadeOut();
+                        }, 3000);
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+
+    $(document).ready(function() {
+        $('#togBtn').change(function() {
+            var providerId = $('#providerId').val();
+            var status = $(this).prop('checked') ? 'active' : 'revoked';
+            
+            // Construct the URL with the provider ID
+            var url = "{{ route('admin.providers.update', ':id') }}";
+             url = url.replace(':id', providerId);
+            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    _method: 'PUT', // Since Laravel's resourceful route uses PUT method for update
+                    status: status
+                },
+                headers: {
+                     'X-CSRF-TOKEN': csrfToken
+                },
+                success: function(response) {
+                        $('#successAlert').fadeIn();
+                        $('#successAlert').text(response.message);
+                        // Hide success alert after 3 seconds (3000 milliseconds)
+                        setTimeout(function() {
+                            $('#successAlert').fadeOut();
+                        }, 3000);
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+
+
 </script>
 @endpush

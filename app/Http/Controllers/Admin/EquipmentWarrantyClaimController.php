@@ -69,6 +69,7 @@ class EquipmentWarrantyClaimController extends Controller
      */
     public function show(EquipmentWarrantyClaim $equipmentWarrantyClaim)
     {
+        dd($equipmentWarrantyClaim);
         print_r($equipmentWarrantyClaim->toArray());
         return 'show warranty claims';
     }
