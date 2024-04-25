@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Models\CertifiedProvider;
+use Illuminate\Support\Facades\Hash;
 use App\Models\CertifiedApplicator;
 use App\Http\Controllers\Controller;
 
@@ -74,7 +75,38 @@ class CertifiedProviderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validatedData = $request->validate([
+                'providerAdministrator' => 'nullable|string',
+                'providerName' => 'required|string',
+                'providerEmail' => 'required|email|unique:certified_providers,provider_email',
+                'providerPassword' => 'required|string|min:8',
+                'providerPhone' => 'required|integer',
+                'providerLogo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'providerImage' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+            // Handle file uploads
+            $providerLogoPath = $request->file('providerLogo')->store('provider_logos');
+            $providerProfileImagePath = $request->file('providerImage')->store('provider_profile_images');
+
+            // Create new Provider
+            $provider = new CertifiedProvider();
+            $provider->provider_administrator = $validatedData['providerAdministrator'];
+            $provider->provider_name = $validatedData['providerName'];
+            $provider->provider_email = $validatedData['providerEmail'];
+            $provider->provider_password = Hash::make($validatedData['providerPassword']);
+            $provider->provider_phone = $validatedData['providerPhone'];
+            $provider->provider_logo_image = $providerLogoPath;
+            $provider->provider_profile_image = $providerProfileImagePath;
+            $provider->save();
+
+            return response()->json(['status'=>true,'message' => 'Certified provider added sucessfully!']);
+
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage().' in '.$e->getFile() .' Line No. '.$e->getLine());
+            // Handle other errors
+            return response()->json(['status'=>false,'message' => 'An error occurred while adding the certified provider.']);
+        }
     }
 
     /**
@@ -115,9 +147,11 @@ class CertifiedProviderController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(CertifiedProvider $certifiedProvider)
+    public function edit($id)
     {
-        //
+        $CertifiedProvider=CertifiedProvider::find($id);
+
+        return response()->json(['status'=>true,'data' => $CertifiedProvider]);
     }
 
     /**
@@ -147,10 +181,5 @@ class CertifiedProviderController extends Controller
         //
     }
 
-    public function getApplicators(Request $request)
-    {
-
-        dd(request);
-
-    } 
+    
 }

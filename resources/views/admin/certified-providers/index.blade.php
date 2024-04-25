@@ -6,46 +6,60 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Certified Service Provider</h5>
+                    <h5 class="modal-title" id="title">Add INFINIGUARD® Certified Service Provider</h5>
                     <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                  <form id="providerForm" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
-                            <label class="text-black font-w500">Company Administrator<span
-                                    class="text-danger">*</span></label>
-                            <input type="text" class="form-control">
+                            <label class="text-black font-w500">Certified Provider Administrator</label>
+                            <input type="text" placeholder="Enter Certified Provider Administrator" id="providerAdministrator" name="providerAdministrator" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label class="text-black font-w500">Company Name<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control">
+                            <label class="text-black font-w500">Certified Provider Name<span class="text-danger">*</span></label>
+                            <input type="text" placeholder="Enter Certified Provider Name" id="providerName" name="providerName" class="form-control">
                         </div>
 
                         <div class="form-group">
                             <label class="text-black font-w500">Email<span class="text-danger">*</span></label>
-                            <input type="email" class="form-control">
+                            <input type="email" placeholder="Enter Email" id="providerEmail" name="providerEmail" class="form-control">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="provider-pass">
                             <label class="text-black font-w500">Password<span class="text-danger">*</span></label>
-                            <input type="password" class="form-control">
+                            <input type="password" placeholder="Enter Password" id="providerPassword" name="providerPassword" class="form-control">
                         </div>
                         <div class="form-group">
                             <label class="text-black font-w500">Phone<span class="text-danger">*</span></label>
-                            <input type="email" class="form-control">
+                            <input type="tel" placeholder="Enter Phone" id="providerPhone" name="providerPhone" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label class="text-black font-w500">Company Logo<span class="text-danger">*</span></label>
-                            <input class="form-control" type="file" id="company-logo">
+                            <label class="text-black font-w500">Certified Provider Logo<span class="text-danger">*</span></label>
+                            <input class="form-control" name="providerLogo" type="file" id="company-logo">
+                        </div>
+                        
+                        <div class="col-6 d-none" id="logo">
+                            <div class="card">
+                                <div class="card-body">  
+                                <img src="" class="img-fluid" id="logo-img" style="width:100px;height:auto;" alt="">
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label class="text-black font-w500">Profile Image<span class="text-danger">*</span></label>
-                            <input class="form-control" type="file" id="profile-image">
+                            <label class="text-black font-w500">Profile Image<span class="text-danger">*</span></label>                            
+                            <input class="form-control" name="providerImage"  type="file" id="profile-image">
+                        </div>
+                       <div class="col-6 d-none" id="profile-card">
+                            <div class="card">
+                                <div class="card-body">  
+                                <img src="" class="img-fluid" id="profile-img" style="width:100px;height:auto;" alt="">
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-group">
-                            <button type="button" class="btn btn-primary">SUBMIT</button>
+                            <button type="button" id="submitBtn" class="btn btn-primary">SUBMIT</button>
                         </div>
                     </form>
                 </div>
@@ -54,7 +68,7 @@
     </div>
 
     <!-- Edit Modal -->
-    <div class="modal fade" id="edit-profile">
+    {{-- <div class="modal fade" id="edit-profile">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -103,12 +117,12 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
         <h3 class="mb-0">INFINIGUARD® Certified Providers</h3>
         <div>
-            <a href="#" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#add-profile">Add</a>
+            <a href="#" class="btn btn-primary rounded add-provider" data-curd="add" data-bs-toggle="modal" data-bs-target="#add-profile">Add</a>
         </div>
     </div>
     <div class="row">
@@ -217,8 +231,8 @@
                                         </svg>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="${baseUrl}/${provider_id}" data-bs-toggle="modal" data-bs-target="#edit-profile">Edit</a>
-                                        <a class="dropdown-item" href="${baseUrl}/${provider_id}">Delete</a>
+                                        <a class="dropdown-item add-provider" data-id="${provider_id}" href="javascript:void(0);" data-curd="edit" data-bs-toggle="modal" data-bs-target="#add-profile">Edit</a>
+                                        <a class="dropdown-item" href="javascript:void(0);">Delete</a>
                                     </div>
                                 </div>`;
                         }
@@ -230,41 +244,138 @@
             });
         })(jQuery);
 
-    $(document).on('change','#certificationStatus',function() {
-       var certificationProviderId = $(this).attr('data-certificationProviderId');
-        console.log(certificationProviderId);
+    $(document).ready(function() {
+        $(document).on('change','#certificationStatus',function() {
+
+        var certificationProviderId = $(this).attr('data-certificationProviderId');           
         var status = $(this).prop('checked') ? 'active' : 'revoked';
-        
-        // Construct the URL with the provider ID
         var url = "{{ route('admin.providers.update', ':id') }}";
             url = url.replace(':id', certificationProviderId);
         var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: {
-                _method: 'PUT', // Since Laravel's resourceful route uses PUT method for update
-                status: status
-            },
-            headers: {
-                    'X-CSRF-TOKEN': csrfToken
-            },
-            success: function(response) {
-                // Handle success response if needed
-              //  console.log(response);
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    _method: 'PUT', // Since Laravel's resourceful route uses PUT method for update
+                    status: status
+                },
+                headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                },
+                success: function(response) {                 
+                    $('#successAlert').fadeIn();
+                    $('#successAlert').text(response.message);
+                    // Hide success alert after 3 seconds (3000 milliseconds)
+                    setTimeout(function() {
+                        $('#successAlert').fadeOut();
+                    }, 3000);
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+
+        function showValidationErorrs(errors){
+
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+            $.each(errors, function(key, value) {
+                var field = $('[name="' + key + '"]');
+                field.addClass('is-invalid');
+                field.after('<div class="invalid-feedback">' + value[0] + '</div>');
+            });
+            field.on('input', function() {
+                field.removeClass('is-invalid');
+                field.next('.invalid-feedback').remove();
+            });
+
+        }
+
+        $(document).on('click', '#submitBtn', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
+            var formData = new FormData($('#providerForm')[0]);
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('admin.providers.store') }}", // Use the store route for creating new providers
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                $('#add-profile').modal('hide');
+                $('#providerForm')[0].reset(); // Reset the form                
+                if(!response.status){
+                    $('#successAlert').removeClass('alert-success'); 
+                    $('#successAlert').addClass('alert-danger');      
+                }
                 $('#successAlert').fadeIn();
                 $('#successAlert').text(response.message);
-                // Hide success alert after 3 seconds (3000 milliseconds)
-                setTimeout(function() {
-                    $('#successAlert').fadeOut();
-                }, 3000);
-            },
-            error: function(xhr, status, error) {
-                // Handle error
-                console.error(xhr.responseText);
-            }
+
+                    // Hide alert after 10 seconds (10000 milliseconds)
+                    setTimeout(function() {
+                        $('#successAlert').fadeOut();
+                    }, 10000);
+
+                },
+                error: function(xhr, status, error) {
+                    var errors = xhr.responseJSON.errors;
+                        showValidationErorrs(errors);
+                }
+            });
         });
+
+        $(document).on('click','.add-provider', function(e){
+            e.preventDefault();
+            let type=$(this).data('curd');
+            if(type == 'edit'){
+                $('#title').text('Edit INFINIGUARD® Certified Service Provider');
+                let providerId=$(this).data('id');
+                var url = "{{ route('admin.providers.edit', ':id') }}";
+                    url = url.replace(':id', providerId);
+                
+                $.ajax({
+                    type: 'GET',
+                    url: url, 
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {                    
+
+                     if(response.status){
+
+                        $('#providerAdministrator').val(response.data.provider_administrator);
+                        $('#providerName').val(response.data.provider_name);
+                        $('#providerEmail').val(response.data.provider_email);
+                        $('#providerPhone').val(response.data.provider_phone);
+                        $('#provider-pass').hide();
+                        $('#logo').removeClass('d-none');
+                        $('#profile-card').removeClass('d-none');
+                        $('#logo-img').attr('src',response.data.provider_logo_image);
+                        $('#profile-img').attr('src',response.data.provider_profile_image);
+                     }
+                    },
+                    error: function(xhr, status, error) {
+                       console.log(error);
+                    }
+                });
+            }else{
+                
+                $('#title').text('ADD INFINIGUARD® Certified Service Provider');
+                $('#providerAdministrator').val('');
+                $('#providerName').val('');
+                $('#providerEmail').val('');
+                $('#providerPhone').val('');
+                $('#provider-pass').show();
+                $('#logo').addClass('d-none');
+                $('#profile-card').addClass('d-none');
+            }
+           
+        })
+
     });
+
 </script>
 @endpush
