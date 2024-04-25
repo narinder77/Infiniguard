@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
 	<div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
-		<h3 class="mb-0">Registered Equipment by {{$certifiedApplicator->applicator_name ?? ''}} of {{$certifiedApplicator->certifiedProviders->provider_name ?? ''}}</h3>
+		<h3 class="mb-0">Warranty Claims for {{$certifiedApplicator->applicator_name ?? ''}} of {{$certifiedApplicator->certifiedProviders->provider_name ?? ''}}</h3>
         <input type="hidden" id="applicatorId" value="{{ $certifiedApplicatorId}}">
 		
 	</div>
@@ -91,7 +91,7 @@
                     },					
                     {data: 'equipment_claim_email', name: 'equipment_claim_email'},
                     {data: 'equipment_claim_phone_number', name: 'equipment_claim_phone_number'},
-                    {data: 'qr_code.equipment_qr_number', name: 'equipment_qr_number'},
+                    {data: 'qr_code.equipment_qr_number', name: 'equipment_claim_qr_id'},
                     {data: 'certified_applicators.certified_providers.provider_name', name: 'provider_name'},
                     {data: 'certified_applicators.applicator_certification_id', name: 'applicator_certification_id'},
 					{data: 'equipment_claim_date', name: 'equipment_claim_date'},
