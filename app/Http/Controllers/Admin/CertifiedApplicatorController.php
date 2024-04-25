@@ -77,8 +77,7 @@ class CertifiedApplicatorController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request,$certifiedApplicatorId)
-    {
-        try{
+    {      
             $request->validate([
                 'status' => 'required|in:active,revoked',
             ]);
@@ -90,11 +89,6 @@ class CertifiedApplicatorController extends Controller
             session()->flash('success', 'Status updated successfully');
             // Return a response
             return response()->json(['message' => 'Status updated successfully']);
-         }catch(Exception $e){
-
-            \Log::error($e->getMessage());
-
-         }
 
     }
 
