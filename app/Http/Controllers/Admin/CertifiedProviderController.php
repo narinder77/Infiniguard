@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Models\CertifiedProvider;
-use Illuminate\Support\Facades\Hash;
 use App\Models\CertifiedApplicator;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class CertifiedProviderController extends Controller
 {
@@ -75,37 +76,69 @@ class CertifiedProviderController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $validatedData = $request->validate([
-                'providerAdministrator' => 'nullable|string',
-                'providerName' => 'required|string',
-                'providerEmail' => 'required|email|unique:certified_providers,provider_email',
-                'providerPassword' => 'required|string|min:8',
-                'providerPhone' => 'required|integer',
-                'providerLogo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'providerImage' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            ]);
-            // Handle file uploads
-            $providerLogoPath = $request->file('providerLogo')->store('provider_logos');
-            $providerProfileImagePath = $request->file('providerImage')->store('provider_profile_images');
+        try {                 
+            if($request->certifiedProviderId){
+              
+               $request->validate([
+                    'providerAdministrator' => 'nullable|string',
+                    'providerName' => 'required|string',
+                    'providerPhone' => 'required|integer',
+                    'providerEmail' => 'required|email|unique:certified_providers,provider_email,' . $request->certifiedProviderId . ',provider_id',
+                ]);
+                $provider =CertifiedProvider::find($request->certifiedProviderId);
 
-            // Create new Provider
-            $provider = new CertifiedProvider();
-            $provider->provider_administrator = $validatedData['providerAdministrator'];
-            $provider->provider_name = $validatedData['providerName'];
-            $provider->provider_email = $validatedData['providerEmail'];
-            $provider->provider_password = Hash::make($validatedData['providerPassword']);
-            $provider->provider_phone = $validatedData['providerPhone'];
-            $provider->provider_logo_image = $providerLogoPath;
-            $provider->provider_profile_image = $providerProfileImagePath;
+                $message='Certified provider updated sucessfully!';
+               
+            }else{               
+                $request->validate([
+                    'providerAdministrator' => 'nullable|string',
+                    'providerName' => 'required|string',
+                    'providerPhone' => 'required|integer',
+                    'providerEmail' => 'required|email|unique:certified_providers,provider_email',
+                    'providerPassword' => 'required|string|min:8',
+                    'providerLogo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                    'providerImage' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                ]);
+                $provider = new CertifiedProvider();
+
+                $message='Certified provider added sucessfully!';
+            }                   
+
+          
+            $provider->provider_administrator = $request->providerAdministrator;
+            $provider->provider_name = $request->providerName;
+            $provider->provider_email = $request->providerEmail;
+            $provider->provider_password = Hash::make($request->providerPassword);
+            $provider->provider_phone = $request->providerPhone;
+
+            if($request->has('providerLogo')){
+                $providerLogoPath = $request->file('providerLogo')->store('public/provider_logos');
+                $path=str_replace('public/','', $providerLogoPath);   
+                $provider->provider_logo_image = $path;        
+            }
+
+            if($request->has('providerLogo')){
+                $providerProfileImagePath = $request->file('providerImage')->store('public/provider_profile_images');
+                $path2=str_replace('public/','', $providerProfileImagePath); 
+                $provider->provider_profile_image = $path2;
+            }            
+           
             $provider->save();
 
-            return response()->json(['status'=>true,'message' => 'Certified provider added sucessfully!']);
+            return response()->json(['status'=>true,'message' => $message],200);
+
+        } catch (ValidationException $e) {
+            // $errors = $e->validator->errors()->all();
+
+            return response()->json([
+                'status' => false,
+                'errors' =>  $e->validator->errors()->toArray(),
+            ], 422); 
 
         } catch (\Exception $e) {
-            \Log::error($e->getMessage().' in '.$e->getFile() .' Line No. '.$e->getLine());
-            // Handle other errors
-            return response()->json(['status'=>false,'message' => 'An error occurred while adding the certified provider.']);
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while adding or updating the certified provider!'], 500);
         }
     }
 

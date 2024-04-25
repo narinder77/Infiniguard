@@ -13,6 +13,7 @@
                 <div class="modal-body">
                   <form id="providerForm" enctype="multipart/form-data">
                         @csrf
+                        <input type="hidden" id="certifiedProviderId" name="certifiedProviderId" class="form-control">
                         <div class="form-group">
                             <label class="text-black font-w500">Certified Provider Administrator</label>
                             <input type="text" placeholder="Enter Certified Provider Administrator" id="providerAdministrator" name="providerAdministrator" class="form-control">
@@ -41,7 +42,7 @@
                         
                         <div class="col-6 d-none" id="logo">
                             <div class="card">
-                                <div class="card-body">  
+                                <div class="card-body text-center">  
                                 <img src="" class="img-fluid" id="logo-img" style="width:100px;height:auto;" alt="">
                                 </div>
                             </div>
@@ -52,7 +53,7 @@
                         </div>
                        <div class="col-6 d-none" id="profile-card">
                             <div class="card">
-                                <div class="card-body">  
+                                <div class="card-body text-center">  
                                 <img src="" class="img-fluid" id="profile-img" style="width:100px;height:auto;" alt="">
                                 </div>
                             </div>
@@ -66,59 +67,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Edit Modal -->
-    {{-- <div class="modal fade" id="edit-profile">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit GLOBAL Profile</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        @csrf
-                        <div class="form-group">
-                            <label class="text-black font-w500">Company Administrator<span
-                                    class="text-danger">*</span></label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label class="text-black font-w500">Company Name<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="text-black font-w500">Email<span class="text-danger">*</span></label>
-                            <input type="email" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label class="text-black font-w500">Password<span class="text-danger">*</span></label>
-                            <input type="password" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label class="text-black font-w500">Phone<span class="text-danger">*</span></label>
-                            <input type="email" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label class="text-black font-w500">Company Logo<span class="text-danger">*</span></label>
-                            <input class="form-control" type="file" id="company-logo">
-                        </div>
-                        <div class="form-group">
-                            <label class="text-black font-w500">Profile Image<span class="text-danger">*</span></label>
-                            <input class="form-control" type="file" id="profile-image">
-                        </div>
-
-                        <div class="form-group">
-                            <button type="button" class="btn btn-primary">SUBMIT</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-
     <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
         <h3 class="mb-0">INFINIGUARD® Certified Providers</h3>
         <div>
@@ -308,9 +256,12 @@
                 success: function(response) {
                 $('#add-profile').modal('hide');
                 $('#providerForm')[0].reset(); // Reset the form                
-                if(!response.status){
+                if(response.status){
+                    $('#successAlert').addClass('alert-success'); 
+                    $('#successAlert').removeClass('alert-danger');      
+                }else{
                     $('#successAlert').removeClass('alert-success'); 
-                    $('#successAlert').addClass('alert-danger');      
+                    $('#successAlert').addClass('alert-danger');     
                 }
                 $('#successAlert').fadeIn();
                 $('#successAlert').text(response.message);
@@ -322,8 +273,14 @@
 
                 },
                 error: function(xhr, status, error) {
-                    var errors = xhr.responseJSON.errors;
+                   if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        var errors = xhr.responseJSON.errors;                        
                         showValidationErorrs(errors);
+                    } else {
+                        // Handle other types of errors
+                        console.error(xhr.responseText);
+                        // You can display a generic error message here
+                    }
                 }
             });
         });
@@ -332,6 +289,16 @@
             e.preventDefault();
             let type=$(this).data('curd');
             if(type == 'edit'){
+               var fields = $('input[name="providerAdministrator"], input[name="providerName"], input[name="providerEmail"], input[name="providerPassword"], input[name="providerPhone"], input[name="providerLogo"],input[name="providerImage"]');
+                   
+                    $.each(fields, function(field) {
+                        field.on('input', function() {
+                                field.removeClass('is-invalid');
+                                field.next('.invalid-feedback').remove();
+                        });
+                   
+                    });
+
                 $('#title').text('Edit INFINIGUARD® Certified Service Provider');
                 let providerId=$(this).data('id');
                 var url = "{{ route('admin.providers.edit', ':id') }}";
@@ -344,8 +311,9 @@
                     contentType: false,
                     success: function(response) {                    
 
-                     if(response.status){
-
+                     if(response.status){                      
+                        var baseUrl="{{ asset('/storage') }}";
+                        $('#certifiedProviderId').val(response.data.provider_id);
                         $('#providerAdministrator').val(response.data.provider_administrator);
                         $('#providerName').val(response.data.provider_name);
                         $('#providerEmail').val(response.data.provider_email);
@@ -353,8 +321,8 @@
                         $('#provider-pass').hide();
                         $('#logo').removeClass('d-none');
                         $('#profile-card').removeClass('d-none');
-                        $('#logo-img').attr('src',response.data.provider_logo_image);
-                        $('#profile-img').attr('src',response.data.provider_profile_image);
+                        $('#logo-img').attr('src',baseUrl+'/'+response.data.provider_logo_image);
+                        $('#profile-img').attr('src',baseUrl+'/'+response.data.provider_profile_image);
                      }
                     },
                     error: function(xhr, status, error) {
@@ -371,6 +339,9 @@
                 $('#provider-pass').show();
                 $('#logo').addClass('d-none');
                 $('#profile-card').addClass('d-none');
+                $('#logo-img').attr('src','');
+                $('#profile-img').attr('src','');
+                $('#certifiedProviderId').val('');
             }
            
         })
