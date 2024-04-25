@@ -7,6 +7,8 @@ use Yajra\DataTables\DataTables;
 use App\Models\CertifiedProvider;
 use App\Models\CertifiedApplicator;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class CertifiedProviderController extends Controller
 {
@@ -74,7 +76,70 @@ class CertifiedProviderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {                 
+            if($request->certifiedProviderId){
+              
+               $request->validate([
+                    'providerAdministrator' => 'nullable|string',
+                    'providerName' => 'required|string',
+                    'providerPhone' => 'required|integer',
+                    'providerEmail' => 'required|email|unique:certified_providers,provider_email,' . $request->certifiedProviderId . ',provider_id',
+                ]);
+                $provider =CertifiedProvider::find($request->certifiedProviderId);
+
+                $message='Certified provider updated sucessfully!';
+               
+            }else{               
+                $request->validate([
+                    'providerAdministrator' => 'nullable|string',
+                    'providerName' => 'required|string',
+                    'providerPhone' => 'required|integer',
+                    'providerEmail' => 'required|email|unique:certified_providers,provider_email',
+                    'providerPassword' => 'required|string|min:8',
+                    'providerLogo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                    'providerImage' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                ]);
+                $provider = new CertifiedProvider();
+
+                $message='Certified provider added sucessfully!';
+            }                   
+
+          
+            $provider->provider_administrator = $request->providerAdministrator;
+            $provider->provider_name = $request->providerName;
+            $provider->provider_email = $request->providerEmail;
+            $provider->provider_password = Hash::make($request->providerPassword);
+            $provider->provider_phone = $request->providerPhone;
+
+            if($request->has('providerLogo')){
+                $providerLogoPath = $request->file('providerLogo')->store('public/provider_logos');
+                $path=str_replace('public/','', $providerLogoPath);   
+                $provider->provider_logo_image = $path;        
+            }
+
+            if($request->has('providerLogo')){
+                $providerProfileImagePath = $request->file('providerImage')->store('public/provider_profile_images');
+                $path2=str_replace('public/','', $providerProfileImagePath); 
+                $provider->provider_profile_image = $path2;
+            }            
+           
+            $provider->save();
+
+            return response()->json(['status'=>true,'message' => $message],200);
+
+        } catch (ValidationException $e) {
+            // $errors = $e->validator->errors()->all();
+
+            return response()->json([
+                'status' => false,
+                'errors' =>  $e->validator->errors()->toArray(),
+            ], 422); 
+
+        } catch (\Exception $e) {
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while adding or updating the certified provider!'], 500);
+        }
     }
 
     /**
@@ -115,9 +180,11 @@ class CertifiedProviderController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(CertifiedProvider $certifiedProvider)
+    public function edit($id)
     {
-        //
+        $CertifiedProvider=CertifiedProvider::find($id);
+
+        return response()->json(['status'=>true,'data' => $CertifiedProvider]);
     }
 
     /**
@@ -147,10 +214,4 @@ class CertifiedProviderController extends Controller
         //
     }
 
-    public function getApplicators(Request $request)
-    {
-
-        dd($request);
-
-    } 
 }

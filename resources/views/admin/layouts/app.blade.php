@@ -114,8 +114,8 @@
         ***********************************-->
         <div class="content-body {{$body_class}}">
             <!-- row -->
-        <div id="successAlert" class="alert alert-success" style="display: none;">
-            Data Updated Successfully
+        <div id="successAlert" class="alert alert-success alert-dismissible" style="display: none;">
+          <button type="button" class="close alert-close" data-dismiss="alert">&times;</button>  Data Updated Successfully
         </div>
 			@yield('content')
         </div>
@@ -173,6 +173,10 @@
                 'x-csrf-token' : $('meta[name="csrf-token"]').attr('content')
             }
         });
+
+        $(document).on('click','.alert-close',function(){
+            $('#successAlert').hide();
+        })
     </script>
     @stack('scripts')
 	
