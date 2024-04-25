@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Exception;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use App\Models\EmailDistributionList;
+use Illuminate\Support\Facades\Validator;
 
 class EmailDistributionListController extends Controller
 {
@@ -16,13 +18,13 @@ class EmailDistributionListController extends Controller
     {
         $page_title = 'Email Distribution List';
         $page_description = 'Some description for the page';
-        
+
         if ($request->ajax()) {
-            $emails = EmailDistributionList::all('id','email','created_at');
+            $emails = EmailDistributionList::all('id', 'email', 'created_at');
             return DataTables::of($emails)
                 ->toJson();
         }
-		return view('admin.email-distributions.index', compact('page_title', 'page_description'));
+        return view('admin.email-distributions.index', compact('page_title', 'page_description'));
     }
 
     /**
@@ -38,22 +40,34 @@ class EmailDistributionListController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([ // Validate input
-            'email' => 'required|email', // Example validation rules
-        ]);
-        $result = EmailDistributionList::create($data);
-        if($result) {
-            return response()->json([
-                'message' => "Record created successfully",
-                "code"    => 200
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email|unique:email_distribution_lists',
+                'name' => 'required'
             ]);
-        } else  {
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()->toArray(),
+                ], 422); 
+            }
+
+            $emailDistributionList = EmailDistributionList::create($request->all());
+    
             return response()->json([
-                'message' => "Internal Server Error",
-                "code"    => 500
+                'message' => 'Email Added successfully',
+                'code' => 201
             ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'errors' => $validator->errors(), 
+                'code' => $e->getCode()
+            ], 500); 
         }
     }
+    
     /**
      * Display the specified resource.
      */
@@ -65,19 +79,18 @@ class EmailDistributionListController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, EmailDistributionList $emailDistributionList)
+    public function edit(EmailDistributionList $emailDistributionList)
     {
-        $result = EmailDistributionList::findOrFail($request->id);
-        if($result) {
+        if ($emailDistributionList) {
             return response()->json([
                 'message' => "Data Found",
                 "code"    => 200,
-                "data"    => $result
+                "data"    => $emailDistributionList
             ]);
-        } else  {
+        } else {
             return response()->json([
-                'message' => "Internal Server Error",
-                "code"    => 500
+                'message' => "Email Distribution List not found",
+                "code"    => 404
             ]);
         }
     }
@@ -87,7 +100,24 @@ class EmailDistributionListController extends Controller
      */
     public function update(Request $request, EmailDistributionList $emailDistributionList)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'name' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()->toArray(),
+            ], 422); 
+        }
+
+        $emailDistributionList->update($request->all());
+
+        return response()->json([
+            'message' => 'Email Distribution List updated successfully',
+            'code' => 200
+        ]);
     }
 
     /**
@@ -95,6 +125,11 @@ class EmailDistributionListController extends Controller
      */
     public function destroy(EmailDistributionList $emailDistributionList)
     {
-        //
+        $emailDistributionList->delete();
+
+        return response()->json([
+            'message' => 'Email Distribution List deleted successfully',
+            'code' => 200
+        ]);
     }
 }
