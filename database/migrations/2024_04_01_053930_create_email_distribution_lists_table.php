@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('email_distribution_lists', function (Blueprint $table) {
             $table->id();
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

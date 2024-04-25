@@ -2,19 +2,26 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use App\Models\EmailDistributionList;
-use Illuminate\Http\Request;
 
 class EmailDistributionListController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $page_title = 'Email Distribution List';
         $page_description = 'Some description for the page';
+        
+        if ($request->ajax()) {
+            $emails = EmailDistributionList::all('id','email','created_at');
+            return DataTables::of($emails)
+                ->toJson();
+        }
 		return view('admin.email-distributions.index', compact('page_title', 'page_description'));
     }
 
@@ -31,13 +38,26 @@ class EmailDistributionListController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([ // Validate input
+            'email' => 'required|email', // Example validation rules
+        ]);
+        $result = EmailDistributionList::create($data);
+        if($result) {
+            return response()->json([
+                'message' => "Record created successfully",
+                "code"    => 200
+            ]);
+        } else  {
+            return response()->json([
+                'message' => "Internal Server Error",
+                "code"    => 500
+            ]);
+        }
     }
-
     /**
      * Display the specified resource.
      */
-    public function show(EmailDistributionList $emailDistributionList)
+    public function show(Request $request)
     {
         //
     }
@@ -45,9 +65,21 @@ class EmailDistributionListController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(EmailDistributionList $emailDistributionList)
+    public function edit(Request $request, EmailDistributionList $emailDistributionList)
     {
-        //
+        $result = EmailDistributionList::findOrFail($request->id);
+        if($result) {
+            return response()->json([
+                'message' => "Data Found",
+                "code"    => 200,
+                "data"    => $result
+            ]);
+        } else  {
+            return response()->json([
+                'message' => "Internal Server Error",
+                "code"    => 500
+            ]);
+        }
     }
 
     /**

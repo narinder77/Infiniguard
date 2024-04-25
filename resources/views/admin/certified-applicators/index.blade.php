@@ -129,7 +129,7 @@
 					</thead>
 					<tbody>
 					</tbody>
-					<thead>
+					<tfoot>
 						<tr>
 							<th> Certification ID </th>
 							<th> Name </th>
@@ -141,7 +141,7 @@
 							<th> Certification Status </th>
 							<th> Edit </th>
 						</tr>
-					</thead>
+					</tfoot>
 				</table>
 			</div>
 		</div>

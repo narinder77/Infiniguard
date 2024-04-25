@@ -167,7 +167,13 @@
             <script src="{{ asset($script) }}" type="text/javascript"></script>
         @endforeach
     @endif
-
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers:{
+                'x-csrf-token' : $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
     @stack('scripts')
 	
 </body>
