@@ -257,7 +257,7 @@
                         data: null,
                         render: function (data, type, row, meta) {
                             let applicator_id = row.applicator_id;
-                            let baseUrl = "{{ route('admin.registered-equipments.show', '') }}";
+                            let baseUrl = "{{ route('admin.applicator.registerEquip', '') }}";
                             return `<a href="${baseUrl}/${applicator_id}" class="">${row.registered_codes_count}</a>`;
                         }
                     },
@@ -265,7 +265,7 @@
                         data: null,
                         render: function (data, type, row, meta) {
                             let applicator_id = row.applicator_id;
-                            let baseUrl = "{{ route('admin.warranty-claims.show', '') }}";
+                            let baseUrl = "{{ route('admin.applicator.warranty-claims', '') }}";
                             return `<a href="${baseUrl}/${applicator_id}" class="">${row.warranty_claims_count}</a>`;
                         }
                     },

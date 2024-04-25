@@ -51,11 +51,15 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
      * This route for Certified Providers
      */
     Route::resource('providers', CertifiedProviderController::class);
-    Route::get('provider/applicators', [CertifiedProviderController::class, 'getApplicators'])->name('provider.getApplicators');
+    
     /**
      * This route for Certified Applicators
      */
     Route::resource('applicators', CertifiedApplicatorController::class);
+
+    Route::get('/applicators/registerequip/{id}', [CertifiedApplicatorController::class, 'applicatorRegisterEquip'])->name('applicator.registerEquip');
+
+    Route::get('/applicators/warranty-claims/{id}', [CertifiedApplicatorController::class, 'applicatorWarrantyClaims'])->name('applicator.warranty-claims');
 
     /**
      * This route for Registered Equipment
