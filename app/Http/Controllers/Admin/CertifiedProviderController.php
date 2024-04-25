@@ -150,7 +150,7 @@ class CertifiedProviderController extends Controller
     public function getApplicators(Request $request)
     {
 
-        dd(request);
+        dd($request);
 
     } 
 }

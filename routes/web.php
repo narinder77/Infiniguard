@@ -70,9 +70,9 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
      */
     Route::resource('warranty-claims', EquipmentWarrantyClaimController::class);
     /**
-     * This route for Clents
+     * This route for Clients
      */
-    Route::resource('clents', ClientController::class);
+    Route::resource('clients', ClientController::class)->except('create','show');
     /**
      * This route for Clents
      */

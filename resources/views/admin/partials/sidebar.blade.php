@@ -26,7 +26,7 @@
                     <span class="nav-text">Warranty Claims</span>
                 </a>
             </li>
-            <li><a class="ai-icon" href="{{ route('admin.clents.index')}}" aria-expanded="false">
+            <li><a class="ai-icon" href="{{ route('admin.clients.index')}}" aria-expanded="false">
                     <img src="{{ asset('assets/images/clients.png')}}" class="sideicon" alt="" />
                     <img src="{{ asset('assets/images/clients-white.png')}}" class="sideicon side-white" alt="" />
                     <span class="nav-text">INFINIGUARD® Clients</span>
