@@ -5,7 +5,7 @@
         <div class="upperboxs">
             <div class="row">
                 <div class="col-sm-4">
-                    <a href="{{ url('providers') }}" style="text-decoration:none">
+                    <a href="{{ route('admin.providers.index') }}" style="text-decoration:none">
                         <div class="box box1">
                             <h2>{{ $counts['certified_providers'] }}</h2>
                             <p>Certified Providers</p>
@@ -16,7 +16,7 @@
                     </a>
                 </div>
                 <div class="col-sm-4">
-                    <a href="{{ url('applicators') }}" style="text-decoration:none">
+                    <a href="{{ route('admin.applicators.index') }}" style="text-decoration:none">
                         <div class="box box2">
                             <h2>{{ $counts['certified_applicators'] }}</h2>
                             <p>Certified Applicators</p>
@@ -28,7 +28,7 @@
                     </a>
                 </div>
                 <div class="col-sm-4">
-                    <a href="{{ url('equipment') }}" style="text-decoration:none">
+                    <a href="{{route('admin.registered-equipments.index') }}" style="text-decoration:none">
                         <div class="box box3">
                             <h2>{{ $counts['registered_qr_codes'] }}</h2>
                             <p>Registered Equipment</p>
