@@ -225,6 +225,16 @@
                 }
             });
         });
+        function resetForm() {
+            $('#providerForm')[0].reset();
+            
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+        }
+
+        $('#add-profile').on('hidden.bs.modal', function (e) {
+            resetForm();
+        });
 
         function showValidationErorrs(errors){
 
@@ -234,11 +244,13 @@
                 var field = $('[name="' + key + '"]');
                 field.addClass('is-invalid');
                 field.after('<div class="invalid-feedback">' + value[0] + '</div>');
+
+                 field.focus(function() {
+                $(this).removeClass('is-invalid');
+                $(this).next('.invalid-feedback').remove();
             });
-            field.on('input', function() {
-                field.removeClass('is-invalid');
-                field.next('.invalid-feedback').remove();
             });
+          
 
         }
 
@@ -289,16 +301,7 @@
             e.preventDefault();
             let type=$(this).data('curd');
             if(type == 'edit'){
-               var fields = $('input[name="providerAdministrator"], input[name="providerName"], input[name="providerEmail"], input[name="providerPassword"], input[name="providerPhone"], input[name="providerLogo"],input[name="providerImage"]');
-                   
-                    $.each(fields, function(field) {
-                        field.on('input', function() {
-                                field.removeClass('is-invalid');
-                                field.next('.invalid-feedback').remove();
-                        });
-                   
-                    });
-
+             
                 $('#title').text('Edit INFINIGUARD® Certified Service Provider');
                 let providerId=$(this).data('id');
                 var url = "{{ route('admin.providers.edit', ':id') }}";

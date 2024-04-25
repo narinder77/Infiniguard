@@ -146,6 +146,9 @@
         ===============================================*/        
         function resetForm() {
             $('#addEmail')[0].reset();
+            
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
         }
 
         $('#addEmailModel').on('hidden.bs.modal', function (e) {
