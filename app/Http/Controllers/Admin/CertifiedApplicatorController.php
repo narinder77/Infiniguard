@@ -158,14 +158,11 @@ class CertifiedApplicatorController extends Controller
                         ->join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
                         ->join('certified_providers', 'certified_applicators.applicator_provider_id', '=', 'certified_providers.provider_id')
                         ->orderBy('certified_providers.provider_name', $order);
-                    })                    
+                    })
                     ->orderColumn('applicator_certification_id', function ($query, $order) {
                         $query->join('registered_qr_codes', 'equipment_warranty_claims.equipment_claim_qr_id', '=', 'registered_qr_codes.equipment_qr_id')
                             ->join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
                             ->orderBy('certified_applicators.applicator_certification_id', $order);
-                    })
-                    ->orderColumn('equipment_qr_number', function ($query, $order) {
-                        $query->orderBy('equipment_claim_qr_id', $order);
                     })
                     ->filterColumn('provider_name', function ($query, $keyword) {
                         $query->whereHas('certifiedApplicators.certifiedProviders', function ($query) use ($keyword) {

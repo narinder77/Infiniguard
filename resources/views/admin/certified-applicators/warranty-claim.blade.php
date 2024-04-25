@@ -91,7 +91,7 @@
                     },					
                     {data: 'equipment_claim_email', name: 'equipment_claim_email'},
                     {data: 'equipment_claim_phone_number', name: 'equipment_claim_phone_number'},
-                    {data: 'qr_code.equipment_qr_number', name: 'equipment_qr_number'},
+                    {data: 'qr_code.equipment_qr_number', name: 'equipment_claim_qr_id'},
                     {data: 'certified_applicators.certified_providers.provider_name', name: 'provider_name'},
                     {data: 'certified_applicators.applicator_certification_id', name: 'applicator_certification_id'},
 					{data: 'equipment_claim_date', name: 'equipment_claim_date'},
