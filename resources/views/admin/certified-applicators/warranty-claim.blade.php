@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
 	<div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
-		<h3 class="mb-0">Registered Equipment by {{$certifiedApplicator->applicator_name ?? ''}} of {{$certifiedApplicator->certifiedProviders->provider_name ?? ''}}</h3>
+		<h3 class="mb-0">Warranty Claims for {{$certifiedApplicator->applicator_name ?? ''}} of {{$certifiedApplicator->certifiedProviders->provider_name ?? ''}}</h3>
         <input type="hidden" id="applicatorId" value="{{ $certifiedApplicatorId}}">
 		
 	</div>
