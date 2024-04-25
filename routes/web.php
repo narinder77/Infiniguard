@@ -80,7 +80,7 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     /**
      * This route for Clents
      */
-    Route::resource('email-distribution-list', EmailDistributionListController::class);
+    Route::resource('email-distribution-list', EmailDistributionListController::class)->except('create','show');
 
     /**
      * This route for custom datatable without yajra
