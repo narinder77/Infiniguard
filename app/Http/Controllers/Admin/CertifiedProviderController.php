@@ -75,36 +75,20 @@ class CertifiedProviderController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        try {                 
-            if($request->certifiedProviderId){
-              
-               $request->validate([
-                    'providerAdministrator' => 'nullable|string',
-                    'providerName' => 'required|string',
-                    'providerPhone' => 'required|integer',
-                    'providerEmail' => 'required|email|unique:certified_providers,provider_email,' . $request->certifiedProviderId . ',provider_id',
-                ]);
-                $provider =CertifiedProvider::find($request->certifiedProviderId);
+    {              
+        $request->validate([
+            'providerAdministrator' => 'nullable|string',
+            'providerName' => 'required|string',
+            'providerPhone' => 'required|integer',
+            'providerEmail' => 'required|email|unique:certified_providers,provider_email',
+            'providerPassword' => 'required|string|min:8',
+            'providerLogo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'providerImage' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);               
 
-                $message='Certified provider updated sucessfully!';
-               
-            }else{               
-                $request->validate([
-                    'providerAdministrator' => 'nullable|string',
-                    'providerName' => 'required|string',
-                    'providerPhone' => 'required|integer',
-                    'providerEmail' => 'required|email|unique:certified_providers,provider_email',
-                    'providerPassword' => 'required|string|min:8',
-                    'providerLogo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-                    'providerImage' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-                ]);
-                $provider = new CertifiedProvider();
-
-                $message='Certified provider added sucessfully!';
-            }                   
-
-          
+        try {  
+            $provider = new CertifiedProvider();               
+        
             $provider->provider_administrator = $request->providerAdministrator;
             $provider->provider_name = $request->providerName;
             $provider->provider_email = $request->providerEmail;
@@ -125,15 +109,7 @@ class CertifiedProviderController extends Controller
            
             $provider->save();
 
-            return response()->json(['status'=>true,'message' => $message],200);
-
-        } catch (ValidationException $e) {
-            // $errors = $e->validator->errors()->all();
-
-            return response()->json([
-                'status' => false,
-                'errors' =>  $e->validator->errors()->toArray(),
-            ], 422); 
+            return response()->json(['status'=>true,'message' => 'Certified provider added sucessfully!'],200);
 
         } catch (\Exception $e) {
             // Other errors occurred
@@ -186,11 +162,68 @@ class CertifiedProviderController extends Controller
 
         return response()->json(['status'=>true,'data' => $CertifiedProvider]);
     }
+    public function edit2($id)
+    {
+        $certifiedProvider=CertifiedProvider::find($id);
+        if($certifiedProvider){
+            $page_title = 'Edit Provider';
+            $page_description = 'Some description for the page';
+            return view('admin.profile.edit', compact('page_title', 'page_description','certifiedProvider'));
+        
+        }else{
+            $page_title = 'Error';
+            $page_description = 'Some description for the page';
+            return view('errors.404');
+        
+        }    
+    }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,$certifiedProviderId)
+    public function update(Request $request)
+    {              
+            $request->validate([
+                 'providerAdministrator' => 'nullable|string',
+                 'providerName' => 'required|string',
+                 'providerPhone' => 'required|integer',
+                 'providerEmail' => 'required|email|unique:certified_providers,provider_email,' . $request->certifiedProviderId . ',provider_id',
+             ]);       
+                              
+     try {                 
+     
+            $provider =CertifiedProvider::find($request->certifiedProviderId);
+
+            $provider->provider_administrator = $request->providerAdministrator;
+            $provider->provider_name = $request->providerName;
+            $provider->provider_email = $request->providerEmail;
+            $provider->provider_password = Hash::make($request->providerPassword);
+            $provider->provider_phone = $request->providerPhone;
+
+            if($request->has('providerLogo')){
+                $providerLogoPath = $request->file('providerLogo')->store('public/provider_logos');
+                $path=str_replace('public/','', $providerLogoPath);   
+                $provider->provider_logo_image = $path;        
+            }
+
+            if($request->has('providerLogo')){
+                $providerProfileImagePath = $request->file('providerImage')->store('public/provider_profile_images');
+                $path2=str_replace('public/','', $providerProfileImagePath); 
+                $provider->provider_profile_image = $path2;
+            }            
+            
+            $provider->save();
+
+         return response()->json(['status'=>true,'message' => 'Certified provider updated sucessfully!'],200);
+
+        } catch (\Exception $e) {
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while adding or updating the certified provider!'], 500);
+        }
+
+    }
+    public function updateStatus(Request $request,$certifiedProviderId)
     {
         $request->validate([
             'status' => 'required|in:active,revoked',
@@ -203,15 +236,25 @@ class CertifiedProviderController extends Controller
         session()->flash('success', 'Status updated successfully');
         // Return a response
         return response()->json(['message' => 'Status updated successfully']);
-
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CertifiedProvider $certifiedProvider)
+    public function destroy($id)
     {
-        //
+        try{
+            
+            $CertifiedProvider=CertifiedProvider::find($id);
+            $CertifiedProvider->delete();
+            return response()->json(['status'=>true],200);
+
+        } catch (\Exception $e) {
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while adding or updating the certified provider!'], 500);
+        }
+
     }
 
     
