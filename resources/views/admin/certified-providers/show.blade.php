@@ -15,9 +15,7 @@
                 <div class="modal-body">
                     <form id="applicatorForm"> 
                     @csrf 
-                        <input type="hidden" value="" id="certifiedProviderId" name="applicator_provider_id" class="form-control">
-                        <input type="hidden" value="" id="certifiedApplicatorId" name="certifiedApplicatorId" class="form-control">
-
+                        <input type="hidden" value="{{ $CertifiedProvider->provider_id }}" id="certifiedProviderId" name="applicator_provider_id" class="form-control">
                     <div class="form-group">
                             <label class="text-black font-w500">Certification ID <span class="text-danger">*</span>
                             </label>
@@ -107,7 +105,7 @@
         {{-- <h2 class="mb-0">Certified Applicators for Mexico</h2> --}}
         <h2 class="mb-0">INFINIGUARD® Certified Applicators for {{ $CertifiedProvider->provider_name ?? '' }}</h2> 
         <div>
-            <a href="#" class="btn btn-primary rounded add-applicator" data-providId="{{ $CertifiedProvider->provider_id }}" data-curd="add" data-bs-toggle="modal" data-bs-target="#addapplicator">Add
+            <a href="#" class="btn btn-primary rounded add-applicator" data-curd="add" data-bs-toggle="modal" data-bs-target="#addapplicator">Add
                 More</a>
         </div>
     </div>
@@ -185,8 +183,8 @@
                     },
                 order: [[0, 'asc']],
                 columnDefs: [
-                    { orderable: false, "targets": [6, 7] },
-                    { searchable: false, "targets": [6, 7] },
+                    { orderable: false, "targets": [4,5,6, 7] },
+                    { searchable: false, "targets": [4,5,6, 7] },
                 ],
             columns: [
                     {data: 'applicator_certification_id', name: 'applicator_certification_id'},
@@ -255,7 +253,7 @@
             var status = $(this).prop('checked') ? 'active' : 'revoked';
             
             // Construct the URL with the provider ID
-            var url = "{{ route('admin.applicators.update', ':id') }}";
+            var url = "{{ route('admin.applicator.updateStatus', ':id') }}";
              url = url.replace(':id', certificationApplicatorId);
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
@@ -263,56 +261,23 @@
                 url: url,
                 method: 'POST',
                 data: {
-                    _method: 'PUT', // Since Laravel's resourceful route uses PUT method for update
                     status: status
                 },
                 headers: {
                      'X-CSRF-TOKEN': csrfToken
                 },
                 success: function(response) {
-                        $('#successAlert').fadeIn();
-                        $('#successAlert').text(response.message);
-                        // Hide success alert after 3 seconds (3000 milliseconds)
-                        setTimeout(function() {
-                            $('#successAlert').fadeOut();
-                        }, 3000);
+                       showAlert('success', response.message, null);   
                 },
                 error: function(xhr, status, error) {
                     // Handle error
-                    console.error(xhr.responseText);
+                    showAlert('danger', xhr.responseJSON.message, null);
                 }
             });
         });
     });
 
     $(document).ready(function() {
-         function showValidationErorrs(errors){
-
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').remove();
-            $.each(errors, function(key, value) {
-                var field = $('[name="' + key + '"]');
-                field.addClass('is-invalid');
-                field.after('<div class="invalid-feedback">' + value[0] + '</div>');
-
-                 field.focus(function() {
-                $(this).removeClass('is-invalid');
-                $(this).next('.invalid-feedback').remove();
-            });
-            });
-          
-
-        }
-        function resetForm() {
-            $('#applicatorForm')[0].reset();
-            
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').remove();
-        }
-
-        $('#addapplicator').on('hidden.bs.modal', function (e) {
-            resetForm();
-        });
 
         $('#togBtn').change(function() {
             var providerId = $('#providerId').val();
@@ -333,16 +298,11 @@
                      'X-CSRF-TOKEN': csrfToken
                 },
                 success: function(response) {
-                        $('#successAlert').fadeIn();
-                        $('#successAlert').text(response.message);
-                        // Hide success alert after 3 seconds (3000 milliseconds)
-                        setTimeout(function() {
-                            $('#successAlert').fadeOut();
-                        }, 3000);
+                        showAlert('success', response.message, null);   
                 },
                 error: function(xhr, status, error) {
                     // Handle error
-                    console.error(xhr.responseText);
+                    showAlert('danger', xhr.responseJSON.message, null);
                 }
             });
         });
@@ -352,8 +312,6 @@
             let type=$(this).data('curd');
             if(type == 'edit'){
                 $('#submitBtn').attr('data-curd','edit');
-
-                $('#title').text('Edit INFINIGUARD® Certified Service Provider');
                 let applicatorId=$(this).data('id');
                 var url = "{{ route('admin.applicators.edit', ':id') }}";
                     url = url.replace(':id', applicatorId);
@@ -365,9 +323,11 @@
                     contentType: false,
                     success: function(response) {                    
 
-                     if(response.status){                      
-                        var baseUrl="{{ asset('/storage') }}";
-                        $('#certifiedApplicatorId').val(response.data.applicator_id);
+                     if(response.status){
+                        
+                    changeModelContent('Edit INFINIGUARD® Certified Applicator', 'Update',  'update', 'applicator_id', response.data.applicator_id, 'addapplicator');
+
+                        var baseUrl="{{ asset('/storage') }}";                      
                         $('#applicator_certification_id').val(response.data.applicator_certification_id);
                         $('#applicator_name').val(response.data.applicator_name);
                         $('#applicator_email').val(response.data.applicator_email);
@@ -381,12 +341,10 @@
                     }
                 });
             }else{
-                 let providId=$(this).attr('data-providId');
-                
-                $('#certifiedProviderId').val(providId);
-                $('#submitBtn').attr('data-curd','add');
 
-                $('#title').text('ADD INFINIGUARD® Certified Service Provider');
+                changeModelContent('ADD INFINIGUARD® Certified Applicator','submit', 'submit', null, null, 'addapplicator');
+
+                $('#submitBtn').attr('data-curd','add');
                 $('#applicator_certification_id').val('');
                 $('#applicator_name').val('');
                 $('#applicator_email').val('');
@@ -405,9 +363,9 @@
             if(type == 'add'){
                  url="{{ route('admin.applicators.store') }}";
             }else{
-                let providerId= $('#certifiedProviderId').val();
+                let applicatorId= $('#applicator_id').val();
                 url="{{ route('admin.applicators.update', ':id') }}";
-                 url = url.replace(':id', providerId);
+                 url = url.replace(':id', applicatorId);
                
             }           
 
@@ -427,19 +385,10 @@
                     $('#addapplicator').modal('hide');
                     $('#applicatorForm')[0].reset(); // Reset the form                
                     if(response.status){
-                        $('#successAlert').addClass('alert-success'); 
-                        $('#successAlert').removeClass('alert-danger');      
+                        showAlert('success', response.message, null);   
                     }else{
-                        $('#successAlert').removeClass('alert-success'); 
-                        $('#successAlert').addClass('alert-danger');     
-                    }
-                    $('#successAlert').fadeIn();
-                    $('#successAlert').text(response.message);
-
-                        // Hide alert after 10 seconds (10000 milliseconds)
-                        setTimeout(function() {
-                            $('#successAlert').fadeOut();
-                        }, 10000);
+                         showAlert('danger', response.message, null);   
+                    }                   
                     $('#certifiedApplicators').DataTable().ajax.reload();
 
                 },
@@ -449,7 +398,7 @@
                         showValidationErorrs(errors);
                     } else {
                         // Handle other types of errors
-                        console.error(xhr.responseText);
+                        showAlert('danger', xhr.responseJSON.message, null);
                         // You can display a generic error message here
                     }
                 }
@@ -458,8 +407,8 @@
 
         $(document).on('click','.delete-applicator',function(e){
             e.preventDefault();
-            var providerId=$(this).data('id');           
-            $("#confirmDelete").attr("data-id", providerId);
+            var applicatorId=$(this).data('id');           
+            $("#confirmDelete").attr("data-id", applicatorId);
 
             // Show the confirmation modal
             $("#confirmationModal").modal('show');
@@ -468,9 +417,9 @@
 
         // Handle delete confirmation
         $("#confirmDelete").on('click', function() {
-            var providerId = $(this).attr('data-id');
+            var applicatorId = $(this).attr('data-id');
             var url = "{{ route('admin.applicators.destroy', ':id') }}";
-            url = url.replace(':id', providerId);
+            url = url.replace(':id', applicatorId);
             
             // Send AJAX request to delete provider
             $.ajax({
@@ -484,7 +433,7 @@
                 
                 },
                 error: function(xhr, status, error) {
-                    console.log(error);
+                   showAlert('danger', xhr.responseJSON.message, null);
                     // Optionally, you can handle errors here
                 }
             });

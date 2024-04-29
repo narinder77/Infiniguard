@@ -55,7 +55,7 @@ class CertifiedApplicatorController extends Controller
         $validate=$request->validate([
             'applicator_certification_id' => 'required|string',
             'applicator_name' => 'required|string',
-            'applicator_email' => 'required|email|unique:certified_providers,provider_email',
+            'applicator_email' => 'required|email|unique:certified_applicators,applicator_email',
             'applicator_password' => 'required|string|min:8',
             'applicator_date' => 'required|date',
         ]);               
@@ -72,7 +72,7 @@ class CertifiedApplicatorController extends Controller
         } catch (\Exception $e) {
             // Other errors occurred
             \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
-            return response()->json(['status' => false, 'message' => 'An error occurred while adding or updating the certified provider!'], 500);
+            return response()->json(['status' => false, 'message' => 'An error occurred while adding the certified provider!'], 500);
         }
     }
 
@@ -104,6 +104,30 @@ class CertifiedApplicatorController extends Controller
      */
     public function update(Request $request,$certifiedApplicatorId)
     {      
+        $validate=$request->validate([
+            'applicator_certification_id' => 'required|string',
+            'applicator_name' => 'required|string',
+            'applicator_email' => 'required|email|unique:certified_applicators,applicator_email,' . $certifiedApplicatorId . ',applicator_id',
+            'applicator_date' => 'required|date',
+        ]);        
+                         
+        try {  
+            $validate['applicator_provider_id']=$request->applicator_provider_id;
+                 
+            $applicator=CertifiedApplicator::find($certifiedApplicatorId);
+            $applicator->update($validate);        
+            return response()->json(['status'=>true,'message' => 'Certified applicator updated sucessfully!'],200);
+
+        } catch (\Exception $e) {
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while updating the certified provider!'], 500);
+        }
+
+    }
+    public function updateStatus(Request $request,$certifiedApplicatorId)
+    {
+        try{
             $request->validate([
                 'status' => 'required|in:active,revoked',
             ]);
@@ -116,6 +140,12 @@ class CertifiedApplicatorController extends Controller
             // Return a response
             return response()->json(['message' => 'Status updated successfully']);
 
+        } catch (\Exception $e) {
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while updating the status!'], 500);
+        }
+        
     }
 
     /**

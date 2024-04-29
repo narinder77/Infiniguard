@@ -62,7 +62,7 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/applicators/registerequip/{id}', [CertifiedApplicatorController::class, 'applicatorRegisterEquip'])->name('applicator.registerEquip');
 
     Route::get('/applicators/warranty-claims/{id}', [CertifiedApplicatorController::class, 'applicatorWarrantyClaims'])->name('applicator.warranty-claims');
-
+    Route::post('/applicator/update-status/{id}', [CertifiedApplicatorController::class, 'updateStatus'])->name('applicator.updateStatus');
     /**
      * This route for Registered Equipment
      */

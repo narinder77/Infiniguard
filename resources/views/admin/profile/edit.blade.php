@@ -141,36 +141,11 @@
 		frame.src = "";
 	}
 
-	function showValidationErorrs(errors){
-
-		$('.is-invalid').removeClass('is-invalid');
-		$('.invalid-feedback').remove();
-		$.each(errors, function(key, value) {
-			var field = $('[name="' + key + '"]');
-			field.addClass('is-invalid');
-			field.after('<div class="invalid-feedback">' + value[0] + '</div>');
-
-				field.focus(function() {
-			$(this).removeClass('is-invalid');
-			$(this).next('.invalid-feedback').remove();
-		});
-		});          
-
-	}
-
-	function resetForm() {
-		$('#resetPassForm')[0].reset();
-		
-		$('.is-invalid').removeClass('is-invalid');
-		$('.invalid-feedback').remove();
-		$('#password_match_message').hide();
-	}
-
 	function showPasswordMatchMessage() {
 		var newPassword = $('#new_password').val();
 		var confirmPassword = $('#new_password_confirmation').val();
 
-		if (newPassword === confirmPassword) {
+		if (newPassword != '' && newPassword === confirmPassword) {
 			$('#password_match_message').show();
 			$('#password_match_message').text('Passwords match').addClass('text-success').removeClass('text-danger');
 		} else {
@@ -183,9 +158,9 @@
 		showPasswordMatchMessage();
 	});
 
-
-	$('#change-password').on('hidden.bs.modal', function (e) {
-		resetForm();
+	$('.modal').on('hidden.bs.modal', function(e) {
+		$('#password_match_message').hide();
+		$('#password_match_message').text('');
 	});
 
 	$(document).on('click', '#submitBtn', function(e) {
@@ -207,22 +182,13 @@
                     
 			},
 			success: function(response) {				
-
+				//window.location.href="{{route('admin.providers.index')}}"   
 				if(response.status){
-					$('#successAlert').addClass('alert-success'); 
-					$('#successAlert').removeClass('alert-danger');      
-				}else{
-					$('#successAlert').removeClass('alert-success'); 
-					$('#successAlert').addClass('alert-danger');     
-				}
-				$('#successAlert').fadeIn();
-				$('#successAlert').text(response.message);
 
-					// Hide alert after 10 seconds (10000 milliseconds)
-					setTimeout(function() {
-						$('#successAlert').fadeOut();
-					}, 10000);	
-				//window.location.href="{{route('admin.providers.index')}}"   			
+					showAlert('success', response.message, null); 
+				}else{
+					showAlert('danger', response.message, null)      
+				}						
 
 			},
 			error: function(xhr, status, error) {
@@ -231,7 +197,7 @@
 					showValidationErorrs(errors);
 				} else {
 					// Handle other types of errors
-					console.error(xhr.responseText);
+				 showAlert('danger', responseJSON.message, null)  
 					// You can display a generic error message here
 				}
 			}
@@ -253,19 +219,10 @@
 					$('#change-password').modal('hide');
 					resetForm();         
                     if(response.status){
-                        $('#successAlert').addClass('alert-success'); 
-                        $('#successAlert').removeClass('alert-danger');      
+                      showAlert('success', response.message, null);      
                     }else{
-                        $('#successAlert').removeClass('alert-success'); 
-                        $('#successAlert').addClass('alert-danger');     
-                    }
-                    $('#successAlert').fadeIn();
-                    $('#successAlert').text(response.message);
-
-                        // Hide alert after 10 seconds (10000 milliseconds)
-                        setTimeout(function() {
-                            $('#successAlert').fadeOut();
-                        }, 10000);
+                       showAlert('danger', response.message, null)      
+                    }                  
                     $('#CertifiedProvider').DataTable().ajax.reload();
 
                 },
@@ -275,7 +232,7 @@
                         showValidationErorrs(errors);
                     } else {
                         // Handle other types of errors
-                        console.error(xhr.responseText);
+                        showAlert('danger', responseJSON.message, null) 
                         // You can display a generic error message here
                     }
                 }
