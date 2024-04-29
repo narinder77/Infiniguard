@@ -15,10 +15,11 @@
 
                     <li class="nav-item dropdown header-profile">
                         <a class="nav-link" href="javascript:void(0)" role="button" data-bs-toggle="dropdown">
-                            <img src="{{ asset('assets/images/profile/17.jpg')}}" width="20" alt=""/>
+                        <img src="{{ asset('assets/images/profile/17.jpg') }}" width="20" alt=""/>
+                        {{-- <img src="{{ asset('storage/'.Auth::guard('admin')->user()->provider_profile_image) }}" width="20" alt=""/> --}}
                             <div class="header-info">
-                                <span class="text-black">Peter Parkur</span>
-                                <p class="fs-12 mb-0">Super Admin</p>
+                                <span class="text-black">{{Auth::guard('admin')->user()->provider_name}}</span>
+                                <p class="fs-12 mb-0">{{Auth::guard('admin')->user()->provider_type == 1 ? 'Admin' : 'Provider'}}</p>
                             </div>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">

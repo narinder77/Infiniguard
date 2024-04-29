@@ -60,7 +60,7 @@
                         </div>
 
                         <div class="form-group">
-                            <button type="button" id="submitBtn" class="btn btn-primary">SUBMIT</button>
+                            <button type="button" data-curd="" id="submitBtn" class="btn btn-primary">SUBMIT</button>
                         </div>
                     </form>
                 </div>
@@ -104,6 +104,23 @@
                         </tr>
                     </tfoot>                    
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="confirmationModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">Confirmation</h5>
+                <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this provider!!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
@@ -180,7 +197,7 @@
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right">
                                         <a class="dropdown-item add-provider" data-id="${provider_id}" href="javascript:void(0);" data-curd="edit" data-bs-toggle="modal" data-bs-target="#add-profile">Edit</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Delete</a>
+                                        <a class="dropdown-item delete-provider" href="javascript:void(0);" data-id="${provider_id}">Delete</a>
                                     </div>
                                 </div>`;
                         }
@@ -197,7 +214,7 @@
 
         var certificationProviderId = $(this).attr('data-certificationProviderId');           
         var status = $(this).prop('checked') ? 'active' : 'revoked';
-        var url = "{{ route('admin.providers.update', ':id') }}";
+        var url = "{{ route('admin.provider.updateStatus', ':id') }}";
             url = url.replace(':id', certificationProviderId);
         var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
@@ -205,7 +222,6 @@
                 url: url,
                 method: 'POST',
                 data: {
-                    _method: 'PUT', // Since Laravel's resourceful route uses PUT method for update
                     status: status
                 },
                 headers: {
@@ -225,6 +241,16 @@
                 }
             });
         });
+        function resetForm() {
+            $('#providerForm')[0].reset();
+            
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+        }
+
+        $('#add-profile').on('hidden.bs.modal', function (e) {
+            resetForm();
+        });
 
         function showValidationErorrs(errors){
 
@@ -234,70 +260,20 @@
                 var field = $('[name="' + key + '"]');
                 field.addClass('is-invalid');
                 field.after('<div class="invalid-feedback">' + value[0] + '</div>');
+
+                 field.focus(function() {
+                $(this).removeClass('is-invalid');
+                $(this).next('.invalid-feedback').remove();
             });
-            field.on('input', function() {
-                field.removeClass('is-invalid');
-                field.next('.invalid-feedback').remove();
             });
+          
 
         }
-
-        $(document).on('click', '#submitBtn', function(e) {
-            e.preventDefault(); // Prevent default form submission
-
-            var formData = new FormData($('#providerForm')[0]);
-
-            $.ajax({
-                type: 'POST',
-                url: "{{ route('admin.providers.store') }}", // Use the store route for creating new providers
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                $('#add-profile').modal('hide');
-                $('#providerForm')[0].reset(); // Reset the form                
-                if(response.status){
-                    $('#successAlert').addClass('alert-success'); 
-                    $('#successAlert').removeClass('alert-danger');      
-                }else{
-                    $('#successAlert').removeClass('alert-success'); 
-                    $('#successAlert').addClass('alert-danger');     
-                }
-                $('#successAlert').fadeIn();
-                $('#successAlert').text(response.message);
-
-                    // Hide alert after 10 seconds (10000 milliseconds)
-                    setTimeout(function() {
-                        $('#successAlert').fadeOut();
-                    }, 10000);
-
-                },
-                error: function(xhr, status, error) {
-                   if (xhr.responseJSON && xhr.responseJSON.errors) {
-                        var errors = xhr.responseJSON.errors;                        
-                        showValidationErorrs(errors);
-                    } else {
-                        // Handle other types of errors
-                        console.error(xhr.responseText);
-                        // You can display a generic error message here
-                    }
-                }
-            });
-        });
-
         $(document).on('click','.add-provider', function(e){
             e.preventDefault();
             let type=$(this).data('curd');
             if(type == 'edit'){
-               var fields = $('input[name="providerAdministrator"], input[name="providerName"], input[name="providerEmail"], input[name="providerPassword"], input[name="providerPhone"], input[name="providerLogo"],input[name="providerImage"]');
-                   
-                    $.each(fields, function(field) {
-                        field.on('input', function() {
-                                field.removeClass('is-invalid');
-                                field.next('.invalid-feedback').remove();
-                        });
-                   
-                    });
+                $('#submitBtn').attr('data-curd','edit');
 
                 $('#title').text('Edit INFINIGUARD® Certified Service Provider');
                 let providerId=$(this).data('id');
@@ -330,7 +306,8 @@
                     }
                 });
             }else{
-                
+                  $('#submitBtn').attr('data-curd','add');
+
                 $('#title').text('ADD INFINIGUARD® Certified Service Provider');
                 $('#providerAdministrator').val('');
                 $('#providerName').val('');
@@ -344,7 +321,104 @@
                 $('#certifiedProviderId').val('');
             }
            
-        })
+        });
+
+        $(document).on('click', '#submitBtn', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            var type=$(this).attr('data-curd');
+            var formData = new FormData($('#providerForm')[0]);
+            var url="";
+            if(type == 'add'){
+                 url="{{ route('admin.providers.store') }}";
+            }else{
+                let providerId= $('#certifiedProviderId').val();
+                url="{{ route('admin.providers.update', ':id') }}";
+                 url = url.replace(':id', providerId);
+               
+            }
+            
+
+            $.ajax({
+                type: 'POST',
+                url: url, // Use the store route for creating new providers
+                data: formData,
+                processData: false,
+                contentType: false,
+                 beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}'); // Set CSRF token
+                    if (type != 'add') {
+                        xhr.setRequestHeader('X-HTTP-Method-Override', 'PUT'); // Set method override for Laravel (only for updating)
+                    }
+                },
+                success: function(response) {
+                    $('#add-profile').modal('hide');
+                    $('#providerForm')[0].reset(); // Reset the form                
+                    if(response.status){
+                        $('#successAlert').addClass('alert-success'); 
+                        $('#successAlert').removeClass('alert-danger');      
+                    }else{
+                        $('#successAlert').removeClass('alert-success'); 
+                        $('#successAlert').addClass('alert-danger');     
+                    }
+                    $('#successAlert').fadeIn();
+                    $('#successAlert').text(response.message);
+
+                        // Hide alert after 10 seconds (10000 milliseconds)
+                        setTimeout(function() {
+                            $('#successAlert').fadeOut();
+                        }, 10000);
+                    $('#CertifiedProvider').DataTable().ajax.reload();
+
+                },
+                error: function(xhr, status, error) {
+                   if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        var errors = xhr.responseJSON.errors;                        
+                        showValidationErorrs(errors);
+                    } else {
+                        // Handle other types of errors
+                        console.error(xhr.responseText);
+                        // You can display a generic error message here
+                    }
+                }
+            });
+        });
+
+        $(document).on('click','.delete-provider',function(e){
+            e.preventDefault();
+            var providerId=$(this).data('id');          
+            $("#confirmDelete").data("id", providerId);
+
+            // Show the confirmation modal
+            $("#confirmationModal").modal('show');
+            
+        });
+
+        // Handle delete confirmation
+        $("#confirmDelete").on('click', function() {
+            var providerId = $(this).data('id');
+            var url = "{{ route('admin.providers.destroy', ':id') }}";
+            url = url.replace(':id', providerId);
+            
+            // Send AJAX request to delete provider
+            $.ajax({
+                url: url,
+                method: 'DELETE',
+                success: function(response) {
+                    if(response.status){
+                         $('#CertifiedProvider').DataTable().ajax.reload();
+                         // Optionally, you can perform actions after successful deletion
+                    }
+                
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                    // Optionally, you can handle errors here
+                }
+            });
+
+            // Close the confirmation modal
+            $("#confirmationModal").modal('hide');
+        });
 
     });
 
