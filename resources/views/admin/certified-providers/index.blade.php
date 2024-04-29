@@ -6,14 +6,14 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="title">Add INFINIGUARD® Certified Service Provider</h5>
+                    <h5 class="modal-title" id="title">Add INFINIGUARD® Certified Provider</h5>
                     <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                   <form id="providerForm" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" id="certifiedProviderId" name="certifiedProviderId" class="form-control">
+                        {{-- <input type="hidden" id="certifiedProviderId" name="certifiedProviderId" class="form-control"> --}}
                         <div class="form-group">
                             <label class="text-black font-w500">Certified Provider Administrator</label>
                             <input type="text" placeholder="Enter Certified Provider Administrator" id="providerAdministrator" name="providerAdministrator" class="form-control">
@@ -227,55 +227,23 @@
                 headers: {
                         'X-CSRF-TOKEN': csrfToken
                 },
-                success: function(response) {                 
-                    $('#successAlert').fadeIn();
-                    $('#successAlert').text(response.message);
-                    // Hide success alert after 3 seconds (3000 milliseconds)
-                    setTimeout(function() {
-                        $('#successAlert').fadeOut();
-                    }, 3000);
+                success: function(response) {  
+                    showAlert('success', response.message, null);       
+                   
                 },
                 error: function(xhr, status, error) {
                     // Handle error
-                    console.error(xhr.responseText);
+                    showAlert('danger', xhr.responseJSON.message, null);
+
                 }
             });
-        });
-        function resetForm() {
-            $('#providerForm')[0].reset();
-            
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').remove();
-        }
-
-        $('#add-profile').on('hidden.bs.modal', function (e) {
-            resetForm();
-        });
-
-        function showValidationErorrs(errors){
-
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').remove();
-            $.each(errors, function(key, value) {
-                var field = $('[name="' + key + '"]');
-                field.addClass('is-invalid');
-                field.after('<div class="invalid-feedback">' + value[0] + '</div>');
-
-                 field.focus(function() {
-                $(this).removeClass('is-invalid');
-                $(this).next('.invalid-feedback').remove();
-            });
-            });
-          
-
-        }
-        $(document).on('click','.add-provider', function(e){
+        });        
+       
+        $(document).on('click','.add-provider', function(e){            
             e.preventDefault();
             let type=$(this).data('curd');
             if(type == 'edit'){
                 $('#submitBtn').attr('data-curd','edit');
-
-                $('#title').text('Edit INFINIGUARD® Certified Service Provider');
                 let providerId=$(this).data('id');
                 var url = "{{ route('admin.providers.edit', ':id') }}";
                     url = url.replace(':id', providerId);
@@ -287,9 +255,10 @@
                     contentType: false,
                     success: function(response) {                    
 
-                     if(response.status){                      
+                     if(response.status){                                              
                         var baseUrl="{{ asset('/storage') }}";
-                        $('#certifiedProviderId').val(response.data.provider_id);
+                       changeModelContent('Edit INFINIGUARD® Certified Provider', 'Update',  'update', 'certifiedProviderId', response.data.provider_id, 'add-profile');
+
                         $('#providerAdministrator').val(response.data.provider_administrator);
                         $('#providerName').val(response.data.provider_name);
                         $('#providerEmail').val(response.data.provider_email);
@@ -306,9 +275,8 @@
                     }
                 });
             }else{
-                  $('#submitBtn').attr('data-curd','add');
-
-                $('#title').text('ADD INFINIGUARD® Certified Service Provider');
+                changeModelContent('ADD INFINIGUARD® Certified Provider','submit', 'submit', null, null, 'add-profile');
+                $('#submitBtn').attr('data-curd','add');
                 $('#providerAdministrator').val('');
                 $('#providerName').val('');
                 $('#providerEmail').val('');
@@ -318,7 +286,6 @@
                 $('#profile-card').addClass('d-none');
                 $('#logo-img').attr('src','');
                 $('#profile-img').attr('src','');
-                $('#certifiedProviderId').val('');
             }
            
         });
@@ -335,8 +302,7 @@
                 url="{{ route('admin.providers.update', ':id') }}";
                  url = url.replace(':id', providerId);
                
-            }
-            
+            }          
 
             $.ajax({
                 type: 'POST',
@@ -351,22 +317,12 @@
                     }
                 },
                 success: function(response) {
-                    $('#add-profile').modal('hide');
-                    $('#providerForm')[0].reset(); // Reset the form                
-                    if(response.status){
-                        $('#successAlert').addClass('alert-success'); 
-                        $('#successAlert').removeClass('alert-danger');      
+                    $('#add-profile').modal('hide');              
+                  if(response.status){
+                     showAlert('success', response.message, null)    
                     }else{
-                        $('#successAlert').removeClass('alert-success'); 
-                        $('#successAlert').addClass('alert-danger');     
-                    }
-                    $('#successAlert').fadeIn();
-                    $('#successAlert').text(response.message);
-
-                        // Hide alert after 10 seconds (10000 milliseconds)
-                        setTimeout(function() {
-                            $('#successAlert').fadeOut();
-                        }, 10000);
+                       showAlert('danger', response.message, null)
+                    }                                           
                     $('#CertifiedProvider').DataTable().ajax.reload();
 
                 },
@@ -376,7 +332,8 @@
                         showValidationErorrs(errors);
                     } else {
                         // Handle other types of errors
-                        console.error(xhr.responseText);
+                       $('#add-profile').modal('hide');
+                       showAlert('danger', xhr.responseJSON.message, null)
                         // You can display a generic error message here
                     }
                 }
@@ -410,9 +367,9 @@
                     }
                 
                 },
-                error: function(xhr, status, error) {
-                    console.log(error);
+                error: function(xhr, status, error) {      
                     // Optionally, you can handle errors here
+                       showAlert('danger', xhr.responseJSON.message, null);
                 }
             });
 

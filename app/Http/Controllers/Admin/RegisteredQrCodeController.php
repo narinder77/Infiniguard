@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use App\Models\GeneratedQrCode;
 use App\Models\RegisteredQrCode;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
@@ -144,9 +145,25 @@ class RegisteredQrCodeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, RegisteredQrCode $registeredQrCode)
+    public function update(Request $request, $registeredEquipmentId)
     {
-        //
+        $request->validate([
+            'serial_number' => 'required|confirmed',
+       ]);  
+       try {  
+            $query = GeneratedQrCode::find($registeredEquipmentId);
+            $query->equipment_serial_number=$request->serial_number;
+            $query->equipment_model_number=$request->serial_number;
+            $query->save();
+
+            return response()->json(['status'=>true,'message' => 'Serial Number updated sucessfully!'],200);
+
+        } catch (\Exception $e) {
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while updating the Serial Number!'], 500);
+        }
+
     }
 
     /**
