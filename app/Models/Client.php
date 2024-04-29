@@ -23,6 +23,12 @@ class Client extends Model
         'client_status',
         'client_otp',
     ];
+
+    public function getForeignKey()
+    {
+        return 'client_provider_id';
+    }
+    
     public function certifiedProviders()
     {
         return $this->belongsTo(CertifiedProvider::class, 'client_provider_id');

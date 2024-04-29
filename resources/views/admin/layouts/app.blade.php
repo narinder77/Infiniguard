@@ -117,6 +117,7 @@
         <div id="successAlert" class="alert alert-success alert-dismissible" style="display: none;">
           <button type="button" class="close alert-close" data-dismiss="alert">&times;</button>  Data Updated Successfully
         </div>
+        <div id="alert-container"></div>
 			@yield('content')
         </div>
         <!--**********************************
@@ -168,11 +169,77 @@
         @endforeach
     @endif
     <script type="text/javascript">
+        /*============================================================
+        Code for sending csrf token on each ajax request
+        ==============================================================*/
         $.ajaxSetup({
             headers:{
                 'x-csrf-token' : $('meta[name="csrf-token"]').attr('content')
             }
         });
+        /*============================================================
+             Function for reset form
+        ==============================================================*/
+        function resetForm() {
+            $('.modal form')[0].reset();
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+        }
+        $('.modal').on('hidden.bs.modal', function(e) {
+            resetForm();
+        });
+        /*==============================================================
+         Function for validation and show errors
+        ==============================================================*/
+        function showValidationErorrs(errors) {
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+            $.each(errors, function(key, value) {
+                var field = $('[name="' + key + '"]');
+                field.addClass('is-invalid');
+                field.after('<div class="invalid-feedback">' + value[0] + '</div>');
+
+                // Remove error message and invalid class when the field is focused
+                field.focus(function() {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                });
+            });
+        }
+        /*==============================================================
+         Function for messages and show errors
+        ==============================================================*/
+        function showAlert(type, message, alertlocation) {
+            var alert = $('<div class="alert alert-' + type +
+                ' alert-dismissible fade show" role="alert">' + message +
+                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
+            );
+            $('#alert-container').append(alert);
+            setTimeout(function() {
+                alert.alert('close');
+            }, 2000);
+        }
+        /*==============================================================
+         Function for change title and button text and class
+        ==============================================================*/
+        function changeModelContent(title, btntext, btnclass, input_name, input_value, modelName) {
+            $(".modal-header .modal-title").text(title);
+            $(".modal-body button").text(btntext).removeClass("submit").addClass(btnclass);
+            $(".hiddenInput_Js").remove();
+            if ((typeof input_name !== 'undefined' && input_name !== null)) {
+                var hiddenInput = $('<input>').attr({
+                    type: 'hidden',
+                    id: input_name,
+                    class: 'hiddenInput_Js',
+                    name: input_name,
+                    value: input_value
+                });
+                $(".modal-body form").append(hiddenInput);
+            } else {
+                $(".hiddenInput_Js").remove();
+            }
+            $(`#${modelName}`).modal('show');
+        }
 
         $(document).on('click','.alert-close',function(){
             $('#successAlert').hide();

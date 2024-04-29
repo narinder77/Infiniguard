@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use App\Models\CertifiedProvider;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Client\StoreClientRequest;
+use App\Http\Requests\Client\UpdateClientRequest;
 
 class ClientController extends Controller
 {
@@ -33,7 +35,8 @@ class ClientController extends Controller
                 })
                 ->toJson();
         }
-        return view('admin.clients.index', compact('page_title', 'page_description'));
+        $providers = CertifiedProvider::select('provider_id', 'provider_name')->get();
+        return view('admin.clients.index', compact('page_title', 'page_description', 'providers'));
     }
 
     /**
@@ -47,40 +50,24 @@ class ClientController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreClientRequest $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'client_company_name' => 'required|string|max:255',
-                'client_firstname' => 'required|string|max:255',
-                'client_lastname' => 'required|string|max:255',
-                'client_email' => 'required|email|unique:clients|max:255',
-                'client_phone' => 'required|string|max:20',
-                'client_provider_id' => 'required|string|min:1',
-                'client_password' => 'required|string|min:8', // Enforce minimum password length
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors()->toArray(),
-                ], 422);
-            }
-            $request->merge([
-                'client_password' => Hash::make($request->client_password)
-            ]);
-
-            $client = Client::create($request->all());
+            $client = Client::create($request->validated());
 
             return response()->json([
                 'message' => 'Client created successfully',
                 'code' => 201
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            Log::error('Error creating record:', [
+                'exception' => $exception->getMessage(),
+                'Line No' => $exception->getLine(),
+                'code' => $exception->getCode()
+            ], 500);
             return response()->json([
-                'message' => 'An error occurred',
-                'errors' => [], // Empty errors for non-validation exceptions
-                'code' => 500
+                'message' => 'An error occurred during creation.',
+                'errors' => $exception->getMessage(),
             ], 500);
         }
     }
@@ -100,16 +87,45 @@ class ClientController extends Controller
      */
     public function edit(Client $client)
     {
-        //
+        if ($client) {
+            return response()->json([
+                'message' => "Data Found",
+                "code"    => 200,
+                "data"    => $client
+            ]);
+        } else {
+            return response()->json([
+                'message' => "Client not found",
+                "code"    => 404
+            ]);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Client $client)
+    public function update(UpdateClientRequest $request, Client $client)
     {
-        //
+        try {
+            $client->update($request->validated());
+
+            return response()->json([
+                'message' => 'Client Profile Updated successfully',
+                'code' => 200
+            ]);
+        } catch (\Exception $exception) {
+            Log::error('Error updating client profile:', [
+                'exception' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
+                'code' => $exception->getCode()
+            ], 500);            
+            return response()->json([
+                'message' => 'An error occurred while updating the client profile.',
+                'errors' => $exception->getMessage(),
+            ], 500);
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.

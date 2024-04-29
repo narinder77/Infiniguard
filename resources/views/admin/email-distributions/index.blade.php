@@ -26,12 +26,12 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
-        <h3 class="mb-0">Email Distribution List</h3>
-        <div>
-            <a href="#" id="addEmailModel" class="add btn btn-primary rounded">Add New
-                Mail</a>
+        <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
+            <h3 class="mb-0">Email Distribution List</h3>
+            <div>
+                <a href="#" id="addNewEmail" class="addNewEmail btn btn-primary rounded">Add</a>
+            </div>
+
         </div>
     </div>
     <div class="row">
@@ -137,155 +137,122 @@
                             </div>
                         </div>
                         `;
-                    }
-                }
-            ]
-        });
-        /*=============================================
-         Function for reset form
-        ===============================================*/        
-        function resetForm() {
-            $('#addEmail')[0].reset();
-            
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').remove();
-        }
 
-        $('#addEmailModel').on('hidden.bs.modal', function (e) {
-            resetForm();
-        });
-        $(document).on('click', '.add', function(e) {
-            changeModelContent('Add New Mail', 'submit','submit');
-        })
-        
-        /*=============================================
-         Function for validation and show errors
-        ===============================================*/
-        function showValidationErorrs(errors){
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').remove();
-            $.each(errors, function(key, value) {
-                var field = $('[name="' + key + '"]');
-                field.addClass('is-invalid');
-                field.after('<div class="invalid-feedback">' + value[0] + '</div>');
+                            }
+                        }
+                    ]
+                });
+                /*==============================================================
+                 Function for reset form
+                ================================================================*/
+                $(document).on('click', '.addNewEmail', function(e) {
+                    changeModelContent('Add New Mail','submit', 'submit', null, null, 'addEmailModel');
+                })
+                /*==============================================================
+                 Create recorde
+                ================================================================*/
+                $(document).on('click', '.submit', function(e) {
+                    e.preventDefault();
+                    let formData = $('#addEmail').serialize();
+                    $.ajax({
+                        url: "{{ route('admin.email-distribution-list.store') }}",
+                        type: 'POST',
+                        dataType: "json",
+                        data: formData,
+                        success: function(response, xhr, status, error) {
+                            resetForm();
+                            showAlert('success', response.message);
+                            if (emailDistribution && emailDistribution.ajax) {
+                                emailDistribution.ajax.reload();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            var errorMessage = xhr.responseJSON.message;
+                            var errors = xhr.responseJSON.errors;
+                            if (errors) {
+                                showValidationErorrs(errors);
+                            }
+                            if (errorMessage) {
+                                showAlert('danger', errorMessage);
+                            }
+                        }
+                    });
+                });
+                /*==============================================================
+                 Edit recorde
+                ================================================================*/
+                $(document).on('click', '.edit', function(e) {
+                    e.preventDefault();
+                    let id = $(this).data('id');
+                    changeModelContent('Edit Email', 'Update',  'update', 'emailID', id, 'addEmailModel');
+                    $.ajax({
+                        url: "{{ route('admin.email-distribution-list.edit', ':id') }}".replace(
+                            ':id', id),
+                        method: 'GET',
+                        dataType: "json",
+                        success: function(response) {
+                            $('input[name="email"]').val(response.data.email);
+                        },
+                        error: function(xhr, status, error) {
+                            var errors = xhr.responseJSON.errors;
+                            showValidationErorrs(errors);
+                        }
+                    });
+                });
+                /*==============================================================
+                 Update recorde
+                ================================================================*/
+                $(document).on('click', '.update', function(e) {
+                    e.preventDefault();
+                    let id = $('input[name="emailID"]').val();
+                    let formData = $('#addEmail').serialize();
+                    $.ajax({
+                        url: "{{ route('admin.email-distribution-list.update', ':id') }}"
+                            .replace(':id', id),
+                        method: 'PUT',
+                        dataType: "json",
+                        data: formData,
+                        success: function(response, xhr, status, error) {
+                            resetForm();
+                            showAlert('success', response.message);
+                            if (emailDistribution && emailDistribution.ajax) {
+                                emailDistribution.ajax.reload();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            var errorMessage = xhr.responseJSON.message;
+                            var errors = xhr.responseJSON.errors;
+                            if (errors) {
+                                showValidationErorrs(errors);
+                            }
+                            if (errorMessage) {
+                                showAlert('danger', errorMessage);
+                            }
+                        }
+                    });
+                });
+                /*==============================================================
+                 Delete recorde
+                ================================================================*/
+                $(document).on('click', '.delete', function(e) {
+                    e.preventDefault();
+                    var id = $(this).data('id');
+                    $.ajax({
+                        url: "{{ route('admin.email-distribution-list.destroy', ':id') }}"
+                            .replace(':id', id),
+                        method: 'DELETE',
+                        dataType: "json",
+                        success: function(response) {
+                            emailDistribution.ajax.reload();
+                            showAlert('success', response.message);
+                        },
+                        error: function(xhr, status, error) {
+                            var errors = xhr.responseJSON.errors;
+                            showValidationErorrs(errors);
+                        }
+                    });
+                });
 
-                // Remove error message and invalid class when the field is focused
-                field.focus(function() {
-                    $(this).removeClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                });
-            });
-        }
-        /*=============================================
-         Function for messages and show errors
-        ===============================================*/        
-        function showAlert(type, message, alertlocation) {
-            var alert = $('<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' + message +
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
-            $('#alert-container').append(alertlocation? alertlocation : alert);
-            setTimeout(function() {
-                alert.alert('close');
-            }, 2000);
-        }  
-        /*=============================================
-         Function for change title and button text and class
-        ===============================================*/  
-        function changeModelContent(title, btntext, btnclass, input_name, input_value){
-            $(".modal-header .modal-title").text(title);
-            $(".modal-body button").text(btntext).removeClass("submit").addClass(btnclass);
-            if ((typeof input_name !== 'undefined' && input_name !== null) ) {
-                var hiddenInput = $('<input>').attr({
-                    type: 'hidden',
-                    id: input_name,
-                    class:'hiddenInput_Js',
-                    name: input_name,
-                    value: input_value
-                });
-                $(".modal-body form").append(hiddenInput); 
-            }else{
-                $(".hiddenInput_Js").remove();  
-            }       
-            $("#addEmailModel").modal('show');
-        }
-        /*=============================================
-         Create recorde
-        ===============================================*/
-        $(document).on('click', '.submit', function(e) {
-            e.preventDefault();
-            let formData = $('#addEmail').serialize();
-            $.ajax({
-                url: "{{ route('admin.email-distribution-list.store') }}",
-                type: 'POST',
-                dataType: "json",
-                data: formData,
-                success: function(response, xhr, status, error) {
-                    resetForm();
-                    showAlert('success', response.message);
-                    if (emailDistribution && emailDistribution.ajax) {
-                        emailDistribution.ajax.reload();
-                    }
-                },
-                error: function(xhr, status, error) {
-                    var errorMessage = xhr.responseJSON.message;
-                    var errors = xhr.responseJSON.errors;
-                    if(errors){
-                        showValidationErorrs(errors);  
-                    }
-                    if(errorMessage) {
-                        showAlert('danger', errorMessage); 
-                    }
-                }
-            });
-        });        
-        /*=============================================
-         Edit recorde
-        ===============================================*/        
-        $(document).on('click', '.edit', function(e) {
-            e.preventDefault();
-            let id = $(this).data('id');
-            changeModelContent('Edit Email', 'Update','update','emailID', id);
-            $.ajax({
-                url: "{{ route('admin.email-distribution-list.edit', ':id') }}".replace(':id', id),
-                method: 'GET',
-                dataType: "json",
-                success: function(response) {
-                    $('input[name="email"]').val(response.data.email);
-                },
-                error: function(xhr, status, error) {
-                    var errors = xhr.responseJSON.errors;
-                    showValidationErorrs(errors);
-                }
-            });
-        });
-        /*=============================================
-         Update recorde
-        ===============================================*/        
-        $(document).on('click', '.update', function(e) {
-            e.preventDefault();
-            let id =  $('input[name="emailID"]').val();
-            let formData = $('#addEmail').serialize();
-            $.ajax({
-                url: "{{ route('admin.email-distribution-list.update', ':id') }}".replace(':id', id),
-                method: 'PUT',
-                dataType: "json",
-                data: formData,
-                success: function(response, xhr, status, error) {
-                    resetForm();
-                    showAlert('success', response.message);
-                    if (emailDistribution && emailDistribution.ajax) {
-                        emailDistribution.ajax.reload();
-                    }
-                },
-                error: function(xhr, status, error) {
-                    var errorMessage = xhr.responseJSON.message;
-                    var errors = xhr.responseJSON.errors;
-                    if(errors){
-                        showValidationErorrs(errors);  
-                    }
-                    if(errorMessage) {
-                        showAlert('danger', errorMessage); 
-                    }
-                }
             });
         });        
         /*=============================================

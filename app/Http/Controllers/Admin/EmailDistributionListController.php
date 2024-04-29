@@ -8,6 +8,8 @@ use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use App\Models\EmailDistributionList;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\EmailDistribution\StoreEmailDistributionRequest;
+use App\Http\Requests\EmailDistribution\UpdateEmailDistributionRequest;
 
 class EmailDistributionListController extends Controller
 {
@@ -38,23 +40,10 @@ class EmailDistributionListController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreEmailDistributionRequest $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'email' => 'required|email|unique:email_distribution_lists',
-                'name' => 'required'
-            ]);
-    
-            if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors()->toArray(),
-                ], 422); 
-            }
-
-            $emailDistributionList = EmailDistributionList::create($request->all());
-    
+            $emailDistributionList = EmailDistributionList::create($request->validated());
             return response()->json([
                 'message' => 'Email Added successfully',
                 'code' => 201
@@ -62,7 +51,7 @@ class EmailDistributionListController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
-                'errors' => $validator->errors(), 
+                'errors' => [], 
                 'code' => $e->getCode()
             ], 500); 
         }
@@ -98,21 +87,10 @@ class EmailDistributionListController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, EmailDistributionList $emailDistributionList)
+    public function update(UpdateEmailDistributionRequest $request, EmailDistributionList $emailDistributionList)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'name' => 'required'
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()->toArray(),
-            ], 422); 
-        }
-
-        $emailDistributionList->update($request->all());
+        $emailDistributionList->update($request->validated());
 
         return response()->json([
             'message' => 'Email Distribution List updated successfully',
