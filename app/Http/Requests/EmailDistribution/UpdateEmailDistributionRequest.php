@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\EmailDistribution;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateEmailDistributionRequest extends FormRequest
@@ -22,7 +23,13 @@ class UpdateEmailDistributionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'email' => [
+                'required',
+                'required',
+                'email',
+                Rule::unique('email_distribution_lists')->ignore($this->id, 'id'),
+                'max:255'
+            ],
         ];
     }
 }

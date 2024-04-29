@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Models\GeneratedQrCode;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\GeneratedQrCodeExport;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class GeneratedQrCodeController extends Controller
 {
@@ -74,7 +77,17 @@ class GeneratedQrCodeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $numberOfCodes = $request->input('number_of_codes');
+        $startNumber = $request->input('start_number');
+
+        // Generate QR codes
+        for ($i = $startNumber; $i < $startNumber + $numberOfCodes; $i++) {
+            $data = $i; 
+            $fileName = 'qrcode_' . $i . '.png'; 
+            QrCode::format('png')->size(300)->generate($data, public_path('qrcodes/' . $fileName));
+        }
+
+        return "QR codes generated successfully!";
     }
 
     /**
@@ -107,5 +120,10 @@ class GeneratedQrCodeController extends Controller
     public function destroy(GeneratedQrCode $generatedQrCode)
     {
         //
+    }
+
+    public function export() 
+    {
+        return Excel::download(new GeneratedQrCodeExport, 'GeneratedQrCode.xlsx');
     }
 }

@@ -22,7 +22,7 @@ class StoreEmailDistributionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'email' => 'required|email|unique:email_distribution_lists|max:255',
         ];
     }
 }
