@@ -29,7 +29,7 @@
         <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
             <h3 class="mb-0">Email Distribution List</h3>
             <div>
-                <a href="#" id="addEmailModel" class="addNewEmail btn btn-primary rounded">Add</a>
+                <a href="#" id="addNewEmail" class="addNewEmail btn btn-primary rounded">Add</a>
             </div>
         </div>
         <div class="row">
@@ -138,74 +138,15 @@
                         }
                     ]
                 });
-                /*=============================================
+                /*==============================================================
                  Function for reset form
-                ===============================================*/
-                function resetForm() {
-                    $('#addEmail')[0].reset();
-                }
-
-                $('#addEmailModel').on('hidden.bs.modal', function(e) {
-                    resetForm();
-                });
+                ================================================================*/
                 $(document).on('click', '.addNewEmail', function(e) {
-                    changeModelContent('Add New Mail', 'submit', 'submit');
+                    changeModelContent('Add New Mail','submit', 'submit', null, null, 'addEmailModel');
                 })
-
-                /*=============================================
-                 Function for validation and show errors
-                ===============================================*/
-                function showValidationErorrs(errors) {
-                    $('.is-invalid').removeClass('is-invalid');
-                    $('.invalid-feedback').remove();
-                    $.each(errors, function(key, value) {
-                        var field = $('[name="' + key + '"]');
-                        field.addClass('is-invalid');
-                        field.after('<div class="invalid-feedback">' + value[0] + '</div>');
-
-                        // Remove error message and invalid class when the field is focused
-                        field.focus(function() {
-                            $(this).removeClass('is-invalid');
-                            $(this).next('.invalid-feedback').remove();
-                        });
-                    });
-                }
-                /*=============================================
-                 Function for messages and show errors
-                ===============================================*/
-                function showAlert(type, message, alertlocation) {
-                    var alert = $('<div class="alert alert-' + type +
-                        ' alert-dismissible fade show" role="alert">' + message +
-                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
-                        );
-                    $('#alert-container').append(alertlocation ? alertlocation : alert);
-                    setTimeout(function() {
-                        alert.alert('close');
-                    }, 2000);
-                }
-                /*=============================================
-                 Function for change title and button text and class
-                ===============================================*/
-                function changeModelContent(title, btntext, btnclass, input_name, input_value) {
-                    $(".modal-header .modal-title").text(title);
-                    $(".modal-body button").text(btntext).removeClass("submit").addClass(btnclass);
-                    if ((typeof input_name !== 'undefined' && input_name !== null)) {
-                        var hiddenInput = $('<input>').attr({
-                            type: 'hidden',
-                            id: input_name,
-                            class: 'hiddenInput_Js',
-                            name: input_name,
-                            value: input_value
-                        });
-                        $(".modal-body form").append(hiddenInput);
-                    } else {
-                        $(".hiddenInput_Js").remove();
-                    }
-                    $("#addEmailModel").modal('show');
-                }
-                /*=============================================
+                /*==============================================================
                  Create recorde
-                ===============================================*/
+                ================================================================*/
                 $(document).on('click', '.submit', function(e) {
                     e.preventDefault();
                     let formData = $('#addEmail').serialize();
@@ -233,13 +174,13 @@
                         }
                     });
                 });
-                /*=============================================
+                /*==============================================================
                  Edit recorde
-                ===============================================*/
+                ================================================================*/
                 $(document).on('click', '.edit', function(e) {
                     e.preventDefault();
                     let id = $(this).data('id');
-                    changeModelContent('Edit Email', 'Update', 'update', 'emailID', id);
+                    changeModelContent('Edit Email', 'Update',  'update', 'emailID', id, 'addEmailModel');
                     $.ajax({
                         url: "{{ route('admin.email-distribution-list.edit', ':id') }}".replace(
                             ':id', id),
@@ -254,9 +195,9 @@
                         }
                     });
                 });
-                /*=============================================
+                /*==============================================================
                  Update recorde
-                ===============================================*/
+                ================================================================*/
                 $(document).on('click', '.update', function(e) {
                     e.preventDefault();
                     let id = $('input[name="emailID"]').val();
@@ -286,9 +227,9 @@
                         }
                     });
                 });
-                /*=============================================
+                /*==============================================================
                  Delete recorde
-                ===============================================*/
+                ================================================================*/
                 $(document).on('click', '.delete', function(e) {
                     e.preventDefault();
                     var id = $(this).data('id');

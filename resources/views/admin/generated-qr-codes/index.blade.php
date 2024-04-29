@@ -12,7 +12,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form class="addOrCode" id="addOrCode">
+                        <form class="addQrCode" id="addOrCode">
                             @csrf
                             <div class="form-group">
                                 <label class="text-black font-w500">Number of QR codes to generate<span
@@ -47,7 +47,7 @@
             <h3 class="mb-0">Generated QR Codes</h3>
             <div>
                 <a href="#" class="btn btn-primary rounded">Download QR Codes into spreadsheet</a>
-                <a href="#" class="btn btn-primary rounded addQrCode">Generate New QR Codes</a>
+                <a href="#" class="btn btn-primary rounded generateQrCode">Generate New QR Codes</a>
             </div>
         </div>
 
@@ -130,68 +130,9 @@
                 /*=============================================
                  Function for reset form
                 ===============================================*/
-                function resetForm() {
-                    $('#addOrCode')[0].reset();
-                }
-
-                $('#addQrderModal').on('hidden.bs.modal', function(e) {
-                    resetForm();
-                });
-                $(document).on('click', '.addQrCode', function(e) {
-                    changeModelContent('Generate INFINIGUARD® QR Codes', 'submit', 'submit');
+                $(document).on('click', '.generateQrCode', function(e) {
+                    changeModelContent('Generate INFINIGUARD® QR Codes', 'submit', 'submit',null,null,'addQrderModal');
                 })
-
-                /*=============================================
-                 Function for validation and show errors
-                ===============================================*/
-                function showValidationErorrs(errors) {
-                    $('.is-invalid').removeClass('is-invalid');
-                    $('.invalid-feedback').remove();
-                    $.each(errors, function(key, value) {
-                        var field = $('[name="' + key + '"]');
-                        field.addClass('is-invalid');
-                        field.after('<div class="invalid-feedback">' + value[0] + '</div>');
-
-                        // Remove error message and invalid class when the field is focused
-                        field.focus(function() {
-                            $(this).removeClass('is-invalid');
-                            $(this).next('.invalid-feedback').remove();
-                        });
-                    });
-                }
-                /*=============================================
-                 Function for messages and show errors
-                ===============================================*/
-                function showAlert(type, message, alertlocation) {
-                    var alert = $('<div class="alert alert-' + type +
-                        ' alert-dismissible fade show" role="alert">' + message +
-                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
-                        );
-                    $('#alert-container').append(alertlocation ? alertlocation : alert);
-                    setTimeout(function() {
-                        alert.alert('close');
-                    }, 2000);
-                }
-                /*=============================================
-                 Function for change title and button text and class
-                ===============================================*/
-                function changeModelContent(title, btntext, btnclass, input_name, input_value) {
-                    $(".modal-header .modal-title").text(title);
-                    $(".modal-body button").text(btntext).removeClass("submit").addClass(btnclass);
-                    if ((typeof input_name !== 'undefined' && input_name !== null)) {
-                        var hiddenInput = $('<input>').attr({
-                            type: 'hidden',
-                            id: input_name,
-                            class: 'hiddenInput_Js',
-                            name: input_name,
-                            value: input_value
-                        });
-                        $(".modal-body form").append(hiddenInput);
-                    } else {
-                        $(".hiddenInput_Js").remove();
-                    }
-                    $("#addOrderModal").modal('show');
-                }
                 /*=============================================
                  Create recorde
                 ===============================================*/
