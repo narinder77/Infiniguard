@@ -17,9 +17,9 @@
                             <div class="form-group">
                                 <label class="text-black font-w500">Number of QR codes to generate<span
                                         class="text-danger">*</span></label>
-                                <select class="form-select form-control" name="NumberofQR "
-                                    aria-label="Default select example">
-                                    <option value="250" selected="">250</option>
+                                <select name="number_of_codes" class="form-select form-control" aria-label="Default select example">
+                                    <option value="10" selected="">10</option>
+                                    <option value="250">250</option>
                                     <option value="500">500</option>
                                     <option value="1000">1000</option>
                                     <option value="1500">1500</option>
@@ -29,7 +29,7 @@
                             <div class="form-group">
                                 <label class="text-black font-w500">Starting QR Number<span
                                         class="text-danger">*</span></label>
-                                <input type="text" name="modelNumber" class="form-control">
+                                <input type="text" name="start_number" class="form-control">
                             </div>
 
                             <div class="form-group">
@@ -46,7 +46,7 @@
         <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
             <h3 class="mb-0">Generated QR Codes</h3>
             <div>
-                <a href="#" class="btn btn-primary rounded">Download QR Codes into spreadsheet</a>
+                <a href="{{ route('admin.GeneratedQrCodeExport') }}" class="btn btn-primary rounded">Download QR Codes into spreadsheet</a>
                 <a href="#" class="btn btn-primary rounded generateQrCode">Generate New QR Codes</a>
             </div>
         </div>
@@ -138,9 +138,9 @@
                 ===============================================*/
                 $(document).on('click', '.submit', function(e) {
                     e.preventDefault();
-                    let formData = $('#addEmail').serialize();
+                    let formData = $('#addOrCode').serialize();
                     $.ajax({
-                        url: "{{ route('admin.email-distribution-list.store') }}",
+                        url: "{{ route('admin.generated-qr-codes.store') }}",
                         type: 'POST',
                         dataType: "json",
                         data: formData,

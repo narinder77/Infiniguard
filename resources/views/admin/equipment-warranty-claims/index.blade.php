@@ -130,11 +130,15 @@
 					{data: 'certified_applicators.certified_providers.provider_name', name: 'provider_name'},
 					{data: 'certified_applicators.applicator_certification_id', name: 'applicator_certification_id'},
 					{data: 'equipment_claim_date', name: 'equipment_claim_date'},
-					{data: 'equipment_claim_id', name: 'equipment_claim_id'},
+					{
+                        data: null,
+                        render: function (data, type, row, meta) {
+							let equipment_claim_qr_id = row.equipment_claim_qr_id;
+							url = "{{ route('admin.inspection-history.show', ':id') }}".replace(':id', equipment_claim_qr_id);
+                            return `<a data-qrId="${equipment_claim_qr_id}" href="${url}">View Maintenance History</a>`;
+                        }
+                    },	
                 ]
-            });
-            $('#example tbody').on('click', 'tr', function() {
-                var data = table.row(this).data();
             });
         })(jQuery);
 </script>

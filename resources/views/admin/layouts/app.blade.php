@@ -178,6 +178,14 @@
             }
         });
         /*============================================================
+             Function for get last parameter form url
+        ==============================================================*/        
+        function getLastPathname() {
+            const pathname = window.location.pathname;
+            const pathnameArray = pathname.split('/');
+            return pathnameArray[pathnameArray.length - 1];
+        }        
+        /*============================================================
              Function for reset form
         ==============================================================*/
         function resetForm() {
@@ -210,6 +218,7 @@
          Function for messages and show errors
         ==============================================================*/
         function showAlert(type, message, alertlocation) {
+            $('.modal').modal('hide');            
             var alert = $('<div class="alert alert-' + type +
                 ' alert-dismissible fade show" role="alert">' + message +
                 '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
