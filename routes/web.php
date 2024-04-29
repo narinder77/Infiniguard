@@ -1,20 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DataTableController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\Auth\PasswordController;
 use App\Http\Controllers\Admin\GeneratedQrCodeController;
+use App\Http\Controllers\Admin\RegisteredQrCodeController;
 use App\Http\Controllers\Admin\CertifiedProviderController;
 use App\Http\Controllers\Admin\CertifiedApplicatorController;
 use App\Http\Controllers\Admin\EmailDistributionListController;
 use App\Http\Controllers\Admin\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Admin\EquipmentWarrantyClaimController;
 use App\Http\Controllers\Admin\Auth\ConfirmablePasswordController;
-use App\Http\Controllers\Admin\RegisteredQrCodeController;
-use App\Http\Controllers\DataTableController;
+use App\Http\Controllers\Admin\EquipmentInspectionHistoryController;
 
 Route::get('/', function () {
     return redirect()->route('admin.login');
@@ -65,6 +66,10 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
      */
     Route::resource('registered-equipments', RegisteredQrCodeController::class);
     /**
+     * This route for Equipment Inspection History
+     */
+    Route::resource('warranty-claims/inspection-history', EquipmentInspectionHistoryController::class);
+     /**
      * This route for Equipment Warranty Claim
      */
     Route::resource('warranty-claims', EquipmentWarrantyClaimController::class);
@@ -75,7 +80,9 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     /**
      * This route for Clents
      */
+    Route::get('generated-qr-codes/export', [GeneratedQrCodeController::class,'export'])->name('GeneratedQrCodeExport');
     Route::resource('generated-qr-codes', GeneratedQrCodeController::class);
+   
     /**
      * This route for Clents
      */

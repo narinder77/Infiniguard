@@ -256,7 +256,7 @@
                             $('input[name="client_email"]').val(response.data.client_email);
                             $('input[name="client_phone"]').val(response.data.client_phone);
                             $('select[name="client_provider_id"]').val(response.data.client_provider_id);
-                            $('input[name="client_password"]').val(response.data.client_password);
+                            //$('input[name="client_password"]').val(response.data.client_password);
 
                         },
                         error: function(xhr, status, error) {

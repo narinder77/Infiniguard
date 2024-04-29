@@ -38,7 +38,7 @@ class RegisteredQRCodesTableSeeder extends Seeder
         foreach ($dates as $date) {
             foreach ($regexFormats as $index => $regex) {
                 if (preg_match($regex, $date)) {
-                    $formattedDate = preg_replace($regex, $replacements[$index], $date);
+                    $formattedDate = preg_replace($regexFormats, $replacements[$index], $date);
                     $parsedDate = date('Y-m-d H:i:s', strtotime($formattedDate));
                     if ($parsedDate != '1970-01-01 00:00:00') {
                         return $parsedDate;

@@ -1,0 +1,42 @@
+[
+{"type":"header","version":"5.2.1","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"maintenance_infiguard"},
+{"type":"table","name":"clients_data","database":"maintenance_infiguard","data":
+[
+{"id":"15","qr_id":"12007","ContactName":"Haider","Email":"haidernuman14@gmail.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2022-08-07 13:58:41","updated_at":"2022-08-07 13:58:41"},
+{"id":"16","qr_id":"12007","ContactName":"Bsbshs","Email":"bsbzn@gmail.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2022-08-07 14:04:55","updated_at":"2022-08-07 14:04:55"},
+{"id":"17","qr_id":"12008","ContactName":"Cccvg","Email":"gfc@hh.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2022-08-07 14:08:55","updated_at":"2022-08-07 14:08:55"},
+{"id":"22","qr_id":"12007","ContactName":"Marcos","Email":"supermerb@gmail.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2022-10-12 18:43:27","updated_at":"2022-10-12 18:43:27"},
+{"id":"76","qr_id":"20006","ContactName":"Marcos R 2301021226","Email":"marcos@syngwth.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2023-01-02 20:27:12","updated_at":"2023-01-02 20:27:12"},
+{"id":"77","qr_id":"20007","ContactName":"Marcos R 230102 1323","Email":"marcos@syngwth.com","Reminder_days":"90","added_from":"App","Lang":"1","created_at":"2023-01-02 21:23:23","updated_at":"2023-01-02 21:23:23"},
+{"id":"78","qr_id":"20006","ContactName":"Marcos R 230102 1338","Email":"merb@alum.mit.edu","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2023-01-02 21:38:48","updated_at":"2023-01-02 21:38:48"},
+{"id":"79","qr_id":"20007","ContactName":"Marcos R 230102 1346","Email":"marcos@syngwth.com","Reminder_days":"90","added_from":"App","Lang":"1","created_at":"2023-01-02 21:46:26","updated_at":"2023-01-02 21:46:26"},
+{"id":"126","qr_id":"20006","ContactName":"Test","Email":"test@test.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2023-03-21 18:44:23","updated_at":"2023-03-21 18:44:23"},
+{"id":"161","qr_id":"981","ContactName":"Test","Email":"Test@gmail.com","Reminder_days":"90","added_from":"Admin","Lang":"0","created_at":"2023-06-01 03:02:26","updated_at":"2023-06-01 03:02:26"},
+{"id":"162","qr_id":"981","ContactName":"Test2","Email":"Test2@gmail.com","Reminder_days":"90","added_from":"Admin","Lang":"0","created_at":"2023-06-01 03:02:26","updated_at":"2023-06-01 03:02:26"},
+{"id":"169","qr_id":"27003","ContactName":"Marcos","Email":"supermerb@gmail.com","Reminder_days":"90","added_from":"App","Lang":"1","created_at":"2023-09-03 20:27:00","updated_at":"2023-09-03 20:27:00"},
+{"id":"200","qr_id":"19683","ContactName":"Wilfredo Air System","Email":"tito10fox@gmail.com","Reminder_days":"90","added_from":"App","Lang":"1","created_at":"2023-11-15 15:59:40","updated_at":"2023-11-15 15:59:40"},
+{"id":"201","qr_id":"3611","ContactName":"Ernesto Nieves","Email":"enc17.icm@gmail.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2023-12-09 18:20:18","updated_at":"2023-12-09 18:20:18"},
+{"id":"202","qr_id":"3613","ContactName":"Ernesto Nieves ","Email":"enc17.icm@gmail.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2023-12-09 18:23:00","updated_at":"2023-12-09 18:23:00"},
+{"id":"203","qr_id":"3612","ContactName":"Ernesto Nieves","Email":"enc17.icm@gmail.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2023-12-09 18:24:25","updated_at":"2023-12-09 18:24:25"},
+{"id":"204","qr_id":"3610","ContactName":"Ernesto Nieves","Email":"enc17.icm@gmail.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2023-12-09 18:25:44","updated_at":"2023-12-09 18:25:44"},
+{"id":"205","qr_id":"3610","ContactName":"Ernesto Nieves","Email":"enc17.icm@gmail.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2023-12-09 18:26:44","updated_at":"2023-12-09 18:26:44"},
+{"id":"206","qr_id":"3614","ContactName":"Ernesto Nieves ","Email":"enc17.icm@gmail.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2023-12-09 18:28:10","updated_at":"2023-12-09 18:28:10"},
+{"id":"207","qr_id":"19683","ContactName":"Wilfredo torres","Email":"tito10fox@gmail.com","Reminder_days":"90","added_from":"App","Lang":"1","created_at":"2023-12-20 13:03:12","updated_at":"2023-12-20 13:03:12"},
+{"id":"208","qr_id":"21288","ContactName":"UPRAG","Email":"proldang90@gmail.com","Reminder_days":"90","added_from":"App","Lang":"1","created_at":"2024-01-23 12:58:32","updated_at":"2024-01-23 12:58:32"},
+{"id":"209","qr_id":"21286","ContactName":"Uprag","Email":"proldang90@gmail.com","Reminder_days":"90","added_from":"App","Lang":"1","created_at":"2024-01-23 13:24:40","updated_at":"2024-01-23 13:24:40"},
+{"id":"223","qr_id":"6613","ContactName":"Fernando","Email":"fernando@infiniguard.com","Reminder_days":"90","added_from":"Admin","Lang":"0","created_at":"2024-03-08 13:33:31","updated_at":"2024-03-08 13:33:31"},
+{"id":"231","qr_id":"11381","ContactName":"Fernando","Email":"fernando@infiniguard.com","Reminder_days":"1","added_from":"Admin","Lang":"0","created_at":"2024-03-12 10:00:06","updated_at":"2024-03-12 10:00:06"},
+{"id":"232","qr_id":"11381","ContactName":"raman","Email":"codecoretesting@gmail.com","Reminder_days":"1","added_from":"Admin","Lang":"0","created_at":"2024-03-12 10:00:06","updated_at":"2024-03-12 10:00:06"},
+{"id":"238","qr_id":"2261","ContactName":"Santiago","Email":"rrodriguezperez1994@gmail.com","Reminder_days":"90","added_from":"App","Lang":"1","created_at":"2024-03-13 16:38:33","updated_at":"2024-03-13 16:38:33"},
+{"id":"242","qr_id":"20002","ContactName":"haidernuman14@gmail.com","Email":"haidernuman14@gmail.com","Reminder_days":"90","added_from":"App","Lang":"0","created_at":"2024-03-19 08:09:53","updated_at":"2024-03-19 08:09:53"},
+{"id":"248","qr_id":"11372","ContactName":"Fernando","Email":"fernando@infiniguard.com","Reminder_days":"90","added_from":"Admin","Lang":"0","created_at":"2024-03-26 05:35:55","updated_at":"2024-03-26 05:35:55"},
+{"id":"249","qr_id":"11372","ContactName":"Code128","Email":"codecortesting@gmail.com","Reminder_days":"90","added_from":"Admin","Lang":"0","created_at":"2024-03-26 05:35:55","updated_at":"2024-03-26 05:35:55"},
+{"id":"252","qr_id":"20004","ContactName":"Raman","Email":"raman.mehta29@gmail.com","Reminder_days":"90","added_from":"Admin","Lang":"0","created_at":"2024-03-26 07:29:21","updated_at":"2024-03-26 07:29:21"},
+{"id":"253","qr_id":"20004","ContactName":"Kamaltest","Email":"kamal@technoarray.com","Reminder_days":"90","added_from":"Admin","Lang":"0","created_at":"2024-03-26 07:29:21","updated_at":"2024-03-26 07:29:21"},
+{"id":"254","qr_id":"20004","ContactName":"test2","Email":"test2@gmail.com","Reminder_days":"90","added_from":"Admin","Lang":"0","created_at":"2024-03-26 07:29:21","updated_at":"2024-03-26 07:29:21"},
+{"id":"255","qr_id":"20005","ContactName":"Kamal","Email":"kamal@technoarray.com","Reminder_days":"90","added_from":"Admin","Lang":"0","created_at":"2024-03-29 20:38:14","updated_at":"2024-03-29 20:38:14"},
+{"id":"256","qr_id":"20005","ContactName":"Marcos","Email":"supermerb@gmail.com","Reminder_days":"90","added_from":"Admin","Lang":"0","created_at":"2024-03-29 20:38:14","updated_at":"2024-03-29 20:38:14"}
+]
+}
+]

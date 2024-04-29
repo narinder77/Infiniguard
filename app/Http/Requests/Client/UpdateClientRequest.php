@@ -36,7 +36,7 @@ class UpdateClientRequest extends FormRequest
             ],
             'client_phone' => 'required|required|string|max:20',
             'client_provider_id' => 'required|required|string|min:1',
-            'client_password' => 'required|required|string|min:8',
+            'client_password' => 'nullable|string|min:8',
         ];
     }
     /**
@@ -46,7 +46,7 @@ class UpdateClientRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        if ($this->has('password')) {
+        if ($this->has('client_password')) {
             $this->merge([
                 'client_password' => Hash::make($this->client_password), // Hash password only if provided
             ]);
