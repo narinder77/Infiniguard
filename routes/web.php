@@ -43,14 +43,17 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/change-password', [PasswordController::class, 'create'])->name('password.create');
     Route::put('/change-password', [PasswordController::class, 'update'])->name('password.update');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     /**
      * This route for Certified Providers
      */
     Route::resource('providers', CertifiedProviderController::class);    
+    Route::get('/provider/edit/{id}', [CertifiedProviderController::class, 'edit2'])->name('provider.edit2');
+    Route::post('/provider/update-status/{id}', [CertifiedProviderController::class, 'updateStatus'])->name('provider.updateStatus');
+
     /**
      * This route for Certified Applicators
      */

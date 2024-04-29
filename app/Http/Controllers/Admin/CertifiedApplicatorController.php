@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Models\RegisteredQrCode;
 use Yajra\DataTables\DataTables;
+use App\Models\CertifiedProvider;
 use App\Models\CertifiedApplicator;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use App\Models\EquipmentWarrantyClaim;
 
 class CertifiedApplicatorController extends Controller
@@ -18,7 +20,8 @@ class CertifiedApplicatorController extends Controller
     {
         $page_title = 'Certified Applicators';
         $page_description = 'Some description for the page';
-
+        $CertifiedProviders=CertifiedProvider::get();
+        // dd($CertifiedProviders);
         if ($request->ajax()) {
             $data = CertifiedApplicator::with('certifiedProviders')
                 ->withCount('registeredCodes', 'warrantyClaims');
@@ -34,7 +37,7 @@ class CertifiedApplicatorController extends Controller
                 })
                 ->toJson();
         }
-        return view('admin.certified-applicators.index', compact('page_title', 'page_description'));
+        return view('admin.certified-applicators.index', compact('page_title', 'page_description','CertifiedProviders'));
     }
     /**
      * Show the form for creating a new resource.
@@ -49,7 +52,28 @@ class CertifiedApplicatorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validate=$request->validate([
+            'applicator_certification_id' => 'required|string',
+            'applicator_name' => 'required|string',
+            'applicator_email' => 'required|email|unique:certified_providers,provider_email',
+            'applicator_password' => 'required|string|min:8',
+            'applicator_date' => 'required|date',
+        ]);               
+
+        try {  
+            $validate['applicator_provider_id']=$request->applicator_provider_id;
+            $validate['applicator_password']=Hash::make($request->applicator_password);    
+
+                 
+            $applicator=CertifiedApplicator::create($validate);
+
+            return response()->json(['status'=>true,'message' => 'Certified provider added sucessfully!'],200);
+
+        } catch (\Exception $e) {
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while adding or updating the certified provider!'], 500);
+        }
     }
 
     /**
@@ -68,9 +92,11 @@ class CertifiedApplicatorController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(CertifiedApplicator $certifiedApplicator)
+    public function edit($id)
     {
-        //
+        $CertifiedApplicator=CertifiedApplicator::find($id);
+
+        return response()->json(['status'=>true,'data' => $CertifiedApplicator]);
     }
 
     /**
@@ -95,9 +121,17 @@ class CertifiedApplicatorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CertifiedApplicator $certifiedApplicator)
+    public function destroy($id)
     {
-        //
+        try{
+            $certifiedApplicator=CertifiedApplicator::find($id);                 
+            $certifiedApplicator->delete();
+            return response()->json(['status'=>true],200);
+        } catch (\Exception $e) {
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while adding or updating the certified provider!'], 500);
+        }
     }
 
     public function applicatorRegisterEquip(Request $request, $certifiedApplicatorId)
