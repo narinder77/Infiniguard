@@ -257,5 +257,4 @@ class CertifiedProviderController extends Controller
 
     }
 
-    
 }

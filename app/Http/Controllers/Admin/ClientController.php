@@ -6,13 +6,15 @@ use App\Models\Client;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         $page_title = 'Clients';
         $page_description = 'Some description for the page';
@@ -31,7 +33,7 @@ class ClientController extends Controller
                 })
                 ->toJson();
         }
-		return view('admin.clients.index', compact('page_title', 'page_description'));
+        return view('admin.clients.index', compact('page_title', 'page_description'));
     }
 
     /**
@@ -47,8 +49,43 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validator = Validator::make($request->all(), [
+                'client_company_name' => 'required|string|max:255',
+                'client_firstname' => 'required|string|max:255',
+                'client_lastname' => 'required|string|max:255',
+                'client_email' => 'required|email|unique:clients|max:255',
+                'client_phone' => 'required|string|max:20',
+                'client_provider_id' => 'required|string|min:1',
+                'client_password' => 'required|string|min:8', // Enforce minimum password length
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()->toArray(),
+                ], 422);
+            }
+            $request->merge([
+                'client_password' => Hash::make($request->client_password)
+            ]);
+
+            $client = Client::create($request->all());
+
+            return response()->json([
+                'message' => 'Client created successfully',
+                'code' => 201
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred',
+                'errors' => [], // Empty errors for non-validation exceptions
+                'code' => 500
+            ], 500);
+        }
     }
+
+
 
     /**
      * Display the specified resource.
