@@ -8,7 +8,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Certified Applicator</h5>
+                    <h5 class="modal-title">Add INFINIGUARD® Certified Applicator</h5>
                     <button type="button" class="close" data-bs-dismiss="modal">
                         <span>&times;</span>
                     </button>
@@ -16,9 +16,6 @@
                 <div class="modal-body">
                     <form id="applicatorForm"> 
                     @csrf 
-                        <input type="hidden" value="" id="certifiedProviderId" name="applicator_provider_id" class="form-control">
-                        <input type="hidden" value="" id="certifiedApplicatorId" name="certifiedApplicatorId" class="form-control">
-
                     <div class="form-group">
                             <label class="text-black font-w500">Certification ID <span class="text-danger">*</span>
                             </label>
@@ -31,7 +28,7 @@
                         </div> 
 						<div class="form-group">
 							<label class="text-black font-w500">Company</label>
-							<select class="form-select form-control" name="applicator_provider_id" aria-label="Default select example">
+							<select class="form-select form-control" id="applicator_provider_id" name="applicator_provider_id" aria-label="Default select example">
 								{{-- <option selected>Open this select menu</option>
 								<option value="1">One</option>
 								<option value="2">Two</option>
@@ -217,40 +214,13 @@
             });
         })(jQuery);
 	$(document).ready(function() {
-		 function showValidationErorrs(errors){
-
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').remove();
-            $.each(errors, function(key, value) {
-                var field = $('[name="' + key + '"]');
-                field.addClass('is-invalid');
-                field.after('<div class="invalid-feedback">' + value[0] + '</div>');
-
-                 field.focus(function() {
-                $(this).removeClass('is-invalid');
-                $(this).next('.invalid-feedback').remove();
-            });
-            });
-          
-
-        }
-        function resetForm() {
-            $('#applicatorForm')[0].reset();
-            
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').remove();
-        }
-
-        $('#addapplicator').on('hidden.bs.modal', function (e) {
-            resetForm();
-        });
 
         $(document).on('change','#certificationApplicatorStatus',function() {
              var certificationApplicatorId= $(this).attr('data-applicatorId');
             var status = $(this).prop('checked') ? 'active' : 'revoked';
             
             // Construct the URL with the provider ID
-            var url = "{{ route('admin.applicators.update', ':id') }}";
+            var url = "{{ route('admin.applicator.updateStatus', ':id') }}";
              url = url.replace(':id', certificationApplicatorId);
             var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
@@ -258,23 +228,18 @@
                 url: url,
                 method: 'POST',
                 data: {
-                    _method: 'PUT', // Since Laravel's resourceful route uses PUT method for update
                     status: status
                 },
                 headers: {
                      'X-CSRF-TOKEN': csrfToken
                 },
                 success: function(response) {
-                        $('#successAlert').fadeIn();
-                        $('#successAlert').text(response.message);
-                        // Hide success alert after 3 seconds (3000 milliseconds)
-                        setTimeout(function() {
-                            $('#successAlert').fadeOut();
-                        }, 3000);
+                    showAlert('success', response.message, null);     
                 },
                 error: function(xhr, status, error) {
                     // Handle error
-                    console.error(xhr.responseText);
+                    showAlert('danger', xhr.responseJSON.message, null);
+
                 }
             });
         });
@@ -283,8 +248,6 @@
             let type=$(this).attr('data-curd');
             if(type == 'edit'){
                 $('#submitBtn').attr('data-curd','edit');
-
-                $('#title').text('Edit INFINIGUARD® Certified Service Provider');
                 let applicatorId=$(this).attr('data-id');
                 var url = "{{ route('admin.applicators.edit', ':id') }}";
                     url = url.replace(':id', applicatorId);
@@ -296,9 +259,11 @@
                     contentType: false,
                     success: function(response) {                    
 
-                     if(response.status){                      
+                     if(response.status){  
+                        changeModelContent('Edit INFINIGUARD® Certified Applicator', 'Update',  'update', 'applicator_id', response.data.applicator_id, 'addapplicator');
+
                         var baseUrl="{{ asset('/storage') }}";
-                        $('#certifiedApplicatorId').val(response.data.applicator_id);
+                        $('#applicator_provider_id').val(response.data.applicator_provider_id);
                         $('#applicator_certification_id').val(response.data.applicator_certification_id);
                         $('#applicator_name').val(response.data.applicator_name);
                         $('#applicator_email').val(response.data.applicator_email);
@@ -312,11 +277,8 @@
                     }
                 });
             }else{              
-                
-                $('#certifiedProviderId').val('');
-                $('#submitBtn').attr('data-curd','add');
-
-                $('#title').text('ADD INFINIGUARD® Certified Service Provider');
+                changeModelContent('ADD INFINIGUARD® Certified Applicator','submit', 'submit', null, null, 'addapplicator');
+                $('#submitBtn').attr('data-curd','add');            
                 $('#applicator_certification_id').val('');
                 $('#applicator_name').val('');
                 $('#applicator_email').val('');
@@ -335,9 +297,9 @@
             if(type == 'add'){
                  url="{{ route('admin.applicators.store') }}";
             }else{
-                let providerId= $('#certifiedProviderId').val();
+                let applicatorId= $('#applicator_id').val();
                 url="{{ route('admin.applicators.update', ':id') }}";
-                 url = url.replace(':id', providerId);
+                 url = url.replace(':id', applicatorId);
                
             }           
 
@@ -357,19 +319,10 @@
                     $('#addapplicator').modal('hide');
                     $('#applicatorForm')[0].reset(); // Reset the form                
                     if(response.status){
-                        $('#successAlert').addClass('alert-success'); 
-                        $('#successAlert').removeClass('alert-danger');      
+                        showAlert('success', response.message, null);      
                     }else{
-                        $('#successAlert').removeClass('alert-success'); 
-                        $('#successAlert').addClass('alert-danger');     
-                    }
-                    $('#successAlert').fadeIn();
-                    $('#successAlert').text(response.message);
-
-                        // Hide alert after 10 seconds (10000 milliseconds)
-                        setTimeout(function() {
-                            $('#successAlert').fadeOut();
-                        }, 10000);
+                       showAlert('danger', response.message, null)     
+                    }                    
                     $('#CertifiedApplicator').DataTable().ajax.reload();
 
                 },
@@ -378,9 +331,7 @@
                         var errors = xhr.responseJSON.errors;                        
                         showValidationErorrs(errors);
                     } else {
-                        // Handle other types of errors
-                        console.error(xhr.responseText);
-                        // You can display a generic error message here
+                        showAlert('danger', responseJSON.message, null)  
                     }
                 }
             });
@@ -388,8 +339,8 @@
 
         $(document).on('click','.delete-applicator',function(e){
             e.preventDefault();
-            var providerId=$(this).data('id');           
-            $("#confirmDelete").attr("data-id", providerId);
+            var applicatorId=$(this).data('id');           
+            $("#confirmDelete").attr("data-id", applicatorId);
 
             // Show the confirmation modal
             $("#confirmationModal").modal('show');
@@ -398,9 +349,9 @@
 
         // Handle delete confirmation
         $("#confirmDelete").on('click', function() {
-            var providerId = $(this).attr('data-id');
+            var applicatorId = $(this).attr('data-id');
             var url = "{{ route('admin.applicators.destroy', ':id') }}";
-            url = url.replace(':id', providerId);
+            url = url.replace(':id', applicatorId);
             
             // Send AJAX request to delete provider
             $.ajax({
@@ -414,7 +365,7 @@
                 
                 },
                 error: function(xhr, status, error) {
-                    console.log(error);
+                    showAlert('danger', responseJSON.message, null)  
                     // Optionally, you can handle errors here
                 }
             });

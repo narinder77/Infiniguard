@@ -80,7 +80,7 @@ class CertifiedProviderController extends Controller
         } catch (\Exception $e) {
             // Other errors occurred
             \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
-            return response()->json(['status' => false, 'message' => 'An error occurred while adding or updating the certified provider!'], 500);
+            return response()->json(['status' => false, 'message' => 'An error occurred while adding the certified provider!'], 500);
         }
     }
 
@@ -180,22 +180,30 @@ class CertifiedProviderController extends Controller
         } catch (\Exception $e) {
             // Other errors occurred
             \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
-            return response()->json(['status' => false, 'message' => 'An error occurred while adding or updating the certified provider!'], 500);
+            return response()->json(['status' => false, 'message' => 'An error occurred while updating the certified provider!'], 500);
         }
     }
     public function updateStatus(Request $request, $certifiedProviderId)
     {
-        $request->validate([
-            'status' => 'required|in:active,revoked',
-        ]);
+        try{
+            $request->validate([
+                'status' => 'required|in:active,revoked',
+            ]);
+
 
         $CertifiedProvider = CertifiedProvider::findOrFail($certifiedProviderId);
         $CertifiedProvider->provider_status = $request->status == 'active' ? '1' : '0';
         $CertifiedProvider->save();
 
-        session()->flash('success', 'Status updated successfully');
-        // Return a response
-        return response()->json(['message' => 'Status updated successfully']);
+
+            session()->flash('success', 'Status updated successfully');
+            // Return a response
+            return response()->json(['message' => 'Status updated successfully']);
+        } catch (\Exception $e) {
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while updating the status!'], 500);
+        }
     }
 
     /**
@@ -211,7 +219,7 @@ class CertifiedProviderController extends Controller
         } catch (\Exception $e) {
             // Other errors occurred
             \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
-            return response()->json(['status' => false, 'message' => 'An error occurred while adding or updating the certified provider!'], 500);
+            return response()->json(['status' => false, 'message' => 'An error occurred while deleting the certified provider!'], 500);
         }
     }
 }

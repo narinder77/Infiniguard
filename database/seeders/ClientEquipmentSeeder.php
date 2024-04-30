@@ -16,6 +16,7 @@ class ClientEquipmentSeeder extends Seeder
         $json = File::get(database_path('seeds/clients_data.json'));
         $data = json_decode($json, true);
 
+
         $dataRows = array_filter($data, function ($item) {
             return isset($item['type']) && $item['type'] === 'table' && isset($item['data']);
         });
@@ -41,10 +42,12 @@ class ClientEquipmentSeeder extends Seeder
                     'client_reminder_days' => $item['Reminder_days'],
                     'client_reminder_language' => $item['Lang'],
                     'client_additional_info' => [],
+
                     'created_at' => $item['created_at'],
                     'updated_at' => $item['updated_at'],
                 ];
             }
+
             if (!empty($item['ContactName']) || !empty($item['Email'])) {
                 $groupedData[$qrId]['client_additional_info'][] = ['ContactName' => $item['ContactName'], 'Email' => $item['Email']];
             }
@@ -59,6 +62,7 @@ class ClientEquipmentSeeder extends Seeder
         $chunks = array_chunk($groupedData, 1000);
         foreach ($chunks as $chunk) {
             ClientEquipment::insert($chunk);
+
         }
     }
 }
