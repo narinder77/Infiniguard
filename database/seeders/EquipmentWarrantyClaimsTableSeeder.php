@@ -12,6 +12,7 @@ class EquipmentWarrantyClaimsTableSeeder extends Seeder
     /**
      * Run the database seeds.
      */
+
     public function convertToDateOnlyFormat($date)
     {
         // Define regular expressions for different date formats
@@ -23,6 +24,7 @@ class EquipmentWarrantyClaimsTableSeeder extends Seeder
             '/(\d{4}-\d{2}-\d{2}) : (\d{2}:\d{2})/',          // Year-month-day : hour:minute
             '/(\d{2}-\d{2}-\d{4})/',                          // Month-day-year
             '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}) (AM|PM)/',    // Year-month-day hour:minute AM/PM
+            '/(\d{2}\/\d{2}\/\d{4})/',
         ];
 
         // Define replacements for each format
@@ -34,10 +36,10 @@ class EquipmentWarrantyClaimsTableSeeder extends Seeder
             '$1 $2',          // Year-month-day : hour:minute
             '$3-$1-$2',       // Month-day-year
             '$1 $2 $3',       // Year-month-day hour:minute AM/PM
+            '$1',             // Month/day/year
         ];
-
         $dates = [
-            'date' => '2024-04-23 04:41 PM',
+            'date' => $date,
         ];
 
         foreach ($dates as $date) {
@@ -52,7 +54,6 @@ class EquipmentWarrantyClaimsTableSeeder extends Seeder
             }
         }
     }
-
     public function convertDate($dateString)
     {
         $timestamp = strtotime($dateString);
@@ -85,13 +86,13 @@ class EquipmentWarrantyClaimsTableSeeder extends Seeder
                 'equipment_claim_phone_number' => $item['phone_number'],
                 'equipment_claim_qr_id' => $item['qr_id'],
                 'equipment_claim_inspection_id' => $item['inspection_id'],
-                'equipment_claim_date' => $this->convertToDateOnlyFormat($this->convertDate($item['claim_date'])),
+                'equipment_claim_date' => $this->convertToDateOnlyFormat($item['claim_date']),
                 'equipment_claim_notes' => $item['notes'],
                 'equipment_claim_address' => $item['address'],
                 'equipment_claim_latitude' => $item['lat'],
                 'equipment_claim_longitude' => $item['lng'],
-                'created_at' => $this->convertToDateOnlyFormat($this->convertDate($item['date'])),
-                'updated_at' => $this->convertToDateOnlyFormat($this->convertDate($item['date']))
+                'created_at' => $this->convertToDateOnlyFormat($item['date']),
+                'updated_at' => $this->convertToDateOnlyFormat($item['date'])
             ];
         }
         $chunks = array_chunk($insertData, 1000);

@@ -20,11 +20,12 @@ class EmailDistributionListSeeder extends Seeder
             'arjun@technoarray.com',
             'codecoretesting@gmail.com',
         ];
-
-        DB::table('email_distribution_lists')->insert([
-            'email_addresses' => json_encode($emailAddresses),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        foreach ($emailAddresses as $emailAddress) {
+            DB::table('email_distribution_lists')->insert([
+                'email' => $emailAddress,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }

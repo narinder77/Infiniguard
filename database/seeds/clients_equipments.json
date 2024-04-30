@@ -1,0 +1,21 @@
+[
+{"type":"header","version":"5.2.1","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"maintenance_infiguard"},
+{"type":"table","name":"clients_equipments","database":"maintenance_infiguard","data":
+[
+{"id":"3","qr_id":"316","client_id":"16","Maintenance_Reminder":"1","Reminder_days":"90","Reminder_language":"English","created_at":"2023-05-31 04:16:35","updated_at":"2023-05-31 04:16:35"},
+{"id":"4","qr_id":"27002","client_id":"16","Maintenance_Reminder":"1","Reminder_days":"90","Reminder_language":"English","created_at":"2023-07-24 21:26:20","updated_at":"2023-07-24 21:26:20"},
+{"id":"5","qr_id":"27001","client_id":"16","Maintenance_Reminder":"1","Reminder_days":"90","Reminder_language":"English","created_at":"2023-07-24 21:52:35","updated_at":"2023-07-24 21:52:35"},
+{"id":"7","qr_id":"27004","client_id":"16","Maintenance_Reminder":"1","Reminder_days":"90","Reminder_language":"English","created_at":"2023-09-08 19:10:36","updated_at":"2023-09-08 19:10:36"},
+{"id":"10","qr_id":"27005","client_id":"16","Maintenance_Reminder":"1","Reminder_days":"90","Reminder_language":"English","created_at":"2023-09-28 19:03:01","updated_at":"2023-09-28 19:03:01"},
+{"id":"11","qr_id":"20011","client_id":"16","Maintenance_Reminder":"1","Reminder_days":"90","Reminder_language":"English","created_at":"2023-10-30 23:32:51","updated_at":"2023-10-30 23:32:51"},
+{"id":"13","qr_id":"11372","client_id":"15","Maintenance_Reminder":"1","Reminder_days":"17","Reminder_language":"Spanish","created_at":"2024-02-22 20:54:14","updated_at":"2024-02-22 20:54:14"},
+{"id":"14","qr_id":"11381","client_id":"15","Maintenance_Reminder":"1","Reminder_days":"1","Reminder_language":"English","created_at":"2024-02-22 20:54:45","updated_at":"2024-02-22 20:54:45"},
+{"id":"17","qr_id":"27015","client_id":"16","Maintenance_Reminder":"1","Reminder_days":"90","Reminder_language":"English","created_at":"2024-03-07 13:42:15","updated_at":"2024-03-07 13:42:15"},
+{"id":"29","qr_id":"20004","client_id":"21","Maintenance_Reminder":"1","Reminder_days":"90","Reminder_language":"English","created_at":"2024-03-12 09:54:14","updated_at":"2024-03-12 09:54:14"},
+{"id":"30","qr_id":"27014","client_id":"16","Maintenance_Reminder":"1","Reminder_days":"90","Reminder_language":"English","created_at":"2024-03-12 15:19:01","updated_at":"2024-03-12 15:19:01"},
+{"id":"31","qr_id":"20005","client_id":"21","Maintenance_Reminder":"1","Reminder_days":"15","Reminder_language":"English","created_at":"2024-03-21 07:44:20","updated_at":"2024-03-21 07:44:20"},
+{"id":"32","qr_id":"20002","client_id":"22","Maintenance_Reminder":"1","Reminder_days":"90","Reminder_language":"English","created_at":"2024-04-22 06:32:54","updated_at":"2024-04-22 06:32:54"}
+]
+}
+]
