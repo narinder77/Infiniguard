@@ -45,10 +45,10 @@ class CertifiedApplicator extends Model
             'equipment_qr_id'
         );
     }
-    /*public function applicatorDate(): Attribute
+    public function applicatorDate(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => Carbon::parse($value)->format('d/m/Y'),
         );
-    }*/
+    }
 }

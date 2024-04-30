@@ -6,9 +6,10 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Database\Seeders\ClientsTableSeeder;
+use Database\Seeders\ClientEquipmentSeeder;
+use Database\Seeders\RegisteredQRCodesTableSeeder;
 use Database\Seeders\CertifiedProvidersTableSeeder;
 use Database\Seeders\CertifiedApplicatorsTableSeeder;
-use Database\Seeders\RegisteredQRCodesTableSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -30,7 +31,9 @@ class DatabaseSeeder extends Seeder
             ClientsTableSeeder::class,
             RegisteredQRCodesTableSeeder::class,
             EquipmentInspectionTableSeeder::class,
-            EquipmentWarrantyClaimsTableSeeder::class
+            EquipmentWarrantyClaimsTableSeeder::class,
+            ClientEquipmentSeeder::class,
+            EmailDistributionListSeeder::class,
         ]);
     }
 }
