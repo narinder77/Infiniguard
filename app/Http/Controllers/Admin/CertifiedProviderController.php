@@ -53,7 +53,18 @@ class CertifiedProviderController extends Controller
             $filteredTotal = $query->count();
             $query->skip($start)->take($length);
             $data = $query->get();
+            $autoincrementIndex = $start + 1;
+            if (!empty($order) && $columns[$order[0]['column']]['data'] == 'provider_id') {
+                // Adjust autoincrement index for descending sorting
+                if ($order[0]['dir'] == 'desc') {
+                    $autoincrementIndex = $filteredTotal - $start;
+                }
+            }
 
+            // Add the autoincrement index to each data row
+            foreach ($data as $row) {
+                $row->provider_id = $autoincrementIndex++;
+            }
             $response = [
                 "draw" => intval($draw),
                 "recordsTotal" => $total,
