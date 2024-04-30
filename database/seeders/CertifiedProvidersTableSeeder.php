@@ -44,6 +44,21 @@ class CertifiedProvidersTableSeeder extends Seeder
                 'updated_at' => $item['modify_date']
             ];
         }
+
+        $insertData[] = [
+            'provider_id' =>'76',
+            'provider_type' => 1,
+            'provider_administrator' => 'Administrator',
+            'provider_name' => 'Administrator Company',
+            'provider_logo_image' => 'company_logo',
+            'provider_profile_image' => 'profile_image',
+            'provider_email' => 'infiniguard@example.com',
+            'provider_phone' => 'company_phone',
+            'provider_password' =>Hash::make('password'),
+            'provider_status' => '1',
+            'created_at' => now(),
+            'updated_at' => now()
+        ];
         $chunks = array_chunk($insertData, 1000);
         foreach ($chunks as $chunk) {
             CertifiedProvider::insert($chunk);

@@ -45,26 +45,33 @@ class CertifiedProviderController extends Controller
             }
             if (!empty($order)) {
                 $columnIndex = $order[0]['column'];
-                $columnName = $columns[$columnIndex]['data'];
+                if($columns[$columnIndex]['data'] == 'id'){
+                    $columnName ='provider_id';
+                }else{
+                    $columnName = $columns[$columnIndex]['data'];
+                }
                 $columnSortOrder = $order[0]['dir'];
                 $query->orderBy($columnName, $columnSortOrder);
             }
-
             $filteredTotal = $query->count();
             $query->skip($start)->take($length);
             $data = $query->get();
-            $autoincrementIndex = $start + 1;
-            if (!empty($order) && $columns[$order[0]['column']]['data'] == 'provider_id') {
+            
+            if (!empty($order) && $columns[$order[0]['column']]['data']) {
                 // Adjust autoincrement index for descending sorting
-                if ($order[0]['dir'] == 'desc') {
-                    $autoincrementIndex = $filteredTotal - $start;
+                $autoincrementIndex = ($order[0]['dir'] == 'desc') ? $start + $total : $start + 1;
+            
+                foreach ($data as $row) {
+                    $row->id = $autoincrementIndex;
+                    $autoincrementIndex += ($order[0]['dir'] == 'desc') ? -1 : 1;
+                }
+            } else {
+                $autoincrementIndex = $start + 1;
+                foreach ($data as $row) {
+                    $row->id = $autoincrementIndex++;
                 }
             }
-
-            // Add the autoincrement index to each data row
-            foreach ($data as $row) {
-                $row->provider_id = $autoincrementIndex++;
-            }
+           
             $response = [
                 "draw" => intval($draw),
                 "recordsTotal" => $total,
@@ -263,7 +270,9 @@ class CertifiedProviderController extends Controller
         try{
             
             $CertifiedProvider=CertifiedProvider::find($id);
+
             $CertifiedProvider->delete();
+
             return response()->json(['status'=>true],200);
 
         } catch (\Exception $e) {

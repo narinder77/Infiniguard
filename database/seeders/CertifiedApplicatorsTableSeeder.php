@@ -28,6 +28,7 @@ class CertifiedApplicatorsTableSeeder extends Seeder
             '/(\d{4}-\d{2}-\d{2}) : (\d{2}:\d{2})/',          // Year-month-day : hour:minute
             '/(\d{2}-\d{2}-\d{4})/',                          // Month-day-year
             '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}) (AM|PM)/',    // Year-month-day hour:minute AM/PM
+            '/(\d{2}\/\d{2}\/\d{4})/', 
         ];
 
         // Define replacements for each format
@@ -39,10 +40,11 @@ class CertifiedApplicatorsTableSeeder extends Seeder
             '$1 $2',          // Year-month-day : hour:minute
             '$3-$1-$2',       // Month-day-year
             '$1 $2 $3',       // Year-month-day hour:minute AM/PM
+            '$1',             // Month/day/year
         ];
 
         $dates = [
-            'date' => '2024-04-23 04:41 PM',
+            'date' => $date,
         ];
 
         foreach ($dates as $date) {
@@ -57,13 +59,11 @@ class CertifiedApplicatorsTableSeeder extends Seeder
             }
         }
     }
-
     public function convertDate($dateString)
     {
         $timestamp = strtotime($dateString);
         return date("Y-m-d H:i:s", $timestamp);
     }
-
     public function run(): void
     {
         $json = File::get(database_path('seeds/certified_applicators.json'));

@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Client;
+use App\Models\ClientEquipment;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class ClientEquipmentSeeder extends Seeder
 {
