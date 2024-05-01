@@ -4,111 +4,68 @@
 <div class="container-fluid">
 
 	<!-- Add Order -->
-	<div class="modal fade" id="add-more">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Add Certified Applicator</h5>
-					<button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<form>
-						@csrf
-						<div class="form-group">
-							<label class="text-black font-w500">Certification ID<span
-									class="text-danger">*</span></label>
-							<input type="text" class="form-control">
-						</div>
-						<div class="form-group">
-							<label class="text-black font-w500">Name<span class="text-danger">*</span></label>
-							<input type="text" class="form-control">
-						</div>
-						<div class="form-group">
-							<label class="text-black font-w500">Company</label>
-							<select class="form-select form-control" aria-label="Default select example">
-								<option selected>Open this select menu</option>
-								<option value="1">One</option>
-								<option value="2">Two</option>
-								<option value="3">Three</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label class="text-black font-w500">Email<span class="text-danger">*</span></label>
-							<input type="email" class="form-control">
-						</div>
-						<div class="form-group">
-							<label class="text-black font-w500">Password<span class="text-danger">*</span></label>
-							<input type="password" class="form-control">
-						</div>
-
-						<div class="form-group">
-							<label class="text-black font-w500">Certification Date<span
-									class="text-danger">*</span></label>
-							<input type="date" class="form-control">
-						</div>
-						<div class="form-group">
-							<button type="button" class="btn btn-primary">SUBMIT</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- Edit Table -->
-	<div class="modal fade" id="edit-profile">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Add Certified Applicator</h5>
-					<button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<form>
-						@csrf
-						<div class="form-group">
-							<label class="text-black font-w500">Certification ID<span
-									class="text-danger">*</span></label>
-							<input type="text" class="form-control">
-						</div>
-						<div class="form-group">
-							<label class="text-black font-w500">Name<span class="text-danger">*</span></label>
-							<input type="text" class="form-control">
-						</div>
+	<div class="modal fade" id="addapplicator">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add INFINIGUARD® Certified Applicator</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="applicatorForm"> 
+                    @csrf 
+                    <div class="form-group">
+                            <label class="text-black font-w500">Certification ID <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="applicator_certification_id" name="applicator_certification_id" placeholder="Enter Certification ID">
+                        </div>
+                        <div class="form-group">
+                            <label class="text-black font-w500">Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="applicator_name" name="applicator_name" placeholder="Enter Name">
+                        </div> 
 						<div class="form-group">
 							<label class="text-black font-w500">Company</label>
-							<select class="form-select form-control" aria-label="Default select example">
-								<option selected>Open this select menu</option>
+							<select class="form-select form-control" id="applicator_provider_id" name="applicator_provider_id" aria-label="Default select example">
+								{{-- <option selected>Open this select menu</option>
 								<option value="1">One</option>
 								<option value="2">Two</option>
-								<option value="3">Three</option>
+								<option value="3">Three</option> --}}
+								@foreach ($CertifiedProviders as $CertifiedProvider)
+									<option value="{{$CertifiedProvider->provider_id}}">{{$CertifiedProvider->provider_name}}</option>
+								@endforeach
 							</select>
-						</div>
-						<div class="form-group">
-							<label class="text-black font-w500">Email<span class="text-danger">*</span></label>
-							<input type="email" class="form-control">
-						</div>
-
-						<div class="form-group">
-							<label class="text-black font-w500">Certification Date<span
-									class="text-danger">*</span></label>
-							<input type="date" class="form-control">
-						</div>
-						<div class="form-group">
-							<button type="button" class="btn btn-primary">SUBMIT</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
-
+						</div>                      
+                        <div class="form-group">
+                            <label class="text-black font-w500">Email <span class="text-danger">*</span>
+                            </label>
+                            <input type="email" class="form-control" id="applicator_email" name="applicator_email" placeholder="Enter Email">
+                        </div>
+                        <div class="form-group" id="applicator-pass">
+                            <label class="text-black font-w500">Password <span class="text-danger">*</span>
+                            </label>
+                            <input type="password" class="form-control" id="applicator_password" name="applicator_password" placeholder="Enter Password">
+                        </div>
+                        <div class="form-group">
+                            <label class="text-black font-w500">Certification Date <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control" id="applicator_date" name="applicator_date">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="submitBtn" class="btn btn-primary">SUBMIT</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>	
 	<div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
 		<h3 class="mb-0">INFINIGUARD Certified Applicators</h3>
 		<div>
-			<a href="#" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#add-more">Add More</a>
-		</div>
+			 <a href="#" class="btn btn-primary rounded add-applicator" data-curd="add" data-bs-toggle="modal" data-bs-target="#addapplicator">Add More</a>
+	</div>
 	</div>
 	<div class="row">
 		<div class="col-lg-12 table-outer">
@@ -129,7 +86,7 @@
 					</thead>
 					<tbody>
 					</tbody>
-					<thead>
+					<tfoot>
 						<tr>
 							<th> Certification ID </th>
 							<th> Name </th>
@@ -141,11 +98,28 @@
 							<th> Certification Status </th>
 							<th> Edit </th>
 						</tr>
-					</thead>
+					</tfoot>
 				</table>
 			</div>
 		</div>
 	</div>
+</div>
+<div class="modal fade" id="confirmationModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">Confirmation</h5>
+                <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this applicator!!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -172,6 +146,9 @@
                         url: "{!! route('admin.applicators.index') !!}",
                         type: "GET",
 						dataType: 'json',
+						data: {
+                                provider_id: '' // Pass the provider ID as data
+                            }
                     },
                 order: [[0, 'asc']],
                 columnDefs: [
@@ -188,7 +165,7 @@
                         data: null,
                         render: function (data, type, row, meta) {
                             let applicator_id = row.applicator_id;
-                            let baseUrl = "{{ route('admin.applicators.show', '') }}";
+                            let baseUrl = "{{ route('admin.applicator.registerEquip', '') }}";
                             return `<a href="${baseUrl}/${applicator_id}" class="">${row.registered_codes_count}</a>`;
                         }
                     },
@@ -196,7 +173,7 @@
                         data: null,
                         render: function (data, type, row, meta) {
                             let applicator_id = row.applicator_id;
-                            let baseUrl = "{{ route('admin.applicators.show', '') }}";
+                            let baseUrl = "{{ route('admin.applicator.warranty-claims', '') }}";
                             return `<a href="${baseUrl}/${applicator_id}" class="">${row.warranty_claims_count}</a>`;
                         }
                     },
@@ -206,7 +183,7 @@
                             let status = row.applicator_status;
     						let checkedAttribute = status == 1 ? 'checked' : '';
                             return `<div class="form-check form-switch">
-										<input class="form-check-input" type="checkbox" id="certificationStatus" name="" value="yes" ${checkedAttribute}>
+										<input data-applicatorId="${row.applicator_id}" class="form-check-input" type="checkbox" id="certificationApplicatorStatus" name="" value="yes" ${checkedAttribute}>
 									</div>`;
                         }
                     },
@@ -224,8 +201,8 @@
                                         </svg>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="${baseUrl}/${applicator_id}" data-bs-toggle="modal" data-bs-target="#edit-profile">Edit</a>
-                                        <a class="dropdown-item" href="${baseUrl}/${applicator_id}">Delete</a>
+                                         <a class="dropdown-item add-applicator" href="javascript:void(0);" data-id="${applicator_id}" data-curd="edit" data-bs-toggle="modal" data-bs-target="#addapplicator ">Edit</a>
+                                        <a class="dropdown-item delete-applicator" href="javascript:void(0);" data-id="${applicator_id}">Delete</a>
                                     </div>
                                 </div>`;
                         }
@@ -236,5 +213,166 @@
                 var data = table.row(this).data();
             });
         })(jQuery);
+	$(document).ready(function() {
+
+        $(document).on('change','#certificationApplicatorStatus',function() {
+             var certificationApplicatorId= $(this).attr('data-applicatorId');
+            var status = $(this).prop('checked') ? 'active' : 'revoked';
+            
+            // Construct the URL with the provider ID
+            var url = "{{ route('admin.applicator.updateStatus', ':id') }}";
+             url = url.replace(':id', certificationApplicatorId);
+            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    status: status
+                },
+                headers: {
+                     'X-CSRF-TOKEN': csrfToken
+                },
+                success: function(response) {
+                    showAlert('success', response.message, null);     
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    showAlert('danger', xhr.responseJSON.message, null);
+
+                }
+            });
+        });
+		$(document).on('click','.add-applicator', function(e){
+            e.preventDefault();
+            let type=$(this).attr('data-curd');
+            if(type == 'edit'){
+                $('#submitBtn').attr('data-curd','edit');
+                let applicatorId=$(this).attr('data-id');
+                var url = "{{ route('admin.applicators.edit', ':id') }}";
+                    url = url.replace(':id', applicatorId);
+                
+                $.ajax({
+                    type: 'GET',
+                    url: url, 
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {                    
+
+                     if(response.status){  
+                        changeModelContent('Edit INFINIGUARD® Certified Applicator', 'Update',  'update', 'applicator_id', response.data.applicator_id, 'addapplicator');
+
+                        var baseUrl="{{ asset('/storage') }}";
+                        $('#applicator_provider_id').val(response.data.applicator_provider_id);
+                        $('#applicator_certification_id').val(response.data.applicator_certification_id);
+                        $('#applicator_name').val(response.data.applicator_name);
+                        $('#applicator_email').val(response.data.applicator_email);
+                        $('#applicator_password').val(response.data.applicator_password);
+                        $('#applicator_date').val(response.data.applicator_date);
+                        $('#applicator-pass').hide();  
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                       console.log(error);
+                    }
+                });
+            }else{              
+                changeModelContent('ADD INFINIGUARD® Certified Applicator','submit', 'submit', null, null, 'addapplicator');
+                $('#submitBtn').attr('data-curd','add');            
+                $('#applicator_certification_id').val('');
+                $('#applicator_name').val('');
+                $('#applicator_email').val('');
+                $('#applicator_password').val('');
+                $('#applicator-pass').show();     
+                $('#applicator_date').val('');
+            }
+           
+        });
+
+        $(document).on('click', '#submitBtn', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            var type=$(this).attr('data-curd');
+            var formData = new FormData($('#applicatorForm')[0]);
+            var url="";
+            if(type == 'add'){
+                 url="{{ route('admin.applicators.store') }}";
+            }else{
+                let applicatorId= $('#applicator_id').val();
+                url="{{ route('admin.applicators.update', ':id') }}";
+                 url = url.replace(':id', applicatorId);
+               
+            }           
+
+            $.ajax({
+                type: 'POST',
+                url: url, // Use the store route for creating new providers
+                data: formData,
+                processData: false,
+                contentType: false,
+                 beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}'); // Set CSRF token
+                    if (type != 'add') {
+                        xhr.setRequestHeader('X-HTTP-Method-Override', 'PUT'); // Set method override for Laravel (only for updating)
+                    }
+                },
+                success: function(response) {
+                    $('#addapplicator').modal('hide');
+                    $('#applicatorForm')[0].reset(); // Reset the form                
+                    if(response.status){
+                        showAlert('success', response.message, null);      
+                    }else{
+                       showAlert('danger', response.message, null)     
+                    }                    
+                    $('#CertifiedApplicator').DataTable().ajax.reload();
+
+                },
+                error: function(xhr, status, error) {
+                   if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        var errors = xhr.responseJSON.errors;                        
+                        showValidationErorrs(errors);
+                    } else {
+                        showAlert('danger', responseJSON.message, null)  
+                    }
+                }
+            });
+        });
+
+        $(document).on('click','.delete-applicator',function(e){
+            e.preventDefault();
+            var applicatorId=$(this).data('id');           
+            $("#confirmDelete").attr("data-id", applicatorId);
+
+            // Show the confirmation modal
+            $("#confirmationModal").modal('show');
+            
+        });
+
+        // Handle delete confirmation
+        $("#confirmDelete").on('click', function() {
+            var applicatorId = $(this).attr('data-id');
+            var url = "{{ route('admin.applicators.destroy', ':id') }}";
+            url = url.replace(':id', applicatorId);
+            
+            // Send AJAX request to delete provider
+            $.ajax({
+                url: url,
+                method: 'DELETE',
+                success: function(response) {
+                    if(response.status){
+                         $('#CertifiedApplicator').DataTable().ajax.reload();
+                         // Optionally, you can perform actions after successful deletion
+                    }
+                
+                },
+                error: function(xhr, status, error) {
+                    showAlert('danger', responseJSON.message, null)  
+                    // Optionally, you can handle errors here
+                }
+            });
+
+            // Close the confirmation modal
+            $("#confirmationModal").modal('hide');
+        });
+    });
 </script>
 @endpush

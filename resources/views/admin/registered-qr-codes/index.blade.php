@@ -13,18 +13,21 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<form>
+					<form id="updateSerialNumberForm">
 						<div class="form-group">
 							<label class="text-black font-w500">Serial Number<span class="text-danger">*</span></label>
-							<input type="number" class="form-control">
+							<input name="registered_equipment_id" id="registered_equipment_id" type="hidden" class="form-control">
+
+							<input name="serial_number" id="serial_number" type="text" class="form-control">
 						</div>
 						<div class="form-group">
 							<label class="text-black font-w500">Confirm Serial Number<span
 									class="text-danger">*</span></label>
-							<input type="number" class="form-control">
+							<input name="serial_number_confirmation" id="serial_number_confirmation" type="text" class="form-control">
+						<div id="serial_numb_match_message"></div>
 						</div>
 						<div class="form-group">
-							<button type="button" class="btn btn-primary">SUBMIT</button>
+							<button type="button" id="updateSerial" class="btn btn-primary">SUBMIT</button>
 						</div>
 
 					</form>
@@ -98,12 +101,14 @@
                     },
                 order: [[3, 'asc']],
                 columnDefs: [
-                    { orderable: false, "targets": [5, 6 ] },
-                    { searchable: false, "targets": [5, 6] },
+                    { orderable: false, "targets": [2, 5, 6 ] },
+                    { searchable: false, "targets": [2, 5, 6] },
                 ],
                 columns: [
-					{data: 'certified_providers.provider_name',name: 'certified_providers.provider_name'},
-                    {data: 'certified_applicators.applicator_certification_id', name: 'certified_applicators.applicator_certification_id'},
+
+					{data: 'certified_providers.provider_name',name: 'provider_name'},
+
+                    {data: 'certified_applicators.applicator_certification_id', name: 'applicator_certification_id'},
 					{
                         data: null,
                         render: function (data, type, row, meta) {
@@ -114,12 +119,12 @@
                     },
                     {data: 'equipment_qr_id', name: 'equipment_qr_id'},
 					{
-                        data: null,
-                        name: 'registered_equipments.equipment_serial_number',
+                        data: 'equipment_qr_id',
+                        name: 'equipment_serial_number',
                         render: function (data, type, row, meta) {
                             let applicator_id = row.applicator_id;
                             let baseUrl = "{{ route('admin.applicators.show', '') }}";
-                            return `<a href="javascript:void(0)" class="btn btn-info d-block rounded" data-bs-toggle="modal" data-bs-target="#update-serial">${row.registered_equipments.equipment_serial_number}</a>`;
+                            return `<a href="javascript:void(0)" data-id="${data}" class="btn btn-info d-block rounded update-serial" data-bs-toggle="modal" data-bs-target="#update-serial">${row.registered_equipments.equipment_serial_number}</a>`;
                         }
                     },
 					{data: 'created_at',name:'created_at'},
@@ -137,5 +142,78 @@
                 var data = table.row(this).data();
             });
         })(jQuery);
+
+	function showSerialNumbMatchMessage() {
+		var serialNumber = $('#serial_number').val();
+		var serialNumberConfirmation = $('#serial_number_confirmation').val();
+		
+		if (serialNumber != '' && serialNumber === serialNumberConfirmation) {
+			$('#serial_numb_match_message').show();
+			$('#serial_numb_match_message').text('Serial match!').addClass('text-success').removeClass('text-danger');
+		} else {
+			$('#serial_numb_match_message').show();
+			$('#serial_numb_match_message').text('Serial Number does not match!').addClass('text-danger').removeClass('text-success');
+		}
+		
+		
+	}
+	$('.modal').on('hidden.bs.modal', function(e) {
+		$('#serial_numb_match_message').hide();
+		$('#serial_numb_match_message').text('');
+	});
+	
+	$('#serial_number, #serial_number_confirmation').on('input', function() {
+		showSerialNumbMatchMessage();
+	});
+
+		$(document).on('click', '.update-serial', function(){
+			let reg_equp_id=$(this).attr('data-id');
+
+			$('#registered_equipment_id').val(reg_equp_id);
+		})
+
+		$(document).on('click', '#updateSerial', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            var type=$(this).attr('data-curd');
+            var formData = new FormData($('#updateSerialNumberForm')[0]);
+            var url="";
+           
+                let id=$('#registered_equipment_id').val();
+                url="{{ route('admin.registered-equipments.update', ':id') }}";
+                 url = url.replace(':id', id);  
+
+            $.ajax({
+                type: 'POST',
+                url: url, // Use the store route for creating new providers
+                data: formData,
+                processData: false,
+                contentType: false,
+                 beforeSend: function(xhr) {
+					xhr.setRequestHeader('X-HTTP-Method-Override', 'PUT'); // Set method override for Laravel (only for updating)
+                    
+                },
+                success: function(response) {
+                    $('#update-serial').modal('hide');              
+                  if(response.status){
+                     showAlert('success', response.message, null)    
+                    }else{
+                       showAlert('danger', response.message, null)
+                    }                                           
+                    $('#RegisteredQrCode').DataTable().ajax.reload();
+
+                },
+                error: function(xhr, status, error) {
+                   if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        var errors = xhr.responseJSON.errors;                        
+                        showValidationErorrs(errors);
+                    } else {
+                        // Handle other types of errors
+                       $('#update-serial').modal('hide');
+                       showAlert('danger', xhr.responseJSON.message, null)
+                        // You can display a generic error message here
+                    }
+                }
+            });
+        });
 </script>
 @endpush

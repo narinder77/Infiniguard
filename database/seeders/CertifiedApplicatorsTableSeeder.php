@@ -21,29 +21,36 @@ class CertifiedApplicatorsTableSeeder extends Seeder
     {
         // Define regular expressions for different date formats
         $regexFormats = [
-            '/(\d{2}-\d{2}-\d{4}) (\d{2}:\d{2})/',     // Day-month-year hour:minute
-            '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/', // Year-month-day hour:minute:second
-            '/(\d{4}-\d{2}-\d{2}) : (\d{2}:\d{2}:\d{2})/', // Year-month-day : hour:minute:second
-            '/(\d{2}-\d{2}-\d{4})/',                  // Day-month-year
-            '/(\d{4}-\d{2}-\d{2}) : (\d{2}:\d{2})/',    // Year-month-day : hour:minute
-            '/(\d{2}-\d{2}-\d{4})/',                  // Month-day-year
+            '/(\d{2}-\d{2}-\d{4}) (\d{2}:\d{2})/',            // Day-month-year hour:minute
+            '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/',      // Year-month-day hour:minute:second
+            '/(\d{4}-\d{2}-\d{2}) : (\d{2}:\d{2}:\d{2})/',    // Year-month-day : hour:minute:second
+            '/(\d{2}-\d{2}-\d{4})/',                          // Day-month-year
+            '/(\d{4}-\d{2}-\d{2}) : (\d{2}:\d{2})/',          // Year-month-day : hour:minute
+            '/(\d{2}-\d{2}-\d{4})/',                          // Month-day-year
+            '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}) (AM|PM)/',    // Year-month-day hour:minute AM/PM
+            '/(\d{2}\/\d{2}\/\d{4})/', 
         ];
+
         // Define replacements for each format
         $replacements = [
-            '$4-$3-$2 $5',   // Day-month-year hour:minute
-            '$1 $2',         // Year-month-day hour:minute:second
-            '$1 $2',         // Year-month-day : hour:minute:second
-            '$3-$2-$1',      // Day-month-year
-            '$1 $2',         // Year-month-day : hour:minute
-            '$3-$1-$2',      // Month-day-year
+            '$4-$3-$2 $5',    // Day-month-year hour:minute
+            '$1 $2',          // Year-month-day hour:minute:second
+            '$1 $2',          // Year-month-day : hour:minute:second
+            '$3-$2-$1',       // Day-month-year
+            '$1 $2',          // Year-month-day : hour:minute
+            '$3-$1-$2',       // Month-day-year
+            '$1 $2 $3',       // Year-month-day hour:minute AM/PM
+            '$1',             // Month/day/year
         ];
+
         $dates = [
-            'date' => $date
+            'date' => $date,
         ];
+
         foreach ($dates as $date) {
             foreach ($regexFormats as $index => $regex) {
                 if (preg_match($regex, $date)) {
-                    $formattedDate = preg_replace($regex, $replacements[$index], $date);
+                    $formattedDate = preg_replace($regexFormats, $replacements[$index], $date);
                     $parsedDate = date('Y-m-d H:i:s', strtotime($formattedDate));
                     if ($parsedDate != '1970-01-01 00:00:00') {
                         return $parsedDate;
@@ -51,15 +58,12 @@ class CertifiedApplicatorsTableSeeder extends Seeder
                 }
             }
         }
-        return $date;
     }
-
     public function convertDate($dateString)
     {
         $timestamp = strtotime($dateString);
         return date("Y-m-d H:i:s", $timestamp);
     }
-
     public function run(): void
     {
         $json = File::get(database_path('seeds/certified_applicators.json'));

@@ -5,38 +5,47 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\EquipmentInspection;
 use Illuminate\Support\Facades\File;
+
 class EquipmentInspectionTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
+
     public function convertToDateOnlyFormat($date)
     {
         // Define regular expressions for different date formats
         $regexFormats = [
-            '/(\d{2}-\d{2}-\d{4}) (\d{2}:\d{2})/',     // Day-month-year hour:minute
-            '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/', // Year-month-day hour:minute:second
-            '/(\d{4}-\d{2}-\d{2}) : (\d{2}:\d{2}:\d{2})/', // Year-month-day : hour:minute:second
-            '/(\d{2}-\d{2}-\d{4})/',                  // Day-month-year
-            '/(\d{4}-\d{2}-\d{2}) : (\d{2}:\d{2})/',    // Year-month-day : hour:minute
-            '/(\d{2}-\d{2}-\d{4})/',                  // Month-day-year
+            '/(\d{2}-\d{2}-\d{4}) (\d{2}:\d{2})/',            // Day-month-year hour:minute
+            '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/',      // Year-month-day hour:minute:second
+            '/(\d{4}-\d{2}-\d{2}) : (\d{2}:\d{2}:\d{2})/',    // Year-month-day : hour:minute:second
+            '/(\d{2}-\d{2}-\d{4})/',                          // Day-month-year
+            '/(\d{4}-\d{2}-\d{2}) : (\d{2}:\d{2})/',          // Year-month-day : hour:minute
+            '/(\d{2}-\d{2}-\d{4})/',                          // Month-day-year
+            '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}) (AM|PM)/',    // Year-month-day hour:minute AM/PM
+            '/(\d{2}\/\d{2}\/\d{4})/',
         ];
+
         // Define replacements for each format
         $replacements = [
-            '$4-$3-$2 $5',   // Day-month-year hour:minute
-            '$1 $2',         // Year-month-day hour:minute:second
-            '$1 $2',         // Year-month-day : hour:minute:second
-            '$3-$2-$1',      // Day-month-year
-            '$1 $2',         // Year-month-day : hour:minute
-            '$3-$1-$2',      // Month-day-year
+            '$4-$3-$2 $5',    // Day-month-year hour:minute
+            '$1 $2',          // Year-month-day hour:minute:second
+            '$1 $2',          // Year-month-day : hour:minute:second
+            '$3-$2-$1',       // Day-month-year
+            '$1 $2',          // Year-month-day : hour:minute
+            '$3-$1-$2',       // Month-day-year
+            '$1 $2 $3',       // Year-month-day hour:minute AM/PM
+            '$1',             // Month/day/year
         ];
+
         $dates = [
-            'date' => $date
+            'date' => $date,
         ];
+
         foreach ($dates as $date) {
             foreach ($regexFormats as $index => $regex) {
                 if (preg_match($regex, $date)) {
-                    $formattedDate = preg_replace($regex, $replacements[$index], $date);
+                    $formattedDate = preg_replace($regexFormats, $replacements[$index], $date);
                     $parsedDate = date('Y-m-d H:i:s', strtotime($formattedDate));
                     if ($parsedDate != '1970-01-01 00:00:00') {
                         return $parsedDate;
@@ -44,9 +53,7 @@ class EquipmentInspectionTableSeeder extends Seeder
                 }
             }
         }
-        return $date;
     }
-
     public function convertDate($dateString)
     {
         $timestamp = strtotime($dateString);
@@ -90,18 +97,16 @@ class EquipmentInspectionTableSeeder extends Seeder
                 'inspection_notes' => $item['notes'],
                 'inspection_latitude' => $item['lat'],
                 'inspection_longitude' => $item['lng'],
-                'inspection_reminder_date' => $this->convertToDateOnlyFormat($this->convertDate($item['inspection_reminder_date'])),
-                'created_at' => $this->convertToDateOnlyFormat($this->convertDate($item['created_date'])),
-                'updated_at' => $this->convertToDateOnlyFormat($this->convertDate($item['created_date']))
+                'inspection_reminder_date' => $this->convertToDateOnlyFormat($item['inspection_reminder_date']),
+                'created_at' => $this->convertToDateOnlyFormat($item['created_date']),
+                'updated_at' => $this->convertToDateOnlyFormat($item['created_date'])
             ];
 
             $dataArray[] = $inspectionData;
         }
-        $chunks = array_chunk($dataArray,1000);
-        foreach($chunks as $chunk){
+        $chunks = array_chunk($dataArray, 1000);
+        foreach ($chunks as $chunk) {
             EquipmentInspection::insert($chunk);
         }
-
-
     }
 }

@@ -24,4 +24,5 @@ class GeneratedQrCode extends Model
     {
         return $this->hasMany(EquipmentWarrantyClaim::class, 'equipment_claim_qr_id', 'equipment_qr_id');
     }
+    
 }
