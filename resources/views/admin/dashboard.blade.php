@@ -117,6 +117,88 @@
         </div-->
 
     </section>
+    <div class="modal fade" id="confirmationModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">Confirmation</h5>
+                <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this provider!!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="add-profile">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Add INFINIGUARD® Certified Provider</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  <form id="providerForm" enctype="multipart/form-data">
+                        @csrf
+                        {{-- <input type="hidden" id="certifiedProviderId" name="certifiedProviderId" class="form-control"> --}}
+                        <div class="form-group">
+                            <label class="text-black font-w500">Certified Provider Administrator</label>
+                            <input type="text" placeholder="Enter Certified Provider Administrator" id="providerAdministrator" name="providerAdministrator" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="text-black font-w500">Certified Provider Name<span class="text-danger">*</span></label>
+                            <input type="text" placeholder="Enter Certified Provider Name" id="providerName" name="providerName" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="text-black font-w500">Email<span class="text-danger">*</span></label>
+                            <input type="email" placeholder="Enter Email" id="providerEmail" name="providerEmail" class="form-control">
+                        </div>
+                        <div class="form-group" id="provider-pass">
+                            <label class="text-black font-w500">Password<span class="text-danger">*</span></label>
+                            <input type="password" placeholder="Enter Password" id="providerPassword" name="providerPassword" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="text-black font-w500">Phone<span class="text-danger">*</span></label>
+                            <input type="tel" placeholder="Enter Phone" id="providerPhone" name="providerPhone" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="text-black font-w500">Certified Provider Logo<span class="text-danger">*</span></label>
+                            <input class="form-control" name="providerLogo" type="file" id="company-logo">
+                        </div>
+                        
+                        <div class="col-6 d-none" id="logo">
+                            <div class="card">
+                                <div class="card-body text-center">  
+                                <img src="" class="img-fluid" id="logo-img" style="width:100px;height:auto;" alt="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="text-black font-w500">Profile Image<span class="text-danger">*</span></label>                            
+                            <input class="form-control" name="providerImage"  type="file" id="profile-image">
+                        </div>
+                       <div class="col-6 d-none" id="profile-card">
+                            <div class="card">
+                                <div class="card-body text-center">  
+                                <img src="" class="img-fluid" id="profile-img" style="width:100px;height:auto;" alt="">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="button" data-curd="" id="submitBtn" class="btn btn-primary">SUBMIT</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @push('scripts')
 <script>
@@ -205,5 +287,175 @@
                 var data = CertifiedProvider.row(this).data();
             });
         })(jQuery);
+        $(document).ready(function() {
+        $(document).on('change','#certificationStatus',function() {
+
+        var certificationProviderId = $(this).attr('data-certificationProviderId');           
+        var status = $(this).prop('checked') ? 'active' : 'revoked';
+        var url = "{{ route('admin.provider.updateStatus', ':id') }}";
+            url = url.replace(':id', certificationProviderId);
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    status: status
+                },
+                headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                },
+                success: function(response) {  
+                    showAlert('success', response.message, null);       
+                   
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    showAlert('danger', xhr.responseJSON.message, null);
+
+                }
+            });
+        });        
+       
+        $(document).on('click','.add-provider', function(e){            
+            e.preventDefault();
+            let type=$(this).data('curd');
+            if(type == 'edit'){
+                $('#submitBtn').attr('data-curd','edit');
+                let providerId=$(this).data('id');
+                var url = "{{ route('admin.providers.edit', ':id') }}";
+                    url = url.replace(':id', providerId);
+                
+                $.ajax({
+                    type: 'GET',
+                    url: url, 
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {                    
+
+                     if(response.status){                                              
+                        var baseUrl="{{ asset('/storage') }}";
+                       changeModelContent('Edit INFINIGUARD® Certified Provider', 'Update',  'update', 'certifiedProviderId', response.data.provider_id, 'add-profile');
+
+                        $('#providerAdministrator').val(response.data.provider_administrator);
+                        $('#providerName').val(response.data.provider_name);
+                        $('#providerEmail').val(response.data.provider_email);
+                        $('#providerPhone').val(response.data.provider_phone);
+                        $('#provider-pass').hide();
+                        $('#logo').removeClass('d-none');
+                        $('#profile-card').removeClass('d-none');
+                        $('#logo-img').attr('src',baseUrl+'/'+response.data.provider_logo_image);
+                        $('#profile-img').attr('src',baseUrl+'/'+response.data.provider_profile_image);
+                     }
+                    },
+                    error: function(xhr, status, error) {
+                       console.log(error);
+                    }
+                });
+            }else{
+                changeModelContent('ADD INFINIGUARD® Certified Provider','submit', 'submit', null, null, 'add-profile');
+                $('#submitBtn').attr('data-curd','add');
+                $('#providerAdministrator').val('');
+                $('#providerName').val('');
+                $('#providerEmail').val('');
+                $('#providerPhone').val('');
+                $('#provider-pass').show();
+                $('#logo').addClass('d-none');
+                $('#profile-card').addClass('d-none');
+                $('#logo-img').attr('src','');
+                $('#profile-img').attr('src','');
+            }
+           
+        });
+
+        $(document).on('click', '#submitBtn', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            var type=$(this).attr('data-curd');
+            var formData = new FormData($('#providerForm')[0]);
+            var url="";
+            if(type == 'add'){
+                 url="{{ route('admin.providers.store') }}";
+            }else{
+                let providerId= $('#certifiedProviderId').val();
+                url="{{ route('admin.providers.update', ':id') }}";
+                 url = url.replace(':id', providerId);
+               
+            }          
+
+            $.ajax({
+                type: 'POST',
+                url: url, // Use the store route for creating new providers
+                data: formData,
+                processData: false,
+                contentType: false,
+                 beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}'); // Set CSRF token
+                    if (type != 'add') {
+                        xhr.setRequestHeader('X-HTTP-Method-Override', 'PUT'); // Set method override for Laravel (only for updating)
+                    }
+                },
+                success: function(response) {
+                    $('#add-profile').modal('hide');              
+                  if(response.status){
+                     showAlert('success', response.message, null)    
+                    }else{
+                       showAlert('danger', response.message, null)
+                    }                                           
+                    $('#CertifiedProvider').DataTable().ajax.reload();
+
+                },
+                error: function(xhr, status, error) {
+                   if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        var errors = xhr.responseJSON.errors;                        
+                        showValidationErorrs(errors);
+                    } else {
+                        // Handle other types of errors
+                       $('#add-profile').modal('hide');
+                       showAlert('danger', xhr.responseJSON.message, null)
+                        // You can display a generic error message here
+                    }
+                }
+            });
+        });
+
+        $(document).on('click','.delete-provider',function(e){
+            e.preventDefault();
+            var providerId=$(this).data('id');          
+            $("#confirmDelete").data("id", providerId);
+
+            // Show the confirmation modal
+            $("#confirmationModal").modal('show');
+            
+        });
+
+        // Handle delete confirmation
+        $("#confirmDelete").on('click', function() {
+            var providerId = $(this).data('id');
+            var url = "{{ route('admin.providers.destroy', ':id') }}";
+            url = url.replace(':id', providerId);
+            
+            // Send AJAX request to delete provider
+            $.ajax({
+                url: url,
+                method: 'DELETE',
+                success: function(response) {
+                    if(response.status){
+                         $('#CertifiedProvider').DataTable().ajax.reload();
+                         // Optionally, you can perform actions after successful deletion
+                    }
+                
+                },
+                error: function(xhr, status, error) {      
+                    // Optionally, you can handle errors here
+                       showAlert('danger', xhr.responseJSON.message, null);
+                }
+            });
+
+            // Close the confirmation modal
+            $("#confirmationModal").modal('hide');
+        });
+
+    });
+
 </script>
 @endpush

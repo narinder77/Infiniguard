@@ -46,33 +46,14 @@ class CertifiedProviderController extends Controller
             }
             if (!empty($order)) {
                 $columnIndex = $order[0]['column'];
-                if($columns[$columnIndex]['data'] == 'id'){
-                    $columnName ='provider_id';
-                }else{
-                    $columnName = $columns[$columnIndex]['data'];
-                }
+                 $columnName = $columns[$columnIndex]['data'];
                 $columnSortOrder = $order[0]['dir'];
                 $query->orderBy($columnName, $columnSortOrder);
             }
             $filteredTotal = $query->count();
             $query->skip($start)->take($length);
-            $data = $query->get();
+            $data = $query->get();            
             
-            if (!empty($order) && $columns[$order[0]['column']]['data']) {
-                // Adjust autoincrement index for descending sorting
-                $autoincrementIndex = ($order[0]['dir'] == 'desc') ? $start + $total : $start + 1;
-            
-                foreach ($data as $row) {
-                    $row->id = $autoincrementIndex;
-                    $autoincrementIndex += ($order[0]['dir'] == 'desc') ? -1 : 1;
-                }
-            } else {
-                $autoincrementIndex = $start + 1;
-                foreach ($data as $row) {
-                    $row->id = $autoincrementIndex++;
-                }
-            }
-           
             $response = [
                 "draw" => intval($draw),
                 "recordsTotal" => $total,

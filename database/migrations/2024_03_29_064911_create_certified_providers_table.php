@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('certified_providers', function (Blueprint $table) {
-            $table->id('id');
             $table->id('provider_id');
             $table->enum('provider_type', ['1', '2'])->default('2')->comment('1=admin, 2=provider');
             $table->string('provider_administrator', 100)->nullable();

@@ -23,17 +23,8 @@ class ClientController extends Controller
 
         if ($request->ajax()) {
             $data = Client::with('certifiedProviders');
-            $orderDirection = $request->input('order.0.dir', 'asc');
-
-            return DataTables::of($data)
-                    ->addColumn('id', function($row) use ($orderDirection) {
-                        // Get the current page number and page length
-                        $currentPage = request()->input('start', 0) / request()->input('length', 10) + 1;
-                        $pageSize = request()->input('length', 10);
-                        // Calculate the index based on the current page, page size, and order direction
-                        $index = ($currentPage - 1) * $pageSize + ($orderDirection === 'asc' ? $row->id : $data->count() - $row->id + 1);
-                        return $index;
-                    })
+            
+            return DataTables::of($data)                   
                 ->orderColumn('provider_name', function ($query, $order) {
                     $query->join('certified_providers', 'clients.client_provider_id', '=', 'certified_providers.provider_id')
                         ->orderBy('certified_providers.provider_name', $order);
