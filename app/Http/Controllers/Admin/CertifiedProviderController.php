@@ -21,13 +21,9 @@ class CertifiedProviderController extends Controller
         $page_description = 'Some description for the page';
         if ($request->ajax()) {
             $data = CertifiedProvider::query();
-            
             return DataTables::of($data)
-                ->addColumn('provider_id', function ($data) {
-                    static $increment = 0;
-                    return ++$increment;
-                })
-                ->toJson();
+            ->addIndexColumn()->setRowId('provider_id')
+            ->toJson();
         }
         return view('admin.certified-providers.index', compact('page_title', 'page_description'));
     }

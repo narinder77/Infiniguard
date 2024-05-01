@@ -158,7 +158,7 @@
                     { searchable: false, "targets": [5, 6, 7] },
                 ],                                  
                 columns: [
-                    {data: 'provider_id', name: 'provider_id'},
+                    {data: 'DT_RowIndex', name: 'provider_id'},
                     {data: 'provider_name', name: 'provider_name'},
                     {data: 'provider_administrator', name: 'provider_administrator'},
                     {data: 'provider_email', name: 'provider_email'},
