@@ -61,7 +61,6 @@
                             <thead>
                                 <tr>
                                     <th>ID </th>
-                                    <th>Provider ID </th>
                                     <th> Certified Providers </th>
                                     <th> Certified Providers Administrator </th>
                                     <th> Email </th>
@@ -76,7 +75,6 @@
                             <tfoot>
                                 <tr>
                                     <th>ID </th>
-                                    <th>Provider ID </th>
                                     <th> Certified Providers </th>
                                     <th> Certified Providers Administrator </th>
                                     <th> Email </th>
@@ -224,7 +222,7 @@
                         type: "GET",
                         dataType: 'json',
                     },  
-                order: [[1, 'asc']],
+                order: [[0, 'asc']],
                 columnDefs: [
                     { orderable: false, "targets": [5,6, 7] },
                     { searchable: false, "targets": [5,6, 7] },
@@ -234,7 +232,6 @@
                     }
                 ],                                  
                 columns: [
-                    {data: 'id', name: 'id'},  
                     {data: 'provider_id', name: 'provider_id'},                  
                     {data: 'provider_name', name: 'provider_name'},
                     {data: 'provider_administrator', name: 'provider_administrator'},
