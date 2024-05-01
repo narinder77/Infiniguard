@@ -21,46 +21,12 @@ class CertifiedProviderController extends Controller
         $page_description = 'Some description for the page';
 
         if ($request->ajax()) {
-            $draw = $request->get('draw');
-            $start = $request->get('start');
-            $length = $request->get('length');
-            $order = $request->get('order');
-            $columns = $request->get('columns');
-            $search = $request->get('search')['value'];
 
-            $query = CertifiedProvider::query();
-            //$query->withTrashed();
+            $data = CertifiedProvider::query();
+            return DataTables::of($data)
+            ->addIndexColumn()->setRowId('provider_id')
+            ->toJson();
 
-            $total = $query->count();
-
-            if (!empty($search)) {
-                $query->when($search, function ($q) use ($search) {
-                    $q->where(function ($q) use ($search) {
-                        $q->where('provider_id', 'like', "%$search%")
-                            ->orWhere('provider_name', 'like', "%$search%")
-                            ->orWhere('provider_administrator', 'like', "%$search%")
-                            ->orWhere('provider_email', 'like', "%$search%")
-                            ->orWhere('provider_phone', 'like', "%$search%");
-                    });
-                });
-            }
-            if (!empty($order)) {
-                $columnIndex = $order[0]['column'];
-                 $columnName = $columns[$columnIndex]['data'];
-                $columnSortOrder = $order[0]['dir'];
-                $query->orderBy($columnName, $columnSortOrder);
-            }
-            $filteredTotal = $query->count();
-            $query->skip($start)->take($length);
-            $data = $query->get();            
-            
-            $response = [
-                "draw" => intval($draw),
-                "recordsTotal" => $total,
-                "recordsFiltered" => $filteredTotal,
-                "data" => $data,
-            ];
-            return $response;
         }
         return view('admin.certified-providers.index', compact('page_title', 'page_description'));
     }
