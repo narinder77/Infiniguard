@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Admin\Auth;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Password;
 
 class PasswordResetLinkController extends Controller
 {
@@ -16,4 +17,15 @@ class PasswordResetLinkController extends Controller
     {
         
     }    
+    public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate(['provider_email' => 'required|email']);
+
+        $status = Password::broker('admins')->sendResetLink(['provider_email' => $request->provider_email]);
+
+        //  dd($status,Password::RESET_LINK_SENT);
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with(['status' => __($status)])
+            : back()->withErrors(['provider_email' => __($status)]);
+    }
 }

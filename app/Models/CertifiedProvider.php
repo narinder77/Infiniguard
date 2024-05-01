@@ -6,11 +6,14 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class CertifiedProvider extends Authenticatable
 {
     use HasFactory, Notifiable;
+    use CanResetPasswordTrait;
 
     protected $table = 'certified_providers';
     protected $primaryKey = 'provider_id';
@@ -44,6 +47,10 @@ class CertifiedProvider extends Authenticatable
     public function getAuthPassword()
     {
         return $this->provider_password;
+    }
+     public function getEmailForPasswordReset()
+    {
+        return $this->provider_email;
     }
     
     public function CertifiedApplicators()

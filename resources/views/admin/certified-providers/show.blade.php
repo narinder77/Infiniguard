@@ -104,10 +104,11 @@
     <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
         {{-- <h2 class="mb-0">Certified Applicators for Mexico</h2> --}}
         <h2 class="mb-0">INFINIGUARD® Certified Applicators for {{ $CertifiedProvider->provider_name ?? '' }}</h2> 
+        @if($CertifiedProvider)
         <div>
-            <a href="#" class="btn btn-primary rounded add-applicator" data-curd="add" data-bs-toggle="modal" data-bs-target="#addapplicator">Add
-                More</a>
+            <a href="#" class="btn btn-primary rounded add-applicator" data-curd="add" data-bs-toggle="modal" data-bs-target="#addapplicator">Add</a>
         </div>
+        @endif
     </div>
     <div class="row">
         <div class="col-lg-12 table-outer">

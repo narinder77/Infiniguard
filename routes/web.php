@@ -28,7 +28,7 @@ Route::middleware('admin.guest')->prefix('admin')->name('admin.')->group(functio
     Route::get('login', [LoginController::class, 'create'])->name('login');
     Route::post('login', [LoginController::class, 'store']);
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('forgot-password');
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('forgot-password-email');
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'sendResetLinkEmail'])->name('forgot-password-email');
 });
 
 Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
