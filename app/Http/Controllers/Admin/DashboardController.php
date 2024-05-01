@@ -22,41 +22,50 @@ class DashboardController extends Controller
             'registered_qr_codes' => RegisteredQrCode::count(),
         ];
 
+       
         if ($request->ajax()) {
-            $query = RegisteredQrCode::query();
-            $query->with('certifiedApplicators', 'certifiedProviders');
+            $draw = $request->get('draw');
+            $start = $request->get('start');
+            $length = $request->get('length');
+            $order = $request->get('order');
+            $columns = $request->get('columns');
+            $search = $request->get('search')['value'];
 
-            return DataTables::of($query)
-                ->orderColumn('provider_name', function ($query, $order) {
-                    $query->join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
-                        ->join('certified_providers', 'certified_applicators.applicator_provider_id', '=', 'certified_providers.provider_id')
-                        ->orderBy('certified_providers.provider_name', $order);
-                })
-                ->orderColumn('applicator_certification_id', function ($query, $order) {
-                    $query->join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
-                        ->orderBy('certified_applicators.applicator_certification_id', $order);
-                })
-               /* ->orderColumn('equipment_serial_number', function ($query, $order) {
-                    $query->join('generated_qr_codes', 'registered_qr_codes.equipment_qr_id', '=', 'generated_qr_codes.equipment_qr_id')
-                        ->orderBy('generated_qr_codes.equipment_serial_number', $order);
-                })*/
-                ->filterColumn('provider_name', function ($query, $keyword) {
-                    $query->whereHas('certifiedProviders', function ($query) use ($keyword) {
-                        $query->where('provider_name', 'like', "%{$keyword}%");
+            $query = CertifiedProvider::query();
+
+            $total = $query->count();
+
+            if (!empty($search)) {
+                $query->when($search, function ($q) use ($search) {
+                    $q->where(function ($q) use ($search) {
+                        $q->where('provider_id', 'like', "%$search%")
+                            ->orWhere('provider_name', 'like', "%$search%")
+                            ->orWhere('provider_administrator', 'like', "%$search%")
+                            ->orWhere('provider_email', 'like', "%$search%")
+                            ->orWhere('provider_phone', 'like', "%$search%");
                     });
-                })
-                ->filterColumn('applicator_certification_id', function ($query, $keyword) {
-                    $query->whereHas('certifiedApplicators', function ($query) use ($keyword) {
-                        $query->where('applicator_certification_id', 'like', "%{$keyword}%");
-                    });
-                })
-                /*->filterColumn('equipment_serial_number', function ($query, $keyword) {
-                    $query->whereHas('registeredEquipments', function ($query) use ($keyword) {
-                        $query->where('equipment_serial_number', 'like', "%{$keyword}%");
-                    });
-                })*/
-                ->toJson();
+                });
+            }
+            if (!empty($order)) {
+                $columnIndex = $order[0]['column'];
+                 $columnName = $columns[$columnIndex]['data'];
+             
+                $columnSortOrder = $order[0]['dir'];
+                $query->orderBy($columnName, $columnSortOrder);
+            }
+            $filteredTotal = $query->count();
+            $query->skip($start)->take($length);
+            $data = $query->get();     
+           
+            $response = [
+                "draw" => intval($draw),
+                "recordsTotal" => $total,
+                "recordsFiltered" => $filteredTotal,
+                "data" => $data,
+            ];
+            return $response;
         }
+        
         return view('admin.dashboard', compact('page_title', 'page_description', 'counts'));
     }
 }

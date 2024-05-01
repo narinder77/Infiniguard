@@ -78,8 +78,8 @@
             <div class="table-responsive card-table rounded table-hover fs-14">
                 <table class="table border-no display mb-4 dataTablesCard project-bx dataTables_wrapper" id="CertifiedProvider">
                     <thead>
-                        <tr>
-                            <th> ID </th>
+                        <tr>                           
+                             <th>ID </th>                           
                             <th> Certified Providers </th>
                             <th> Certified Providers Administrator </th>
                             <th> Email </th>
@@ -93,7 +93,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th> ID </th>
+                             <th>ID </th>             
                             <th> Certified Providers </th>
                             <th> Certified Providers Administrator </th>
                             <th> Email </th>
@@ -142,7 +142,7 @@
                     }
                 },  
                 pagingType: "simple_numbers",
-                lengthMenu: [ 5, 10, 25, 50, 100],
+                lengthMenu: [5, 10, 25, 50, 100],
                 pageLength: 10,           
                 processing: true,
                 responsive: true,
@@ -154,11 +154,16 @@
                     },  
                 order: [[0, 'asc']],
                 columnDefs: [
-                    { orderable: false, "targets": [5, 6, 7] },
-                    { searchable: false, "targets": [5, 6, 7] },
+                    { orderable: false, "targets": [5,6, 7] },
+                    { searchable: false, "targets": [5,6, 7] },
+                     {
+                        'visible': false,
+                        'targets': [1]
+                    }
                 ],                                  
                 columns: [
-                    {data: 'DT_RowIndex', name: 'provider_id'},
+                    {data: 'provider_id', name: 'provider_id'},                  
+
                     {data: 'provider_name', name: 'provider_name'},
                     {data: 'provider_administrator', name: 'provider_administrator'},
                     {data: 'provider_email', name: 'provider_email'},
@@ -203,7 +208,9 @@
                         }
                     },
                 ]
-            });          
+            }); 
+           
+
             $('#CertifiedProvider tbody').on('click', 'tr', function() {
                 var data = CertifiedProvider.row(this).data();
             });

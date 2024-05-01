@@ -23,7 +23,8 @@ class ClientController extends Controller
 
         if ($request->ajax()) {
             $data = Client::with('certifiedProviders');
-            return DataTables::of($data)
+            
+            return DataTables::of($data)                   
                 ->orderColumn('provider_name', function ($query, $order) {
                     $query->join('certified_providers', 'clients.client_provider_id', '=', 'certified_providers.provider_id')
                         ->orderBy('certified_providers.provider_name', $order);
