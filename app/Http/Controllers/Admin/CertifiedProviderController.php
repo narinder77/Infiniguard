@@ -29,6 +29,7 @@ class CertifiedProviderController extends Controller
             $search = $request->get('search')['value'];
 
             $query = CertifiedProvider::query();
+            //$query->withTrashed();
 
             $total = $query->count();
 

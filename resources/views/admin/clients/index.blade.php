@@ -150,8 +150,8 @@
                         },
                     ],
                     columns: [{
-                            data: 'client_id',
-                            name: 'client_id'
+                            data: 'id',
+                            name: 'id'
                         },
                         {
                             data: 'client_company_name',
