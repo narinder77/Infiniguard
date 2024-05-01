@@ -7,6 +7,8 @@ use App\Models\GeneratedQrCode;
 use App\Models\RegisteredQrCode;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\RegisteredEquipmentExport;
 
 class RegisteredQrCodeController extends Controller
 {
@@ -14,7 +16,7 @@ class RegisteredQrCodeController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
+    {        
         $page_title = 'Registered Equipment';
         $page_description = 'Some description for the page';
 
@@ -172,5 +174,10 @@ class RegisteredQrCodeController extends Controller
     public function destroy(RegisteredQrCode $registeredQrCode)
     {
         //
+    }
+    public function exportdata() 
+    {
+        dd('test');
+       // return Excel::download(new RegisteredEquipmentExport, 'RegisteredEquipment.xlsx');
     }
 }

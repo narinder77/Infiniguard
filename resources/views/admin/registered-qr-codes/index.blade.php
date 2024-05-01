@@ -38,7 +38,7 @@
 	<div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
 		<h3 class="mb-0">Registered Equipments</h3>
 		<div>
-			<a href="#" class="btn btn-primary rounded">Download Data Into Spreadsheet</a>
+			<a href="{{ route('admin.registeredEqup.export') }}" class="btn btn-primary rounded">Download Data Into Spreadsheet</a>
 		</div>
 	</div>
 	<div class="row">
