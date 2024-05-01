@@ -22,7 +22,8 @@ class EmailDistributionListController extends Controller
         $page_description = 'Some description for the page';
 
         if ($request->ajax()) {
-            $emails = EmailDistributionList::all('id', 'email', 'created_at');
+            $emails = EmailDistributionList::query();
+            $emails->select('id', 'email', 'created_at');
             return DataTables::of($emails)
                 ->toJson();
         }
