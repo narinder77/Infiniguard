@@ -174,7 +174,7 @@ class CertifiedApplicatorController extends Controller
             if($certifiedApplicator){
                 $query = RegisteredQrCode::query();
                 $query->where('applicator_id', $certifiedApplicatorId);              
-                $query->with('certifiedApplicators', 'certifiedProviders', 'registeredEquipments');
+                $query->with('certifiedApplicators', 'certifiedProviders', 'registeredEquipments','EquipmentInspection');
                 
                 return DataTables::of($query)
                 ->orderColumn('equipment_qr_number', function ($query, $order) {

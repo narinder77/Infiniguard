@@ -9,10 +9,12 @@ use Yajra\DataTables\DataTables;
 use App\Models\CertifiedProvider;
 use App\Models\CertifiedApplicator;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request, CertifiedProvider $certifiedProvider){
+        
         $page_title = 'Dashboard';
         $page_description = 'Some description for the page';
         

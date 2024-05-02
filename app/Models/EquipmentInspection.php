@@ -32,6 +32,12 @@ class EquipmentInspection extends Model
             set: fn ($value) => json_encode(["condenser_image" => $value]),
         );
     } 
+    public function createdAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => Carbon::parse($value)->format('d/m/Y'),
+        );
+    }
     public function InspectionCabinetImage(): Attribute
     { 
         return Attribute::make(

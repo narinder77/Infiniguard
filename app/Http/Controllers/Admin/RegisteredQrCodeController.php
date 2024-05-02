@@ -23,7 +23,7 @@ class RegisteredQrCodeController extends Controller
 
         if ($request->ajax()) {
             $query = RegisteredQrCode::query();
-            $query->with('certifiedApplicators', 'certifiedProviders', 'registeredEquipments');
+            $query->with('certifiedApplicators', 'certifiedProviders', 'registeredEquipments','EquipmentInspection');
 
             return DataTables::of($query)
                 ->orderColumn('provider_name', function ($query, $order) {

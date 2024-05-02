@@ -15,7 +15,7 @@
                 <div class="modal-body">
                     <form id="applicatorForm"> 
                     @csrf 
-                        <input type="hidden" value="{{ $CertifiedProvider->provider_id }}" id="certifiedProviderId" name="applicator_provider_id" class="form-control">
+                        <input type="hidden" value="{{ $CertifiedProvider->provider_id ?? '' }}" id="certifiedProviderId" name="applicator_provider_id" class="form-control">
                     <div class="form-group">
                             <label class="text-black font-w500">Certification ID <span class="text-danger">*</span>
                             </label>

@@ -49,7 +49,7 @@ class EmailDistributionListController extends Controller
                 'message' => 'Email Added successfully',
                 'code' => 201
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
                 'errors' => [], 

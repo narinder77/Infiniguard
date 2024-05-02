@@ -17,7 +17,8 @@ class CertifiedProvider extends Authenticatable
 
     protected $table = 'certified_providers';
     protected $primaryKey = 'provider_id';
-
+    const ROLE_ADMIN = 'admin';
+    const ROLE_PROVIDER = 'provider';
     protected $fillable = [
         'provider_type',
         'provider_administrator',
@@ -48,11 +49,22 @@ class CertifiedProvider extends Authenticatable
     {
         return $this->provider_password;
     }
+
      public function getEmailForPasswordReset()
     {
         return $this->provider_email;
     }
     
+    public function isAdmin()
+    {
+        return $this->provider_type === '1'; 
+    }
+
+    public function isProvider()
+    {
+        return $this->provider_type === '2'; 
+    }
+
     public function CertifiedApplicators()
     {
         return $this->hasMany(CertifiedApplicator::class, 'applicator_provider_id', 'provider_id');

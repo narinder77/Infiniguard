@@ -47,6 +47,10 @@ class RegisteredQrCode extends Model
     {
         return $this->belongsTo(CertifiedApplicator::class, 'applicator_id');
     }
+    public function EquipmentInspection()
+    {
+        return $this->belongsTo(EquipmentInspection::class, 'equipment_qr_id');
+    }
 
     public function certifiedProviders()
     {
