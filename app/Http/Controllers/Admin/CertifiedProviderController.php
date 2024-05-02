@@ -7,6 +7,7 @@ use Yajra\DataTables\DataTables;
 use App\Models\CertifiedProvider;
 use App\Models\CertifiedApplicator;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -15,13 +16,14 @@ class CertifiedProviderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, CertifiedProvider $certifiedProvider)
     {
+       Gate::authorize('index',$certifiedProvider);
+
         $page_title = 'Certified Providers';
         $page_description = 'Some description for the page';
 
         if ($request->ajax()) {
-
             $data = CertifiedProvider::query();
             return DataTables::of($data)
             ->addIndexColumn()->setRowId('provider_id')
