@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\GeneratedQrCode;
 use App\Models\RegisteredQrCode;
 use Yajra\DataTables\DataTables;
+use App\Models\EquipmentInspection;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RegisteredEquipmentExport;
@@ -175,9 +176,25 @@ class RegisteredQrCodeController extends Controller
     {
         //
     }
-    public function exportdata() 
-    {
-        dd('test');
-       // return Excel::download(new RegisteredEquipmentExport, 'RegisteredEquipment.xlsx');
+    public function export() 
+    { 
+        
+        $data = RegisteredQrCode::join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
+                                ->join('certified_providers', 'certified_applicators.applicator_provider_id', '=', 'certified_providers.provider_id')
+                                ->join('generated_qr_codes', 'registered_qr_codes.equipment_qr_id', '=', 'generated_qr_codes.equipment_qr_id')
+                                ->select(
+                                    'registered_qr_codes.equipment_qr_id',
+                                    'certified_providers.provider_name',
+                                    'certified_applicators.applicator_certification_id',
+                                    'generated_qr_codes.equipment_qr_number',
+                                    'generated_qr_codes.equipment_serial_number',
+                                    'registered_qr_codes.created_at AS registered_created_at',
+                                    'registered_qr_codes.latitude',
+                                    'registered_qr_codes.longitude'
+                                ) 
+                                ->get();
+
+       return Excel::download(new RegisteredEquipmentExport($data), 'RegisteredEquipment.xlsx');
+
     }
 }

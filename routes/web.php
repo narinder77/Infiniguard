@@ -68,8 +68,7 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
      * This route for Registered Equipment
      */
     Route::resource('registered-equipments', RegisteredQrCodeController::class);
-    
-    Route::get('registered-equipments/export', [RegisteredQrCodeController::class,'exportdata'])->name('registeredEqup.export');
+    Route::get('/registered-equipments}', [RegisteredQrCodeController::class, 'export'])->name('register-equp.export');
 
     /**
      * This route for Equipment Inspection History
