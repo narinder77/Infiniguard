@@ -138,22 +138,14 @@
                         name: 'inspection_address'
                     },
                     {
-                        data: null,
-                        render: function(data, type, row, meta) {
-                            let status = row.equipment_claim_status;
-                            let equipment_claim_status = status == 1 ? 'answered' : 'unanswered';
-                            let className = status == 1 ? ' btn-info' : 'btn-warning';
-                            return `<a href="javascript:void(0)" class="btn ${className} d-block rounded" data-bs-toggle="modal" data-bs-target="#claimstatus">${equipment_claim_status}</a>`;
-                        }
+                        data: 'notes_link',
+                        name: 'notes_link'
+                   
                     },
                     {
-                        data: null,
-                        render: function(data, type, row, meta) {
-                            let equipment_claim_qr_id = row.equipment_claim_qr_id;
-                            url = "{{ route('admin.warranty-claims.edit', ':id') }}".replace(':id',
-                                equipment_claim_qr_id)
-                            return `<a href="${url}">View Maintenance History</a>`;
-                        }
+                        data: 'inspection_link',
+                        name: 'inspection_link'
+                     
                     },
                 ]
             });

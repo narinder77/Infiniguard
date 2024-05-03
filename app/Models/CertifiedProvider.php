@@ -44,7 +44,10 @@ class CertifiedProvider extends Authenticatable
             'provider_password' => 'hashed',
         ];
     }
-    
+    public function routeNotificationForMail()
+    {
+        return $this->provider_email;
+    }
     public function getAuthPassword()
     {
         return $this->provider_password;

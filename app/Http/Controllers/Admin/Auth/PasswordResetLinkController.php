@@ -13,11 +13,7 @@ class PasswordResetLinkController extends Controller
         $page_description = 'Some description for the page';
         return view('admin.auth.forgot-password', compact('page_title', 'page_description'));
     }
-    public function store(Request $request)
-    {
-        
-    }    
-    public function sendResetLinkEmail(Request $request)
+        public function store(Request $request)
     {
         $request->validate(['provider_email' => 'required|email']);
 

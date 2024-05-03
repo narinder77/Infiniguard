@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\GeneratedQrCode;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Models\EquipmentInspection;
@@ -15,6 +16,7 @@ class EquipmentInspectionHistoryController extends Controller
      */
     public function index(Request $request)
     {
+
     }
 
     /**
@@ -41,36 +43,56 @@ class EquipmentInspectionHistoryController extends Controller
         $page_title = 'warranty inspected records';
         $page_description = 'Some description for the page';
         if ($request->ajax()) {
-            $query = EquipmentInspection::query();
-            $query->where('inspection_equipment_qr_id', $id);
-            $query->orderBy('inspection_id', 'asc');
-            $data = $query->get();
-            return DataTables::of($data)
-                ->addColumn('date', function ($row) {
-                    $createdAt = $row->created_at;
-                    if (empty($createdAt) || !strtotime($createdAt)) {
-                        return 'd-m-Y';
-                    } else {
-                        return date('m-d-Y', strtotime($row->created_at));
-                    }
-                })
-                ->addColumn('time', function ($row) {
-                    $createdAt = $row->created_at;
-                    if (empty($createdAt) || !strtotime($createdAt)) {
-                        return '00:00:00';
-                    } else {
-                        return date('H:i:s', strtotime($row->created_at));
-                    }
-                })
-                ->addColumn('activity', function ($row) {
-                    $createdAt = $row->created_at;
-                    if (empty($createdAt) || !strtotime($createdAt)) {
-                        return '00:00:00';
-                    } else {
-                        return date('H:i:s', strtotime($row->created_at));
-                    }
-                })
-                ->toJson();
+            $query = GeneratedQrCode::query();
+            $query->where('equipment_qr_id', $id);
+            $query->with('registeredCodes','equipmentInspection');
+            $query->orderBy('equipment_qr_id', 'asc');         
+            $data = $query->first();
+
+            // dd($data->registeredCodes[0]->createdAt);
+            $formattedData = [];
+                foreach ($data->registeredCodes as $registered) {  
+                  
+                    $formattedData[]= [
+                        'inspection_id' => $registered->id,
+                        'date' => $registered->createdAt,
+                        'time' => $registered->time,
+                        'activity' => 'Registration', // Assuming this is hardcoded for now
+                        'inspection_address' => $registered->address,
+                        'notes_link' => '<a class="btn btn-success btn-just-icon btn-sm add-reg-notes" href="" title="Add Registration Notes">Registration Notes</a>',
+                        'inspection_link' => '<a class="btn btn-success btn-just-icon btn-sm add-reg-notes" href="" title="Add Registration Notes">View inspection pictures</a>',
+                    ];
+                }                
+                foreach ($data->equipmentInspection as $inspection) {   
+                   
+                 
+                    $formattedData[]= [
+                        'inspection_id' => $inspection->inspection_id,
+                        'date' => $inspection->createdAt,
+                        'time' => $inspection->time,
+                        'activity' => 'Maintenance', // Assuming this is hardcoded for now
+                        'inspection_address' => $inspection->inspection_address,
+                        'notes_link' => '<a class="btn btn-success btn-just-icon btn-sm add-reg-notes" href="" title="Add Registration Notes">Registration Notes</a>',
+                        'inspection_link' => '<a class="btn btn-success btn-just-icon btn-sm add-reg-notes" href="" title="Add Registration Notes">View inspection pictures</a>',
+                    ];
+                }
+                
+                return response()->json(['data' => $formattedData]);
+            // return DataTables::of($data)
+            //     ->addColumn('date', function ($row) {
+            //         return 'Maintenance';
+            //         //return $row->createdAt;      
+            //     })
+            //     ->addColumn('time', function ($row) {   
+            //         return 'Maintenance';               
+            //        // return $row->time;
+                    
+            //     })
+            //     ->addColumn('activity', function ($row) {
+            //        return 'Maintenance';
+                   
+            //     })
+            //     ->toJson();
         }
         return view('admin.inspection-history.show', compact('page_title', 'page_description'));
     }

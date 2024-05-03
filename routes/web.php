@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\Auth\PasswordController;
 use App\Http\Controllers\Admin\GeneratedQrCodeController;
+use App\Http\Controllers\Admin\Auth\NewPasswordController;
 use App\Http\Controllers\Admin\RegisteredQrCodeController;
 use App\Http\Controllers\Admin\CertifiedProviderController;
 use App\Http\Controllers\Admin\CertifiedApplicatorController;
@@ -28,7 +29,16 @@ Route::middleware('admin.guest')->prefix('admin')->name('admin.')->group(functio
     Route::get('login', [LoginController::class, 'create'])->name('login');
     Route::post('login', [LoginController::class, 'store']);
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('forgot-password');
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'sendResetLinkEmail'])->name('forgot-password-email');
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+    ->name('password.email');
+});
+
+Route::middleware('admin.guest')->prefix('admin')->group(function () {
+    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+                ->name('password.reset');
+                
+    Route::post('reset-password', [NewPasswordController::class, 'store'])
+    ->name('password.store');
 });
 
 Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {

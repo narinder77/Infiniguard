@@ -133,7 +133,7 @@
                         render: function (data, type, row, meta) {
                             let applicator_id = row.applicator_id;
                             let baseUrl = "{{ route('admin.applicators.show', '') }}";
-							 let inspectionDate = row.equipment_inspection ? row.equipment_inspection.created_at : 'No Maintenance Recorded';
+							 let inspectionDate = row.equipment_inspection != '' ? row.equipment_inspection[0].created_at : 'No Maintenance Recorded';
                             return `<a href="https://dev.infiniguard.com/inspection-record">${inspectionDate}</a>`;
                         }
                     },

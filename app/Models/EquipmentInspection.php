@@ -38,6 +38,10 @@ class EquipmentInspection extends Model
             get: fn ($value) => Carbon::parse($value)->format('d/m/Y'),
         );
     }
+    public function time(): Attribute
+    {
+        return Attribute::make(get: fn ($value) => Carbon::parse($value)->format('H:i'));
+    }
     public function InspectionCabinetImage(): Attribute
     { 
         return Attribute::make(

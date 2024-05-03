@@ -38,6 +38,10 @@ class RegisteredQrCode extends Model
             get: fn ($value) => Carbon::parse($value)->format('d/m/Y'),
         );
     }
+    public function time(): Attribute
+    {
+        return Attribute::make(get: fn ($value) => Carbon::parse($value)->format('H:i'));
+    }
     public function registeredEquipments()
     {
         return $this->belongsTo(GeneratedQrCode::class, 'equipment_qr_id');
@@ -47,9 +51,9 @@ class RegisteredQrCode extends Model
     {
         return $this->belongsTo(CertifiedApplicator::class, 'applicator_id');
     }
-    public function EquipmentInspection()
+    public function equipmentInspection()
     {
-        return $this->belongsTo(EquipmentInspection::class, 'equipment_qr_id');
+        return $this->hasMany(EquipmentInspection::class, 'inspection_equipment_qr_id','equipment_qr_id');
     }
 
     public function certifiedProviders()
