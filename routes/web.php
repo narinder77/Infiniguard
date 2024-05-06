@@ -83,7 +83,7 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     /**
      * This route for Equipment Inspection History
      */
-    Route::resource('warranty-claims/inspection-history', EquipmentInspectionHistoryController::class);
+    Route::resource('inspection-history', EquipmentInspectionHistoryController::class);
      /**
      * This route for Equipment Warranty Claim
      */

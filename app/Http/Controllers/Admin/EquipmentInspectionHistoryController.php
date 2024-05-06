@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\GeneratedQrCode;
 use Illuminate\Http\Request;
+use App\Models\GeneratedQrCode;
 use Yajra\DataTables\DataTables;
 use App\Models\EquipmentInspection;
 use App\Http\Controllers\Controller;
+use App\Models\EquipmentWarrantyClaim;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 
 class EquipmentInspectionHistoryController extends Controller
@@ -49,36 +50,41 @@ class EquipmentInspectionHistoryController extends Controller
             $query->orderBy('equipment_qr_id', 'asc');         
             $data = $query->first();
 
-            // dd($data->registeredCodes[0]->createdAt);
             $formattedData = [];
                 foreach ($data->registeredCodes as $registered) {  
-                  
+                 
                     $formattedData[]= [
                         'inspection_id' => $registered->id,
-                        'date' => $registered->createdAt,
-                        'time' => $registered->time,
+                        'date' => $registered->createdAt(),
+                        'time' => $registered->time(),
                         'activity' => 'Registration', // Assuming this is hardcoded for now
                         'inspection_address' => $registered->address,
-                        'notes_link' => '<a class="btn btn-success btn-just-icon btn-sm add-reg-notes" href="" title="Add Registration Notes">Registration Notes</a>',
-                        'inspection_link' => '<a class="btn btn-success btn-just-icon btn-sm add-reg-notes" href="" title="Add Registration Notes">View inspection pictures</a>',
+                        'notes_link' => '<a class="btn btn-primary rounded btn-sm add-reg-notes" href="" title="Add Registration Notes">Registration Notes</a>',
+                        'inspection_link' => '<a class="btn btn-primary rounded btn-sm add-reg-notes" href="" title="Add Registration Notes">View inspection pictures</a>',
                     ];
                 }                
                 foreach ($data->equipmentInspection as $inspection) {   
-                   
-                 
+
+                    $warranty=EquipmentWarrantyClaim::where('equipment_claim_inspection_id',$inspection->inspection_id)->first();
+                    if(isset($warranty->equipment_claim_status) && $warranty->equipment_claim_status == "1"){
+                        $notes=$warranty->equipment_claim_status == "1" ? 'Yes/answered' : 'Yes/unanswered';
+                    }else{
+                        $notes='No';
+                    }
+                                 
                     $formattedData[]= [
                         'inspection_id' => $inspection->inspection_id,
-                        'date' => $inspection->createdAt,
-                        'time' => $inspection->time,
+                        'date' => $inspection->createdAt(),
+                        'time' => $inspection->time(),
                         'activity' => 'Maintenance', // Assuming this is hardcoded for now
                         'inspection_address' => $inspection->inspection_address,
-                        'notes_link' => '<a class="btn btn-success btn-just-icon btn-sm add-reg-notes" href="" title="Add Registration Notes">Registration Notes</a>',
-                        'inspection_link' => '<a class="btn btn-success btn-just-icon btn-sm add-reg-notes" href="" title="Add Registration Notes">View inspection pictures</a>',
+                        'notes_link' => '<a class="btn btn-primary rounded btn-sm add-reg-notes" href="" title="Add Registration Notes">'.$notes.'</a>',
+                        'inspection_link' => '<a class="btn btn-primary rounded btn-sm add-reg-notes" href="" title="Add Registration Notes">View inspection pictures</a>',
                     ];
                 }
                 
                 return response()->json(['data' => $formattedData]);
-            // return DataTables::of($data)
+            // return DataTables::of($formattedData)
             //     ->addColumn('date', function ($row) {
             //         return 'Maintenance';
             //         //return $row->createdAt;      
