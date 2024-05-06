@@ -138,7 +138,7 @@ class CertifiedApplicatorController extends Controller
 
             session()->flash('success', 'Status updated successfully');
             // Return a response
-            return response()->json(['message' => 'Status updated successfully']);
+            return response()->json(['status'=>true,'message' => 'Status updated successfully']);
 
         } catch (\Exception $e) {
             // Other errors occurred

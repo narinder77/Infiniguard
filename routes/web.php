@@ -79,15 +79,21 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
      */
     Route::resource('registered-equipments', RegisteredQrCodeController::class);
     Route::get('/registered-equipments}', [RegisteredQrCodeController::class, 'export'])->name('register-equp.export');
+    Route::post('/Inspected_equip/update_reg_note/{id}', [RegisteredQrCodeController::class, 'updateNotes'])->name('register-equp.updateNotes');
+    Route::get('/Inspected_equip/view_registered_images/cond/{id}', [RegisteredQrCodeController::class, 'viewImage'])->name('register-equp.viewImage');
 
     /**
      * This route for Equipment Inspection History
      */
     Route::resource('inspection-history', EquipmentInspectionHistoryController::class);
+    Route::get('inspection-report/download-pdf', [EquipmentInspectionHistoryController::class,'downloadPdf'])->name('insepection.downloadPdf');
+
      /**
      * This route for Equipment Warranty Claim
      */
     Route::resource('warranty-claims', EquipmentWarrantyClaimController::class);
+    Route::get('/Inspected_equip/view_images/cond/{id}', [EquipmentWarrantyClaimController::class, 'viewImage'])->name('inpspection.viewImage');
+
     /**
      * This route for Clients
      */

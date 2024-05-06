@@ -3,7 +3,7 @@
 @section('content')
     <div class="container-fluid">
         <!-- Add Order -->
-        <div class="modal fade" id="status-modal">
+        <div class="modal fade modal-lg" id="update-notes">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -12,32 +12,45 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form>
+                        <form id="updaeNotesForm">
                             @csrf
-                            <div class="form-group">
+                            <div class="form-group claim_status">
                                 <label class="text-black font-w500">Status</label>
-                                <select class="form-select form-control" aria-label="Default select example">
-                                    <option selected>Answered</option>
-                                    <option value="1">Unanswered</option>
+                                <select name="equipment_claim_status" id="equipment_claim_status" class="form-select form-control" aria-label="Default select example">
+                                    <option value="1" selected>Answered</option>
+                                    <option value="0">Unanswered</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label class="text-black font-w500">Notes<span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="" rows="3"></textarea>
+                                <textarea class="form-control" name="equipment_claim_notes" id="equipment_claim_notes" rows="3"></textarea>
                             </div>
                             <div class="form-group">
-                                <button type="button" class="btn btn-primary">SUBMIT</button>
+                                <button type="button" id="updateBtn" class="btn btn-primary">Update</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+        @php
+          $equip_data=array();
+        if($qr_number->registeredCodes[0]->condenser=="1"){
+            $equip_data[]='condenser coils';
+        }
+        if($qr_number->registeredCodes[0]->cabinet=="1"){
+            $equip_data[]='cabinet';
+        }
+        //if($qr_number->registeredCodes[0]->evaporator!="0"){
+        //    $equip_data[]='evaporator coils '.$qr_number->registeredCodes[0]->evaporator;
+       // }
+        $equip_data = implode(' and ', $equip_data)
+        @endphp
         <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
-            <h3 class="mb-0">Warranty Inspected Records</h3>
+            <h3 class="mb-0"> INFINIGUARD&#174;  Record for QR {{ $qr_number->equipment_qr_number}}, {{$equip_data}} <br> protected with INFINIGUARD®</h3>
             <div>
                 <a href="{{ url('qr-client-information') }}" class="btn btn-primary rounded">Client</a>
-                <a href="#" class="btn btn-primary rounded">Download Inspection Report</a>
+                <a href="{{ route('admin.insepection.downloadPdf') }}" class="btn btn-primary rounded">Download Inspection Report</a>
             </div>
         </div>
         <div class="row">
@@ -153,5 +166,92 @@
                 var data = table.row(this).data();
             });
         })(jQuery);
+
+        $(document).on('click', '.add-notes', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            var type = $(this).data('type');
+            var url = type == "registration" ? "{{ route('admin.registered-equipments.edit', ':id') }}" : "{{ route('admin.warranty-claims.edit', ':id') }}";
+            url = url.replace(':id', id);
+
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success: function(response) {
+                    if (response.status) {
+                        var editId='';
+                        var notes='';
+                        if(response.type == "register"){
+                             $('.claim_status').hide();
+                            editId=response.data.id;
+                            notes=response.data.notes;
+
+                        }else if(response.type == "warranty"){
+                            editId=response.data.equipment_claim_id;
+                             $('.claim_status').show();
+                            $('#equipment_claim_status').val(response.data.equipment_claim_status);
+                             notes=response.data.equipment_claim_notes;
+                        }else{
+                            editId=response.data.inspection_id;
+                            $('.claim_status').hide();
+                             notes=response.data.inspection_notes;
+                        }   
+                        $('#updateBtn').attr('data-type',response.type);
+                        $('#updateBtn').attr('data-id',editId);
+                        $('#equipment_claim_notes').val(notes);
+                        changeModelContent(response.title, 'Update',  'update', 'type', response.type, 'update-notes');
+   
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        });
+
+        $(document).on('click', '#updateBtn', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            var type=$(this).attr('data-type');
+            var id=$(this).attr('data-id');
+            var formData = new FormData($('#updaeNotesForm')[0]);
+            var url = type == "register" ? "{{ route('admin.register-equp.updateNotes', ':id') }}" : "{{ route('admin.warranty-claims.update', ':id') }}";
+            url = url.replace(':id', id);         
+
+            $.ajax({
+                type: 'POST',
+                url: url, // Use the store route for creating new providers
+                data: formData,
+                processData: false,
+                contentType: false,
+                 beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}'); // Set CSRF token
+                    if (type != 'register') {
+                        xhr.setRequestHeader('X-HTTP-Method-Override', 'PUT'); // Set method override for Laravel (only for updating)
+                    }
+                },
+                success: function(response) {
+                    $('#add-profile').modal('hide');              
+                  if(response.status){
+                     showAlert('success', response.message, null)    
+                    }else{
+                       showAlert('danger', response.message, null)
+                    }                                           
+                    $('#WarrantyInspectedRecords').DataTable().ajax.reload();
+
+                },
+                error: function(xhr, status, error) {
+                   if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        var errors = xhr.responseJSON.errors;                        
+                        showValidationErorrs(errors);
+                    } else {
+                        // Handle other types of errors
+                       $('#add-profile').modal('hide');
+                       showAlert('danger', xhr.responseJSON.message, null)
+                        // You can display a generic error message here
+                    }
+                }
+            });
+        });
+
     </script>
 @endpush

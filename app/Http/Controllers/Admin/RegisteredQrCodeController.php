@@ -146,9 +146,16 @@ class RegisteredQrCodeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(RegisteredQrCode $registeredQrCode)
+    public function edit($id)
     {
-        //
+        $registeredQrCode = RegisteredQrCode::where('id', $id)->select('equipment_qr_id','id','notes','created_at')->first();
+        $generatedQrCode = GeneratedQrCode::where('equipment_qr_id', $registeredQrCode->equipment_qr_id)
+            ->first();
+
+        $title = "INFINIGUARD® Notes For QR" . $generatedQrCode->equipment_qr_number . " : " . $registeredQrCode->createdAt() . ' ' . $registeredQrCode->time();
+
+        return response()->json(['status' => true, 'type' => "register", 'data' => $registeredQrCode, 'title' => $title]);
+
     }
 
     /**
@@ -166,6 +173,25 @@ class RegisteredQrCodeController extends Controller
             $query->save();
 
             return response()->json(['status'=>true,'message' => 'Serial Number updated sucessfully!'],200);
+
+        } catch (\Exception $e) {
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while updating the Serial Number!'], 500);
+        }
+
+    }
+    public function updateNotes(Request $request, $registeredEquipmentId)
+    {
+        $request->validate([
+            'equipment_claim_notes' => 'required|string|max:255',
+       ]);  
+       try {  
+            $query = RegisteredQrCode::find($registeredEquipmentId);
+            $query->notes=$request->equipment_claim_notes;
+            $query->save();
+
+            return response()->json(['status'=>true,'message' => 'Record updated sucessfully!'],200);
 
         } catch (\Exception $e) {
             // Other errors occurred
@@ -202,5 +228,9 @@ class RegisteredQrCodeController extends Controller
 
        return Excel::download(new RegisteredEquipmentExport($data), 'RegisteredEquipment.xlsx');
 
+    }
+
+    public function viewImage($id){
+        dd($id);
     }
 }
