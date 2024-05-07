@@ -138,7 +138,7 @@ class CertifiedApplicatorController extends Controller
 
             session()->flash('success', 'Status updated successfully');
             // Return a response
-            return response()->json(['message' => 'Status updated successfully']);
+            return response()->json(['status'=>true,'message' => 'Status updated successfully']);
 
         } catch (\Exception $e) {
             // Other errors occurred
@@ -174,9 +174,17 @@ class CertifiedApplicatorController extends Controller
             if($certifiedApplicator){
                 $query = RegisteredQrCode::query();
                 $query->where('applicator_id', $certifiedApplicatorId);              
-                $query->with('certifiedApplicators', 'certifiedProviders', 'registeredEquipments');
+                $query->with([
+                    'certifiedApplicators', 
+                    'certifiedProviders', 
+                    'registeredEquipments', 
+                    'equipmentInspection' => function ($query) {
+                        $query->take(1); // Limiting to one record
+                    }
+                ]);
                 
                 return DataTables::of($query)
+                
                 ->orderColumn('equipment_qr_number', function ($query, $order) {
                     $query->orderBy('equipment_qr_id', $order);
                 })

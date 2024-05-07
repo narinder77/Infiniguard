@@ -38,7 +38,7 @@
 	<div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
 		<h3 class="mb-0">Registered Equipments</h3>
 		<div>
-			<a href="#" class="btn btn-primary rounded">Download Data Into Spreadsheet</a>
+			<a href="{{ route('admin.register-equp.export') }}" class="btn btn-primary rounded">Download Data Into Spreadsheet</a>
 		</div>
 	</div>
 	<div class="row">
@@ -133,7 +133,8 @@
                         render: function (data, type, row, meta) {
                             let applicator_id = row.applicator_id;
                             let baseUrl = "{{ route('admin.applicators.show', '') }}";
-                            return `<a href="https://dev.infiniguard.com/inspection-record">No Maintenance Recorded</a>`;
+							 let inspectionDate = row.equipment_inspection != '' ? row.equipment_inspection[0].created_at : 'No Maintenance Recorded';
+                            return `<a href="https://dev.infiniguard.com/inspection-record">${inspectionDate}</a>`;
                         }
                     },
                 ]

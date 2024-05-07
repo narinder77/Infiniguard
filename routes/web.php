@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\Auth\PasswordController;
 use App\Http\Controllers\Admin\GeneratedQrCodeController;
+use App\Http\Controllers\Admin\Auth\NewPasswordController;
 use App\Http\Controllers\Admin\RegisteredQrCodeController;
 use App\Http\Controllers\Admin\CertifiedProviderController;
 use App\Http\Controllers\Admin\CertifiedApplicatorController;
@@ -28,7 +29,16 @@ Route::middleware('admin.guest')->prefix('admin')->name('admin.')->group(functio
     Route::get('login', [LoginController::class, 'create'])->name('login');
     Route::post('login', [LoginController::class, 'store']);
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('forgot-password');
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('forgot-password-email');
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+    ->name('password.email');
+});
+
+Route::middleware('admin.guest')->prefix('admin')->group(function () {
+    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+                ->name('password.reset');
+                
+    Route::post('reset-password', [NewPasswordController::class, 'store'])
+    ->name('password.store');
 });
 
 Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
@@ -68,14 +78,22 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
      * This route for Registered Equipment
      */
     Route::resource('registered-equipments', RegisteredQrCodeController::class);
+    Route::get('/registered-equipments}', [RegisteredQrCodeController::class, 'export'])->name('register-equp.export');
+    Route::post('/Inspected_equip/update_reg_note/{id}', [RegisteredQrCodeController::class, 'updateNotes'])->name('register-equp.updateNotes');
+    Route::get('/Inspected_equip/view_registered_images/cond/{id}', [RegisteredQrCodeController::class, 'viewImage'])->name('register-equp.viewImage');
+
     /**
      * This route for Equipment Inspection History
      */
-    Route::resource('warranty-claims/inspection-history', EquipmentInspectionHistoryController::class);
+    Route::resource('inspection-history', EquipmentInspectionHistoryController::class);
+    Route::get('inspection-report/download-pdf', [EquipmentInspectionHistoryController::class,'downloadPdf'])->name('insepection.downloadPdf');
+
      /**
      * This route for Equipment Warranty Claim
      */
     Route::resource('warranty-claims', EquipmentWarrantyClaimController::class);
+    Route::get('/Inspected_equip/view_images/cond/{id}', [EquipmentWarrantyClaimController::class, 'viewImage'])->name('inpspection.viewImage');
+
     /**
      * This route for Clients
      */

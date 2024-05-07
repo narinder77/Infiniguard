@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\GeneratedQrCode;
 use App\Models\RegisteredQrCode;
 use Yajra\DataTables\DataTables;
+use App\Models\EquipmentInspection;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\RegisteredEquipmentExport;
 
 class RegisteredQrCodeController extends Controller
 {
@@ -14,14 +17,20 @@ class RegisteredQrCodeController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
+    {        
         $page_title = 'Registered Equipment';
         $page_description = 'Some description for the page';
 
         if ($request->ajax()) {
             $query = RegisteredQrCode::query();
-            $query->with('certifiedApplicators', 'certifiedProviders', 'registeredEquipments');
-
+            $query->with([
+                'certifiedApplicators', 
+                'certifiedProviders', 
+                'registeredEquipments', 
+                'equipmentInspection' => function ($query) {
+                    $query->take(1); // Limiting to one record
+                }
+            ]);
             return DataTables::of($query)
                 ->orderColumn('provider_name', function ($query, $order) {
                     $query->join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
@@ -137,9 +146,16 @@ class RegisteredQrCodeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(RegisteredQrCode $registeredQrCode)
+    public function edit($id)
     {
-        //
+        $registeredQrCode = RegisteredQrCode::where('id', $id)->select('equipment_qr_id','id','notes','created_at')->first();
+        $generatedQrCode = GeneratedQrCode::where('equipment_qr_id', $registeredQrCode->equipment_qr_id)
+            ->first();
+
+        $title = "INFINIGUARD® Notes For QR" . $generatedQrCode->equipment_qr_number . " : " . $registeredQrCode->createdAt() . ' ' . $registeredQrCode->time();
+
+        return response()->json(['status' => true, 'type' => "register", 'data' => $registeredQrCode, 'title' => $title]);
+
     }
 
     /**
@@ -165,6 +181,25 @@ class RegisteredQrCodeController extends Controller
         }
 
     }
+    public function updateNotes(Request $request, $registeredEquipmentId)
+    {
+        $request->validate([
+            'equipment_claim_notes' => 'required|string|max:255',
+       ]);  
+       try {  
+            $query = RegisteredQrCode::find($registeredEquipmentId);
+            $query->notes=$request->equipment_claim_notes;
+            $query->save();
+
+            return response()->json(['status'=>true,'message' => 'Record updated sucessfully!'],200);
+
+        } catch (\Exception $e) {
+            // Other errors occurred
+            \Log::error($e->getMessage() . ' in ' . $e->getFile() . ' Line No. ' . $e->getLine());
+            return response()->json(['status' => false, 'message' => 'An error occurred while updating the Serial Number!'], 500);
+        }
+
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -172,5 +207,30 @@ class RegisteredQrCodeController extends Controller
     public function destroy(RegisteredQrCode $registeredQrCode)
     {
         //
+    }
+    public function export() 
+    { 
+        
+        $data = RegisteredQrCode::join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
+                                ->join('certified_providers', 'certified_applicators.applicator_provider_id', '=', 'certified_providers.provider_id')
+                                ->join('generated_qr_codes', 'registered_qr_codes.equipment_qr_id', '=', 'generated_qr_codes.equipment_qr_id')
+                                ->select(
+                                    'registered_qr_codes.equipment_qr_id',
+                                    'certified_providers.provider_name',
+                                    'certified_applicators.applicator_certification_id',
+                                    'generated_qr_codes.equipment_qr_number',
+                                    'generated_qr_codes.equipment_serial_number',
+                                    'registered_qr_codes.created_at AS registered_created_at',
+                                    'registered_qr_codes.latitude',
+                                    'registered_qr_codes.longitude'
+                                ) 
+                                ->get();
+
+       return Excel::download(new RegisteredEquipmentExport($data), 'RegisteredEquipment.xlsx');
+
+    }
+
+    public function viewImage($id){
+        dd($id);
     }
 }

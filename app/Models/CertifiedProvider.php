@@ -6,11 +6,14 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class CertifiedProvider extends Authenticatable
 {
     use HasFactory, Notifiable;
+    use CanResetPasswordTrait;
 
     protected $table = 'certified_providers';
     protected $primaryKey = 'provider_id';
@@ -41,19 +44,28 @@ class CertifiedProvider extends Authenticatable
             'provider_password' => 'hashed',
         ];
     }
-    
+    public function routeNotificationForMail()
+    {
+        return $this->provider_email;
+    }
     public function getAuthPassword()
     {
         return $this->provider_password;
     }
+
+     public function getEmailForPasswordReset()
+    {
+        return $this->provider_email;
+    }
+    
     public function isAdmin()
     {
-        return $this->role === self::ROLE_ADMIN;
+        return $this->provider_type === '1'; 
     }
 
     public function isProvider()
     {
-        return $this->role === self::ROLE_PROVIDER;
+        return $this->provider_type === '2'; 
     }
 
     public function CertifiedApplicators()

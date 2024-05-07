@@ -18,7 +18,7 @@ class CertifiedProviderController extends Controller
      */
     public function index(Request $request, CertifiedProvider $certifiedProvider)
     {
-       Gate::authorize('index',$certifiedProvider);
+    //    Gate::authorize('index',$certifiedProvider);
 
         $page_title = 'Certified Providers';
         $page_description = 'Some description for the page';
@@ -158,14 +158,14 @@ class CertifiedProviderController extends Controller
                  'providerEmail' => 'required|email|unique:certified_providers,provider_email,' . $request->certifiedProviderId . ',provider_id',
              ]);       
                               
-     try {                 
+     try {       
+        dd($request);          
      
             $provider =CertifiedProvider::find($request->certifiedProviderId);
 
             $provider->provider_administrator = $request->providerAdministrator;
             $provider->provider_name = $request->providerName;
             $provider->provider_email = $request->providerEmail;
-            $provider->provider_password = Hash::make($request->providerPassword);
             $provider->provider_phone = $request->providerPhone;
 
             if($request->has('providerLogo')){

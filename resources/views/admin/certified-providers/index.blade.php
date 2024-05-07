@@ -6,7 +6,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="title">Add INFINIGUARD® Certified Provider</h5>
+                    <h5 class="modal-title" id="title">Add INFINIGUARD® Certified Service Provider</h5>
                     <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span>
                     </button>
                 </div>
@@ -68,7 +68,7 @@
         </div>
     </div>
     <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
-        <h3 class="mb-0">INFINIGUARD® Certified Providers</h3>
+        <h3 class="mb-0">INFINIGUARD® Certified Service Providers</h3>
         <div>
             <a href="#" class="btn btn-primary rounded add-provider" data-curd="add" data-bs-toggle="modal" data-bs-target="#add-profile">Add</a>
         </div>
@@ -264,7 +264,7 @@
 
                      if(response.status){                                              
                         var baseUrl="{{ asset('/storage') }}";
-                       changeModelContent('Edit INFINIGUARD® Certified Provider', 'Update',  'update', 'certifiedProviderId', response.data.provider_id, 'add-profile');
+                       changeModelContent('Edit INFINIGUARD® Certified Service Provider', 'Update',  'update', 'certifiedProviderId', response.data.provider_id, 'add-profile');
 
                         $('#providerAdministrator').val(response.data.provider_administrator);
                         $('#providerName').val(response.data.provider_name);
@@ -282,7 +282,7 @@
                     }
                 });
             }else{
-                changeModelContent('ADD INFINIGUARD® Certified Provider','submit', 'submit', null, null, 'add-profile');
+                changeModelContent('ADD INFINIGUARD® Certified Service Provider','submit', 'submit', null, null, 'add-profile');
                 $('#submitBtn').attr('data-curd','add');
                 $('#providerAdministrator').val('');
                 $('#providerName').val('');

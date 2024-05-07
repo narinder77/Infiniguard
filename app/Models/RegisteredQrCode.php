@@ -32,11 +32,13 @@ class RegisteredQrCode extends Model
     protected $casts = [
         'additional_image' => 'json',
     ];
-    public function createdAt(): Attribute
+    public function createdAt(): string
     {
-        return Attribute::make(
-            get: fn ($value) => Carbon::parse($value)->format('d/m/Y'),
-        );
+        return Carbon::parse($this->created_at)->format('d/m/Y');
+    }
+    public function time(): string
+    {
+        return Carbon::parse($this->created_at)->format('H:i');
     }
     public function registeredEquipments()
     {
@@ -46,6 +48,10 @@ class RegisteredQrCode extends Model
     public function certifiedApplicators()
     {
         return $this->belongsTo(CertifiedApplicator::class, 'applicator_id');
+    }
+    public function equipmentInspection()
+    {
+        return $this->hasMany(EquipmentInspection::class, 'inspection_equipment_qr_id','equipment_qr_id');
     }
 
     public function certifiedProviders()
