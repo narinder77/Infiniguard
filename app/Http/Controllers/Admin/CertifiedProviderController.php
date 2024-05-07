@@ -69,7 +69,7 @@ class CertifiedProviderController extends Controller
                 $provider->provider_logo_image = $path;        
             }
 
-            if($request->has('providerLogo')){
+            if($request->has('providerImage')){
                 $providerProfileImagePath = $request->file('providerImage')->store('public/provider_profile_images');
                 $path2=str_replace('public/','', $providerProfileImagePath); 
                 $provider->provider_profile_image = $path2;
