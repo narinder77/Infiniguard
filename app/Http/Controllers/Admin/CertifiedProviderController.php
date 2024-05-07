@@ -69,7 +69,7 @@ class CertifiedProviderController extends Controller
                 $provider->provider_logo_image = $path;        
             }
 
-            if($request->has('providerLogo')){
+            if($request->has('providerImage')){
                 $providerProfileImagePath = $request->file('providerImage')->store('public/provider_profile_images');
                 $path2=str_replace('public/','', $providerProfileImagePath); 
                 $provider->provider_profile_image = $path2;
@@ -158,9 +158,7 @@ class CertifiedProviderController extends Controller
                  'providerEmail' => 'required|email|unique:certified_providers,provider_email,' . $request->certifiedProviderId . ',provider_id',
              ]);       
                               
-     try {       
-        dd($request);          
-     
+     try {            
             $provider =CertifiedProvider::find($request->certifiedProviderId);
 
             $provider->provider_administrator = $request->providerAdministrator;
@@ -174,7 +172,7 @@ class CertifiedProviderController extends Controller
                 $provider->provider_logo_image = $path;        
             }
 
-            if($request->has('providerLogo')){
+            if($request->has('providerImage')){
                 $providerProfileImagePath = $request->file('providerImage')->store('public/provider_profile_images');
                 $path2=str_replace('public/','', $providerProfileImagePath); 
                 $provider->provider_profile_image = $path2;

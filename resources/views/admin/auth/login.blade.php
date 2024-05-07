@@ -55,6 +55,9 @@
 							<div class="mb-3">
 								<label class="mb-1"><strong>Password</strong></label>
 								<input type="password" name="password" class="form-control">
+								@error('password')
+								<div class="invalid-feedback d-block">{{ $message }}</div>
+								@enderror	
 							</div>
 							<div class="row d-flex justify-content-between mt-4 mb-2">
 								<div class="mb-3">

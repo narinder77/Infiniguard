@@ -78,3 +78,8 @@ table.dataTable.display>tbody>tr:nth-child(odd)>* {
 .btn.btn-warning {
     padding: 5px 12px !important;
 }
+#alert-container {
+    position: fixed;
+    width: 84%;
+    z-index: 999;
+}

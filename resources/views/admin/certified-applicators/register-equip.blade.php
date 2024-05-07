@@ -85,8 +85,8 @@
                         render: function (data, type, row, meta) {
                             let id = row.registered_equipments.equipment_qr_id;
                             let baseUrl = "{{ route('admin.inspection-history.show', '') }}";
-                            let inspectionDate = row.equipment_inspection != ''  ? row.equipment_inspection[0].created_at : 'No Maintenance Recorded';
-                            return `<a href="${baseUrl}/${id}">${inspectionDate}</a>`;
+                            //let inspectionDate = row.equipment_inspection != ''  ? row.equipment_inspection[0].created_at : 'No Maintenance Recorded';
+                            return `<a href="${baseUrl}/${id}">${row.maintenance_date}</a>`;
                         }
                     },
                 ]

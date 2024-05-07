@@ -101,7 +101,7 @@ class CertifiedProvidersTableSeeder extends Seeder
             'provider_logo_image' => 'company_logo',
             'provider_profile_image' => 'profile_image',
             'provider_email' => 'infiniguard@example.com',
-            'provider_phone' => 'company_phone',
+            'provider_phone' => '123456789',
             'provider_password' =>Hash::make('password'),
             'provider_status' => '1',
             'created_at' => now(),

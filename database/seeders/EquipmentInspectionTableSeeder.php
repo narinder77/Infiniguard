@@ -81,10 +81,11 @@ class EquipmentInspectionTableSeeder extends Seeder
             } else {
                 $item['evaporator_image'] =  json_encode([$item['evaporator_image1'], $item['evaporator_image2']]);
             }
-            if (empty($item['additionalImage1']) && empty($item['additionalImage1'])) {
+            if (empty($item['additionalImage1']) && empty($item['additionalImage2'])) {
                 $item['additional_image'] = null;
             } else {
-                $item['additional_image'] =  json_encode([$item['additionalImage1'], $item['additionalImage2']]);
+                $item['additional_image'] =  json_encode([$item['additionalImage1'],$item['additionalImage2']]);
+
             }
             $inspectionData = [
                 'inspection_id' => $item['id'],

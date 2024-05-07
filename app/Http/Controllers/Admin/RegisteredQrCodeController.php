@@ -32,6 +32,9 @@ class RegisteredQrCodeController extends Controller
                 }
             ]);
             return DataTables::of($query)
+                ->addColumn('created_at',function ($row){    
+                    return $row->createdAt();
+                })
                 ->orderColumn('provider_name', function ($query, $order) {
                     $query->join('certified_applicators', 'registered_qr_codes.applicator_id', '=', 'certified_applicators.applicator_id')
                         ->join('certified_providers', 'certified_applicators.applicator_provider_id', '=', 'certified_providers.provider_id')
@@ -231,6 +234,28 @@ class RegisteredQrCodeController extends Controller
     }
 
     public function viewImage($id){
-        dd($id);
+       \Log::info($id);
+        $register_qr=RegisteredQrCode::with('registeredEquipments')->where('id', $id)->first();
+        $equip_data=array();
+        if($register_qr->condenser=="1"){
+            $equip_data[]='condenser coils';
+        }
+        if($register_qr->cabinet=="1"){
+            $equip_data[]='cabinet';
+        }
+        //if($register_qr->evaporator!="0"){
+        //    $equip_data[]='evaporator coils '.$register_qr->evaporator;
+       // }
+       
+       $equip_data = implode(' and ', $equip_data);
+
+       $date =$register_qr->createdAt();
+      $time=$register_qr->time();
+
+      $page_title="View Image";
+      $page_description="";
+       $title="Pictures for INFINIGUARD® QR". $register_qr->registeredEquipments->equipment_qr_number. " , ". $date . " " .$time. " , ".$equip_data. " protected with INFINIGUARD®";
+        return view('admin.inspection-history.view-image',compact('page_title','page_description','title','register_qr'));
     }
+
 }

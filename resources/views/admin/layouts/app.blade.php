@@ -168,6 +168,7 @@
             <script src="{{ asset($script) }}" type="text/javascript"></script>
         @endforeach
     @endif
+
     <script type="text/javascript">
         /*============================================================
         Code for sending csrf token on each ajax request
@@ -226,7 +227,7 @@
             $('#alert-container').append(alert);
             setTimeout(function() {
                 alert.alert('close');
-            }, 2000);
+            }, 5000);
         }
         /*==============================================================
          Function for change title and button text and class

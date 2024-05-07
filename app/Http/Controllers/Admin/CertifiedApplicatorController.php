@@ -184,7 +184,16 @@ class CertifiedApplicatorController extends Controller
                 ]);
                 
                 return DataTables::of($query)
-                
+                ->addColumn('maintenance_date',function ($row){                  
+                   if(isset($row->equipmentInspection[0])){
+                     return $row->equipmentInspection[0]->createdAt();
+                   }else{
+                     return "No Maintenance Recorded";
+                   }
+                })
+                ->addColumn('created_at',function ($row){    
+                      return $row->createdAt();
+                 })
                 ->orderColumn('equipment_qr_number', function ($query, $order) {
                     $query->orderBy('equipment_qr_id', $order);
                 })
