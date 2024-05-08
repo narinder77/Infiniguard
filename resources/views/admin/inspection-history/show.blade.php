@@ -33,23 +33,97 @@
                 </div>
             </div>
         </div>
-        @php
-          $equip_data=array();
-        if($qr_number->registeredCodes[0]->condenser=="1"){
-            $equip_data[]='condenser coils';
-        }
-        if($qr_number->registeredCodes[0]->cabinet=="1"){
-            $equip_data[]='cabinet';
-        }
-        //if($qr_number->registeredCodes[0]->evaporator!="0"){
-        //    $equip_data[]='evaporator coils '.$qr_number->registeredCodes[0]->evaporator;
-       // }
-        $equip_data = implode(' and ', $equip_data)
-        @endphp
-        <div class="heading-part d-lg-flex d-block mb-3 pb-3 border-bottom justify-content-between align-items-center">
-            <h3 class="mb-0"> INFINIGUARD&#174;  Record for QR {{ $qr_number->equipment_qr_number}}, {{$equip_data}} <br> protected with INFINIGUARD®</h3>
-            <div>
-                <a href="{{ url('qr-client-information') }}" class="btn btn-primary rounded">Client</a>
+        <div class="modal modal-lg fade" id="client-info">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Client information for INFINIGUARD® QR number {{ $qr_number->equipment_qr_number ?? '' }}</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addClientForm">
+                        @csrf
+                        <div class="form-group">
+                            <label class="text-black font-w500">Client<span class="text-danger">*</span></label>                            
+                             <select name="client_provider_id" class="form-select form-control" aria-label="Default select example">
+                             <option value="">test</option>                                
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="text-black font-w500">Maintenance Reminder<span class="text-danger">*</span></label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                                <label class="form-check-label" for="flexRadioDefault1">
+                                    Yes
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                                <label class="form-check-label" for="flexRadioDefault2">
+                                    No
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-black font-w500">Next Maintenance Reminder Date<span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="client_phone" class="form-control">
+                            </div>
+                        </div>                     
+
+                        <div class="form-group">
+                            <label class="text-black font-w500">Reminder Language<span class="text-danger">*</span></label>
+                            <select name="client_provider_id" class="form-select form-control" aria-label="Default select example">
+                             <option value="1" selected>English</option> 
+                             <option value="2">Spanish</option>                                
+                            </select>
+                        </div><hr>
+
+                        <div class="form-check my-3">
+                        <input class="form-check-input" type="checkbox" value="1" id="additional-info">
+                        <label class="form-check-label" for="additional-info">
+                            Additional Contact Info
+                        </label>                       
+                        </div> 
+                        <div id="contact-div">
+                            <div class="row contact-row">
+                                <div class="col-5">          
+                                    <div class="form-group">
+                                        <label class="text-black font-w500">Contact Name<span
+                                                class="text-danger">*</span></label>
+                                        <input type="password" name="client_password" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-5"> 
+                                    <div class="form-group">
+                                        <label class="text-black font-w500">Email<span
+                                                class="text-danger">*</span></label>
+                                        <input type="password" name="client_password" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-2 d-flex justify-content-center mt-4">
+                                    <div class="form-group text-end">
+                                        <button type="button" class="btn btn-danger remove-contact"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                    </div>                              
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group text-end">
+                            <button type="button" class="btn btn-success add-contact"><i class="fa fa-plus" aria-hidden="true"></i>  Add Contact</button>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="button" class="btn btn-primary">SUBMIT</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+     </div>
+      
+        <div class="heading-part d-block mb-3 pb-3 border-bottom">
+            <h3 class="mb-0"> {{$title}}</h3>
+            <div class="text-end mt-3">
+                <a href="javascript:void(0)" data-bs-toggle="modal" data-id="{{ $qr_number->equipment_qr_id }}" data-bs-target="#client-info" class="btn btn-primary rounded client-btn">Client</a>
                 <a href="{{ route('admin.insepection.downloadPdf') }}" class="btn btn-primary rounded">Download Inspection Report</a>
             </div>
         </div>
@@ -253,5 +327,72 @@
             });
         });
 
+    $(document).ready(function(){
+
+        $(document).on("click",".client-btn", function(){
+            var id =$(this).attr("data-id");
+                var url = "{{ route('admin.client-info', ':id') }}";
+                    url = url.replace(':id', id);
+                
+                $.ajax({
+                    type: 'GET',
+                    url: url, 
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {                    
+
+                     if(response.status){                                              
+                        var baseUrl="{{ asset('/storage') }}";
+                       $('#providerAdministrator').val();
+                       
+                     }
+                    },
+                    error: function(xhr, status, error) {
+                       console.log(error);
+                    }
+                });        
+        })
+
+        // Add contact
+        $(document).on("click",".add-contact",function(){
+            addContact();
+        });
+
+        // Remove contact
+        $(document).on("click", ".remove-contact", function(){
+            $(this).closest('.contact-row').remove();
+        });
+        $(document).on('change','#additional-info', function(){
+            if($(this).is(":checked")) {
+                 $('#contact-div').empty();
+            } else {
+               addContact();
+            }
+        })
+
+        function addContact(){
+                var contactRow = `<div class="row contact-row"> 
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="text-black font-w500">Contact Name<span class="text-danger">*</span></label>
+                                        <input type="text" name="contact_name[]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="text-black font-w500">Email<span class="text-danger">*</span></label>
+                                        <input type="email" name="contact_email[]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2 d-flex justify-content-center mt-4">
+                                    <div class="form-group text-end">
+                                        <button type="button" class="btn btn-danger remove-contact"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+                            </div>`;
+            $("#contact-div").append(contactRow);
+        }
+    });
+    
     </script>
 @endpush

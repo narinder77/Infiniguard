@@ -97,7 +97,8 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     /**
      * This route for Clients
      */
-    Route::resource('clients', ClientController::class)->except('create','show');
+    Route::resource('clients', ClientController::class);
+    Route::get('clients/info/{id}', [ClientController::class,"clientInfo"])->name("client-info");
     /**
      * This route for Clents
      */

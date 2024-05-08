@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Client;
+use App\Models\ClientEquipment;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Models\CertifiedProvider;
@@ -134,5 +135,15 @@ class ClientController extends Controller
     public function destroy(Client $client)
     {
         //
+    }
+
+    public function clientInfo($id)
+    {
+        $client=Client::select('client_id','client_company_name','client_firstname','client_lastname')->get();
+        $clientEquipment=ClientEquipment::where('equipment_qr_id',$id)->first();
+        $client_additional_info=json_decode($clientEquipment->client_additional_info);
+
+        return response()->json(['status'=>true,"clientData"=>$client,"clientEquipmentData"=>$clientEquipment,"clientAdditionalInfo"=>$client_additional_info], 200);
+
     }
 }

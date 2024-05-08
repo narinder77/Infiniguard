@@ -1,5 +1,89 @@
 @extends('admin.layouts.app')
+<style>
+		/**
+ * EasyZoom core styles
+ */
+.easyzoom {
+	position: relative;
 
+	/* 'Shrink-wrap' the element */
+	display: inline-block;
+	*display: inline;
+	*zoom: 1;
+}
+
+.easyzoom img {
+	vertical-align: bottom;
+}
+
+.easyzoom.is-loading img {
+	cursor: progress;
+}
+
+.easyzoom.is-ready img {
+	cursor: crosshair;
+}
+
+.easyzoom.is-error  img {
+	cursor: not-allowed;
+}
+
+.easyzoom-notice {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 150;
+	width: 10em;
+	margin: -1em 0 0 -5em;
+	line-height: 2em;
+	text-align: center;
+	background: #FFF;
+	box-shadow: 0 0 10px #888;
+}
+
+.easyzoom-flyout {
+	position:absolute;
+	z-index: 100;
+	overflow: hidden;
+	background: #FFF;
+}
+
+/**
+ * EasyZoom layout variations
+ */
+.easyzoom--overlay .easyzoom-flyout {
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.easyzoom--adjacent .easyzoom-flyout {
+	top: 0;
+	left: 100%;
+	width: 100%;
+	height: 100%;
+	margin-left: 20px;
+}
+.thumbnails {
+	overflow: hidden;
+	margin: 1em 0;
+	padding: 0;
+	text-align: center;
+}
+
+.thumbnails li {
+	display: inline-block;
+	width: 140px;
+	margin: 0 5px;
+}
+
+.thumbnails img {
+	display: block;
+	min-width: 100%;
+	max-width: 100%;
+}
+</style>
 @section('content')
 	<div class="modal fade" id="update-serial">
 		<div class="modal-dialog" role="document">
@@ -40,60 +124,61 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-12 ">   
-                <div class="row text-center">
-                  @if($register_qr->model_number_image)             
-                        <div class="col-4">
-                            <div class="card">
-                                <div class="card-body">
-                                <div id="zoom_01">
-                                    <img class="img-fluid" src="{{ asset('assets/images/profile/17.jpg') }}" data-zoom-image="{{ asset('assets/images/profile/17.jpg') }}"/>
-                                </div>
-                               
-                                {{-- <img class="img-fluid" src="{{ asset('/storage/'.$register_qr->model_number_image) }}"> --}}
-                                </div>  
-                            </div>                    
-                        </div>
-                    @endif
-                    @if($register_qr->serial_number_image)             
-                        <div class="col-4">
-                            <div class="card">
-                                <div class="card-body">
-                                <img class="img-fluid" src="{{ asset('assets/images/profile/17.jpg') }}">
-                                {{-- <img class="img-fluid" src="{{ asset('/storage/'.$register_qr->serial_number_image) }}"> --}}
-                                </div>  
-                            </div>                    
-                        </div>
-                    @endif
-                    @if($register_qr->distant_image)             
-                        <div class="col-4">
-                            <div class="card">
-                                <div class="card-body">
-                                <img class="img-fluid" src="{{ asset('/storage/'.$register_qr->distant_image) }}">
-                                </div>  
-                            </div>                    
-                        </div>
-                    @endif
-                    @if($register_qr->additional_image && ($additionalImages = json_decode($register_qr->additional_image)))
-                        @foreach($additionalImages as $image)
-                            @if($image)
-                                <div class="col-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <img class="img-fluid" src="{{ asset('/storage/' .$image) }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                        @endforeach
-                    @endif
+            <div class="col-lg-12 "> 
+            <div class="card">
+               <div class="card-body">   
+                <div class="row">
+                @if($register_qr->model_number_image)             
+                <div class="col-6">
+                    <div style="float: right; width: 310px; height: 400px; background: #EEE;"></div>
+                    <div class="easyzoom easyzoom--adjacent">
+                        <a href="{{asset('assets/images/inspection-pictures/1546344124_condenser_coil1.jpg') }}">
+                            <img src="{{asset('assets/images/inspection-pictures/1546344124_condenser_coil1.jpg') }}" alt="" width="310" height="400" />
+                        </a>
+                    </div>
                 </div>
+                 @endif
+                @if($register_qr->serial_number_image)
+                <div class="col-6">
+                    <div style="float: right; width: 310px; height: 400px; background: #EEE;"></div>
+                    <div class="easyzoom easyzoom--adjacent">
+                        <a href="{{asset('assets/images/inspection-pictures/1546344124_condenser_coil1.jpg') }}">
+                            <img src="{{asset('assets/images/inspection-pictures/1546344124_condenser_coil1.jpg') }}" alt="" width="310" height="400" />
+                        </a>
+                    </div>
+                </div>
+                @endif
+                @if($register_qr->distant_image) 
+                <div class="col-6">
+                    <div style="float: right; width: 310px; height: 400px; background: #EEE;"></div>
+                    <div class="easyzoom easyzoom--adjacent">
+                        <a href="{{asset('assets/images/inspection-pictures/1546344124_condenser_coil1.jpg') }}">
+                            <img src="{{asset('assets/images/inspection-pictures/1546344124_condenser_coil1.jpg') }}" alt="" width="310" height="400" />
+                        </a>
+                    </div>
+                </div>
+                @endif
+                 @if($register_qr->additional_image && ($additionalImages = json_decode($register_qr->additional_image)))
+                    @foreach($additionalImages as $image)
+                        @if($image)
+                        <div class="col-6">
+                            <div style="float: right; width: 310px; height: 400px; background: #EEE;"></div>
+                            <div class="easyzoom easyzoom--adjacent">
+                                <a href="{{asset('assets/images/inspection-pictures/1546344124_condenser_coil1.jpg') }}">
+                                    <img src="{{asset('assets/images/inspection-pictures/1546344124_condenser_coil1.jpg') }}" alt="" width="310" height="400" />
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+                    @endforeach
+                @endif
+                </div></div>
             </div>
         </div>
     </div>
 @endsection
 @push('scripts')
-    <script src='{{ asset('assets/js/jquery.elevatezoom.js') }}'></script>
+    <script src='{{ asset('assets/js/easyzoom.js') }}'></script>
     <script>
     $(document).ready(function() {      
 
@@ -170,12 +255,36 @@
             showSerialNumbMatchMessage();
         });
 
-   /*  $('#zoom_01').elevateZoom({
+    /* $('#zoom_01').elevateZoom({
         zoomType: "inner",
         cursor: "crosshair",
         zoomWindowFadeIn: 500,
         zoomWindowFadeOut: 750
         });  */
+    var $easyzoom = $('.easyzoom').easyZoom({
+        zoomWindowWidth: 800, // Increase the zoom window width
+        zoomWindowHeight: 800 // Increase the zoom window height
+    });
+    var api = $easyzoom.data('easyZoom');
+    $('.easyzoom').on('mouseenter', function() {
+      
+        $(window).on('scroll', function() {
+            var scrollPercentage = ($(this).scrollTop() / ($(document).height() - $(window).height())) * 100;
+            var maxZoomLevel = 2; // Maximum zoom level
+            var minZoomLevel = 1; // Minimum zoom level
+        
+            // Adjust zoom level based on scroll percentage
+            var zoomLevel = minZoomLevel + ((maxZoomLevel - minZoomLevel) * (scrollPercentage / 100));
+            console.log(zoomLevel);
+            // Set zoom level if opts exist
+          if (api && api.opts) {
+                api.opts.zoomLevel = zoomLevel;
+            }
+        });
+    }).on('mouseleave', function() {
+        $(window).off('scroll'); // Unbind scroll event when mouse leaves
+    });
+
     }); 
     </script>
 @endpush

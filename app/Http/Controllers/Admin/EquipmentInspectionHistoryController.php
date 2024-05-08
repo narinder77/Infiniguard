@@ -83,10 +83,24 @@ class EquipmentInspectionHistoryController extends Controller
         }
     
         $qr_number = GeneratedQrCode::with('registeredCodes')->where('equipment_qr_id', $id)->first();
+        $equip_data=array();
+        if($qr_number->registeredCodes[0]->condenser=="1"){
+            $equip_data[]='condenser coils';
+        }
+        if($qr_number->registeredCodes[0]->cabinet=="1"){
+            $equip_data[]='cabinet';
+        }
+        //if($qr_number->registeredCodes[0]->evaporator!="0"){
+        //    $equip_data[]='evaporator coils '.$qr_number->registeredCodes[0]->evaporator;
+       // }
+       
+        $equip_data = implode(' and ', $equip_data);
+        $title="INFINIGUARD®  Record for QR " .$qr_number->equipment_qr_number. " , " .$equip_data. " protected with INFINIGUARD®";
+
         $page_title = 'warranty inspected records';
         $page_description = 'Some description for the page';
     
-        return view('admin.inspection-history.show', compact('page_title', 'page_description', 'qr_number'));
+        return view('admin.inspection-history.show', compact('page_title', 'page_description', 'qr_number','title'));
     }
     
 
