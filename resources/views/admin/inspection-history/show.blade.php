@@ -42,45 +42,60 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="addClientForm">
+                    <form id="addClientEquipmentForm">
+                    <input type="hidden" name="qr_id" value="{{ $qr_number->equipment_qr_id }}">
                         @csrf
                         <div class="form-group">
                             <label class="text-black font-w500">Client<span class="text-danger">*</span></label>                            
-                             <select name="client_provider_id" class="form-select form-control" aria-label="Default select example">
-                             <option value="">test</option>                                
+                                <select name="client_id" required id="client_id" class="form-select form-control" aria-label="Default select example">
+                                <option value="" selected>Select client</option>   
+                                @forelse($clients as $client)
+                                    <option value="{{ $client->client_id }}">{{ $client->provider_name ?? ""}} {{ $client->client_firstname ?? "" }} {{ $client->client_lastname ?? ""}}</option>   
+                                @empty
+                                    <option value=""></option>   
+                                @endforelse
+                                                        
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="text-black font-w500">Maintenance Reminder<span class="text-danger">*</span></label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                                <label class="form-check-label" for="flexRadioDefault1">
+                                <input class="form-check-input" type="radio" value="1" name="maintenanceReminder" id="reminder1" checked>
+                                <label class="form-check-label" for="reminder1">
                                     Yes
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-                                <label class="form-check-label" for="flexRadioDefault2">
+                                <input class="form-check-input" type="radio" value="0" name="maintenanceReminder" id="reminder2">
+                                <label class="form-check-label" for="reminder2">
                                     No
                                 </label>
                             </div>
                             <div class="form-group">
+                                <label class="text-black font-w500">Days until maintenance reminder<span
+                                        class="text-danger">*</span></label>
+                                <input type="number" required min="1" max="90" name="reminderDays" id="reminderDays" class="form-control">
+                            <div class="text-danger d-none remider-alert">
+                                Value must be greater than 0 and less than 90.
+                            </div>
+                            </div>
+                            <div class="form-group">
                                 <label class="text-black font-w500">Next Maintenance Reminder Date<span
                                         class="text-danger">*</span></label>
-                                <input type="text" name="client_phone" class="form-control">
+                                <input type="text" name="nextReminderDate" id="nextReminderDate" class="form-control">
                             </div>
                         </div>                     
 
                         <div class="form-group">
                             <label class="text-black font-w500">Reminder Language<span class="text-danger">*</span></label>
-                            <select name="client_provider_id" class="form-select form-control" aria-label="Default select example">
+                            <select name="reminderLang" required id="reminderLang" class="form-select form-control" aria-label="Default select example">
                              <option value="1" selected>English</option> 
                              <option value="2">Spanish</option>                                
                             </select>
                         </div><hr>
 
                         <div class="form-check my-3">
-                        <input class="form-check-input" type="checkbox" value="1" id="additional-info">
+                        <input class="form-check-input" name="additionalInfo" checked type="checkbox" value="1" id="additional-info">
                         <label class="form-check-label" for="additional-info">
                             Additional Contact Info
                         </label>                       
@@ -91,14 +106,14 @@
                                     <div class="form-group">
                                         <label class="text-black font-w500">Contact Name<span
                                                 class="text-danger">*</span></label>
-                                        <input type="password" name="client_password" class="form-control">
+                                        <input type="password" required name="client_password" class="form-control contact-email">
                                     </div>
                                 </div>
                                 <div class="col-5"> 
                                     <div class="form-group">
                                         <label class="text-black font-w500">Email<span
                                                 class="text-danger">*</span></label>
-                                        <input type="password" name="client_password" class="form-control">
+                                        <input type="password" required name="client_password" class="form-control contact-email">
                                     </div>
                                 </div>
                                 <div class="col-2 d-flex justify-content-center mt-4">
@@ -106,13 +121,14 @@
                                         <button type="button" class="btn btn-danger remove-contact"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                                     </div>                              
                                 </div>
+                                
                             </div>
                         </div>
                         <div class="form-group text-end">
                             <button type="button" class="btn btn-success add-contact"><i class="fa fa-plus" aria-hidden="true"></i>  Add Contact</button>
                         </div>
                         <div class="form-group text-center">
-                            <button type="button" class="btn btn-primary">SUBMIT</button>
+                            <button type="button" id="submitBtn" class="btn btn-primary">SUBMIT</button>
                         </div>
                     </form>
                 </div>
@@ -124,7 +140,7 @@
             <h3 class="mb-0"> {{$title}}</h3>
             <div class="text-end mt-3">
                 <a href="javascript:void(0)" data-bs-toggle="modal" data-id="{{ $qr_number->equipment_qr_id }}" data-bs-target="#client-info" class="btn btn-primary rounded client-btn">Client</a>
-                <a href="{{ route('admin.insepection.downloadPdf') }}" class="btn btn-primary rounded">Download Inspection Report</a>
+                <a href="{{ route('admin.insepection.downloadPdf',$qr_number->equipment_qr_id) }}" class="btn btn-primary rounded">Download Inspection Report</a>
             </div>
         </div>
         <div class="row">
@@ -329,7 +345,8 @@
 
     $(document).ready(function(){
 
-        $(document).on("click",".client-btn", function(){
+        $(document).on("click",".client-btn", function(e){
+              e.preventDefault(); 
             var id =$(this).attr("data-id");
                 var url = "{{ route('admin.client-info', ':id') }}";
                     url = url.replace(':id', id);
@@ -341,10 +358,24 @@
                     contentType: false,
                     success: function(response) {                    
 
-                     if(response.status){                                              
-                        var baseUrl="{{ asset('/storage') }}";
-                       $('#providerAdministrator').val();
-                       
+                     if(response.status){ 
+                        $("#client_id").val(response.clientEquipmentData.client_id ?? '');
+                        if(response.clientEquipmentData.client_maintenance_reminder == 1){
+                            $("#reminder1").attr("checked", true);
+                        }else{
+                            $("#reminder2").attr("checked", true);
+                        }
+                        $("#nextReminderDate").val(response.nextReminderDate ?? '');
+                        $("#reminderLang").val(response.clientEquipmentData.client_reminder_language ?? '');
+                        $("#reminderDays").val(response.clientEquipmentData.client_reminder_days);
+                        if(response.clientAdditionalInfo){
+                            var client_info=response.clientAdditionalInfo; 
+                             $('#contact-div').empty();
+                            $.each(client_info, function(index, client) {
+                                addContact(client);
+                            });
+                        }                                          
+                      
                      }
                     },
                     error: function(xhr, status, error) {
@@ -362,26 +393,27 @@
         $(document).on("click", ".remove-contact", function(){
             $(this).closest('.contact-row').remove();
         });
+
         $(document).on('change','#additional-info', function(){
             if($(this).is(":checked")) {
-                 $('#contact-div').empty();
+                $('#contact-div').show();               
             } else {
-               addContact();
+                $('#contact-div').hide();
             }
-        })
+        })        
 
-        function addContact(){
+        function addContact(client=""){
                 var contactRow = `<div class="row contact-row"> 
                                 <div class="col-md-5">
                                     <div class="form-group">
                                         <label class="text-black font-w500">Contact Name<span class="text-danger">*</span></label>
-                                        <input type="text" name="contact_name[]" class="form-control">
+                                        <input type="text" required value="${client.ContactName ?? ""}" name="contact_name[]" class="form-control contact-email">
                                     </div>
                                 </div>
                                 <div class="col-md-5">
                                     <div class="form-group">
                                         <label class="text-black font-w500">Email<span class="text-danger">*</span></label>
-                                        <input type="email" name="contact_email[]" class="form-control">
+                                        <input type="email" required value="${client.Email ?? ""}" name="contact_email[]" class="form-control contact-email">
                                     </div>
                                 </div>
                                 <div class="col-md-2 d-flex justify-content-center mt-4">
@@ -392,7 +424,83 @@
                             </div>`;
             $("#contact-div").append(contactRow);
         }
+
+        $(document).on("input","#reminderDays", function(e){
+            e.preventDefault(); 
+
+            var value=$(this).val();
+            if(value != "" && value <= 0 || value > 90)
+            {
+                $(".remider-alert").removeClass("d-none");
+            }else{
+                $(".remider-alert").addClass("d-none");
+            }
+
+        })
+
+        $(document).on('click', '#submitBtn', function(e) {
+            e.preventDefault();
+            var error=emailVlidation();
+            console.log(error);
+
+            var formData = new FormData($('#addClientEquipmentForm')[0]);
+            var url="{{ route('admin.store-client-equipment') }}";
+                       
+            $.ajax({
+                type: 'POST',
+                url: url, // Use the store route for creating new providers
+                data: formData,
+                processData: false,
+                contentType: false,             
+                success: function(response) {
+                    $('#add-profile').modal('hide');              
+                  if(response.status){
+                     showAlert('success', response.message, null)    
+                    }else{
+                       showAlert('danger', response.message, null)
+                    }                                           
+                    $('#CertifiedProvider').DataTable().ajax.reload();
+
+                },
+                error: function(xhr, status, error) {
+                   if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        var errors = xhr.responseJSON.errors;                        
+                        showValidationErorrs(errors);
+                    } else {
+                        // Handle other types of errors
+                       $('#add-profile').modal('hide');
+                       showAlert('danger', xhr.responseJSON.message, null)
+                        // You can display a generic error message here
+                    }
+                }
+            });
+        });
     });
-    
+
+    emailVlidation();
+
+    function emailVlidation(){
+       $(document).on('blur','.contact-email',function() {
+        var currentEmail = $(this).val();
+        var existingEmails = [];
+        $('.contact-email').not(this).each(function() {
+            existingEmails.push($(this).val());
+        });
+        if ($.inArray(currentEmail, existingEmails) !== -1) {
+            $(this).val('');
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+                var field =$(this);
+                field.addClass('is-invalid');
+                field.after('<div class="invalid-feedback">Email must be unique</div>');
+
+                // Remove error message and invalid class when the field is focused
+                field.focus(function() {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                });
+        }
+     });
+    }
     </script>
 @endpush

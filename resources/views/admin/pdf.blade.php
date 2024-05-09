@@ -21,8 +21,7 @@
             </tr>
         </thead>
         <tbody>
-        @dd($formattedData)
-            @foreach($formattedData as $data)
+            {{-- @foreach($formattedData as $data)
             <tr>
                 <td>{{ $data['inspection_id'] }}</td>
                 <td>{{ $data['date'] }}</td>
@@ -32,7 +31,7 @@
                 <td>{!! $data['notes_link'] !!}</td>
                 <td>{!! $data['inspection_link'] !!}</td>
             </tr>
-            @endforeach
+            @endforeach --}}
         </tbody>
     </table>
 </body>

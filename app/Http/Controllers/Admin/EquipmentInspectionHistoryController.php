@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Barryvdh\DomPDF\PDF;
+use App\Models\Client;
+use PDF;
 use Illuminate\Http\Request;
 use App\Models\GeneratedQrCode;
 use Yajra\DataTables\DataTables;
@@ -96,11 +97,12 @@ class EquipmentInspectionHistoryController extends Controller
        
         $equip_data = implode(' and ', $equip_data);
         $title="INFINIGUARD®  Record for QR " .$qr_number->equipment_qr_number. " , " .$equip_data. " protected with INFINIGUARD®";
-
+        $clients = Client::join('certified_providers','certified_providers.provider_id','=','clients.client_provider_id')
+                            ->select('clients.client_id', 'clients.client_company_name', 'clients.client_firstname', 'clients.client_lastname','certified_providers.provider_name')->get();
         $page_title = 'warranty inspected records';
         $page_description = 'Some description for the page';
     
-        return view('admin.inspection-history.show', compact('page_title', 'page_description', 'qr_number','title'));
+        return view('admin.inspection-history.show', compact('page_title', 'page_description', 'clients','qr_number','title'));
     }
     
 
@@ -141,12 +143,36 @@ class EquipmentInspectionHistoryController extends Controller
             'inspection_link' => '<a class="btn btn-primary rounded btn-sm add-reg-notes" href="' .($activity == 'Registration' ? route('admin.register-equp.viewImage',$data->id) :  route('admin.inpspection.viewImage',$data->inspection_id)) . '">View inspection pictures</a>',
         ];
     }
-    public function downloadPdf(){
-        $formattedData="test";
-        dd($formattedData);
-        // $pdf = PDF::loadView('admin.pdf', compact('formattedData'))->setPaper('a4', 'landscape');
+    public function downloadPdf($id){
+       
+        $data = GeneratedQrCode::with(['registeredCodes', 'equipmentInspection' => function ($query) {
+            $query->with(['warrantyClaims' => function ($query) {
+                $query->select('equipment_claim_inspection_id', 'equipment_claim_status');
+            }]);
+        }])->where('equipment_qr_id', $id)->first();
+        $formattedData = [];
+    
+            foreach ($data->registeredCodes as $registered) {
+                $formattedData[] = $this->formatData($registered, 'Registration');
+            }
+    
+            foreach ($data->equipmentInspection as $inspection) 
+            {
+                if(isset($inspection->warrantyClaims[0])){
+                    $className = $inspection->warrantyClaims[0]->equipment_claim_status == "1" ? ' btn-success' : 'btn-warning';
+                    $notes = $inspection->warrantyClaims[0]->equipment_claim_status == "1" ? 'Yes/answered' : 'Yes/unanswered';
+                }else{
+                    $className = 'btn-secondary';
 
-        // dd($pdf);
-        // return $pdf->download('data_report.pdf');
+                    $notes ='No';
+                }
+               
+                $formattedData[] = $this->formatData($inspection, 'Maintenance', $notes,$className);
+            }
+    
+
+            $pdf = PDF::loadView('admin.pdf',$formattedData);
+
+        return $pdf->download('admin.pdf');
     }
 }
