@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Client;
 use PDF;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Models\GeneratedQrCode;
 use Yajra\DataTables\DataTables;
+use App\Models\CertifiedApplicator;
 use App\Models\EquipmentInspection;
 use App\Http\Controllers\Controller;
 use App\Models\EquipmentWarrantyClaim;
@@ -149,30 +150,40 @@ class EquipmentInspectionHistoryController extends Controller
             $query->with(['warrantyClaims' => function ($query) {
                 $query->select('equipment_claim_inspection_id', 'equipment_claim_status');
             }]);
-        }])->where('equipment_qr_id', $id)->first();
+        }])->where('equipment_qr_id', $id)->first(); 
+        $applicator=CertifiedApplicator::where('applicator_id',$data->registeredCodes[0]->applicator_id)->select('applicator_certification_id')->first();       
+        $qr_number=$data->equipment_qr_number;
+        $certification_id=$applicator->applicator_certification_id;
+        $image1=asset('storage/'.$data->registeredCodes[0]->model_number_image);
+        $image2=asset('storage/'.$data->registeredCodes[0]->serial_number_image);
+
         $formattedData = [];
     
             foreach ($data->registeredCodes as $registered) {
-                $formattedData[] = $this->formatData($registered, 'Registration');
+                $formattedData[] = $this->pdfData($registered, 'Registration');
             }
     
             foreach ($data->equipmentInspection as $inspection) 
             {
                 if(isset($inspection->warrantyClaims[0])){
-                    $className = $inspection->warrantyClaims[0]->equipment_claim_status == "1" ? ' btn-success' : 'btn-warning';
-                    $notes = $inspection->warrantyClaims[0]->equipment_claim_status == "1" ? 'Yes/answered' : 'Yes/unanswered';
+                    $warrantyClaim = $inspection->warrantyClaims[0]->equipment_claim_status == "1" ? 'Yes/answered' : 'Yes/unanswered';
                 }else{
-                    $className = 'btn-secondary';
-
-                    $notes ='No';
+                    $warrantyClaim ='No';
                 }
                
-                $formattedData[] = $this->formatData($inspection, 'Maintenance', $notes,$className);
+                $formattedData[] = $this->pdfData($inspection, 'Maintenance', $warrantyClaim);
             }
-    
-
-            $pdf = PDF::loadView('admin.pdf',$formattedData);
-
+            $pdf = PDF::loadView('admin.pdf',compact('formattedData','qr_number','certification_id'));
         return $pdf->download('admin.pdf');
+    }
+    private function pdfData($data, $activity, $warrantyClaim = null){
+        return [
+            'type'=>$activity == 'Registration'? 'Registration' : 'Inspection',
+            'date' => $data->createdAt(),
+            'time' => $data->time(),
+            'inspection_address' => $activity == 'Registration' ? $data->address : $data->inspection_address,
+            'notes' => $activity == 'Registration' ? $data->notes : $data->inspection_notes,
+            'warrantyClaim' =>$warrantyClaim,
+        ]; 
     }
 }
