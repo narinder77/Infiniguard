@@ -86,7 +86,7 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
      * This route for Equipment Inspection History
      */
     Route::resource('inspection-history', EquipmentInspectionHistoryController::class);
-    Route::get('inspection-report/download-pdf', [EquipmentInspectionHistoryController::class,'downloadPdf'])->name('insepection.downloadPdf');
+    Route::get('inspection-report/download-pdf/{id}', [EquipmentInspectionHistoryController::class,'downloadPdf'])->name('insepection.downloadPdf');
 
      /**
      * This route for Equipment Warranty Claim
@@ -97,7 +97,9 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     /**
      * This route for Clients
      */
-    Route::resource('clients', ClientController::class)->except('create','show');
+    Route::resource('clients', ClientController::class);
+    Route::get('clients/info/{id}', [ClientController::class,"clientInfo"])->name("client-info");
+    Route::post('clients/info/store', [ClientController::class,"storeClientEquipment"])->name("store-client-equipment");
     /**
      * This route for Clents
      */

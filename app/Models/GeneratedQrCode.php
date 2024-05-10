@@ -29,5 +29,8 @@ class GeneratedQrCode extends Model
     {
         return $this->hasMany(EquipmentInspection::class, 'inspection_equipment_qr_id','equipment_qr_id');
     }
-    
+    public function clientEquipment()
+    {
+        return $this->hasMany(ClientEquipment::class,'equipment_qr_id');        
+    }
 }

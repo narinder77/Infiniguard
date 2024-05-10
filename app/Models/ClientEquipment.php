@@ -12,4 +12,14 @@ class ClientEquipment extends Model
     protected $table = "client_equipments";
     protected $primaryKey = 'client_equipment_id';
 
+    protected $fillable = [
+        'equipment_qr_id',
+        'client_id',
+        'client_maintenance_reminder',
+        'client_reminder_days',
+        'client_reminder_language',
+        'client_additional_info',       
+        
+    ];
+
 }

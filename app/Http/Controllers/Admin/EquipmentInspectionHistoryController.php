@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Barryvdh\DomPDF\PDF;
+use PDF;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Models\GeneratedQrCode;
 use Yajra\DataTables\DataTables;
+use App\Models\CertifiedApplicator;
 use App\Models\EquipmentInspection;
 use App\Http\Controllers\Controller;
 use App\Models\EquipmentWarrantyClaim;
@@ -83,10 +85,25 @@ class EquipmentInspectionHistoryController extends Controller
         }
     
         $qr_number = GeneratedQrCode::with('registeredCodes')->where('equipment_qr_id', $id)->first();
+        $equip_data=array();
+        if($qr_number->registeredCodes[0]->condenser=="1"){
+            $equip_data[]='condenser coils';
+        }
+        if($qr_number->registeredCodes[0]->cabinet=="1"){
+            $equip_data[]='cabinet';
+        }
+        //if($qr_number->registeredCodes[0]->evaporator!="0"){
+        //    $equip_data[]='evaporator coils '.$qr_number->registeredCodes[0]->evaporator;
+       // }
+       
+        $equip_data = implode(' and ', $equip_data);
+        $title="INFINIGUARD®  Record for QR " .$qr_number->equipment_qr_number. " , " .$equip_data. " protected with INFINIGUARD®";
+        $clients = Client::join('certified_providers','certified_providers.provider_id','=','clients.client_provider_id')
+                            ->select('clients.client_id', 'clients.client_company_name', 'clients.client_firstname', 'clients.client_lastname','certified_providers.provider_name')->get();
         $page_title = 'warranty inspected records';
         $page_description = 'Some description for the page';
     
-        return view('admin.inspection-history.show', compact('page_title', 'page_description', 'qr_number'));
+        return view('admin.inspection-history.show', compact('page_title', 'page_description', 'clients','qr_number','title'));
     }
     
 
@@ -127,12 +144,46 @@ class EquipmentInspectionHistoryController extends Controller
             'inspection_link' => '<a class="btn btn-primary rounded btn-sm add-reg-notes" href="' .($activity == 'Registration' ? route('admin.register-equp.viewImage',$data->id) :  route('admin.inpspection.viewImage',$data->inspection_id)) . '">View inspection pictures</a>',
         ];
     }
-    public function downloadPdf(){
-        $formattedData="test";
-        dd($formattedData);
-        // $pdf = PDF::loadView('admin.pdf', compact('formattedData'))->setPaper('a4', 'landscape');
+    public function downloadPdf($id){
+       
+        $data = GeneratedQrCode::with(['registeredCodes', 'equipmentInspection' => function ($query) {
+            $query->with(['warrantyClaims' => function ($query) {
+                $query->select('equipment_claim_inspection_id', 'equipment_claim_status');
+            }]);
+        }])->where('equipment_qr_id', $id)->first(); 
+        $applicator=CertifiedApplicator::where('applicator_id',$data->registeredCodes[0]->applicator_id)->select('applicator_certification_id')->first();       
+        $qr_number=$data->equipment_qr_number;
+        $certification_id=$applicator->applicator_certification_id;
+        $image1=asset('storage/'.$data->registeredCodes[0]->model_number_image);
+        $image2=asset('storage/'.$data->registeredCodes[0]->serial_number_image);
 
-        // dd($pdf);
-        // return $pdf->download('data_report.pdf');
+        $formattedData = [];
+    
+            foreach ($data->registeredCodes as $registered) {
+                $formattedData[] = $this->pdfData($registered, 'Registration');
+            }
+    
+            foreach ($data->equipmentInspection as $inspection) 
+            {
+                if(isset($inspection->warrantyClaims[0])){
+                    $warrantyClaim = $inspection->warrantyClaims[0]->equipment_claim_status == "1" ? 'Yes/answered' : 'Yes/unanswered';
+                }else{
+                    $warrantyClaim ='No';
+                }
+               
+                $formattedData[] = $this->pdfData($inspection, 'Maintenance', $warrantyClaim);
+            }
+            $pdf = PDF::loadView('admin.pdf',compact('formattedData','qr_number','certification_id'));
+        return $pdf->download('admin.pdf');
+    }
+    private function pdfData($data, $activity, $warrantyClaim = null){
+        return [
+            'type'=>$activity == 'Registration'? 'Registration' : 'Inspection',
+            'date' => $data->createdAt(),
+            'time' => $data->time(),
+            'inspection_address' => $activity == 'Registration' ? $data->address : $data->inspection_address,
+            'notes' => $activity == 'Registration' ? $data->notes : $data->inspection_notes,
+            'warrantyClaim' =>$warrantyClaim,
+        ]; 
     }
 }

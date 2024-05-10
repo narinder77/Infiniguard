@@ -158,9 +158,7 @@ class CertifiedProviderController extends Controller
                  'providerEmail' => 'required|email|unique:certified_providers,provider_email,' . $request->certifiedProviderId . ',provider_id',
              ]);       
                               
-     try {       
-        dd($request);          
-     
+     try {            
             $provider =CertifiedProvider::find($request->certifiedProviderId);
 
             $provider->provider_administrator = $request->providerAdministrator;
